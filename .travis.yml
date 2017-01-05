@@ -5,3 +5,4 @@ script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - pushd nginx && docker build -t sdrzlyz/nginx . && docker push sdrzlyz/nginx && popd
   - pushd tengine && docker build -t sdrzlyz/tengine . && docker push sdrzlyz/tengine && popd
+  - pushd openresty && docker build -t sdrzlyz/openresty . && docker push sdrzlyz/openresty && popd
