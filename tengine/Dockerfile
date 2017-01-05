@@ -10,7 +10,7 @@ RUN build_pkgs="build-base git gperf icu-dev libjpeg-turbo-dev linux-headers ope
     cd ${SOURCE_DIR}  && \
     git clone git://github.com/yaoweibin/ngx_http_substitutions_filter_module && \
     git clone git://github.com/cuber/ngx_http_google_filter_module && \
-    wget -O- http://tengine.taobao.org/download/tengine-2.2.0.tar.gz | tar -zxv && \
+    wget -O- http://tengine.taobao.org/download/tengine-${TENGINE_VERSION}.tar.gz | tar -zxv && \
     cd ${SOURCE_DIR}/tengine-${TENGINE_VERSION} && \
     ./configure \
     --prefix=/etc/nginx \
