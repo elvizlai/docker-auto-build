@@ -36,9 +36,7 @@ RUN build_pkgs="build-base git gperf tzdata wget linux-headers icu-dev libjpeg-t
     --with-http_secure_link_module \
     --with-http_stub_status_module \
     --with-http_auth_request_module \
-    --without-http_redis2_module \
     --with-http_iconv_module \
-    --with-http_postgres_module \
     --with-ipv6 \
     --with-threads \
     --with-pcre-jit \
