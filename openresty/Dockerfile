@@ -5,8 +5,8 @@ LABEL maintainer="sdrzlyz@gmail.com"
 ENV OPENRESTY_VERSION=1.13.6.1 \
     SOURCE_DIR=/tmp
 
-RUN build_pkgs="build-base git gperf tzdata wget linux-headers icu-dev libjpeg-turbo-dev openssl-dev pcre-dev zlib-dev readline-dev" && \
-    runtime_pkgs="ca-certificates icu icu-libs libuuid libjpeg-turbo openssl pcre zlib perl" && \
+RUN build_pkgs="build-base git curl gd-dev deoip-dev libxslt-dev perl-dev readline-dev gperf tzdata wget linux-headers icu-dev libjpeg-turbo-dev openssl-dev pcre-dev zlib-dev" && \
+    runtime_pkgs="ca-certificates gd geoip libgcc libxslt icu icu-libs libuuid libjpeg-turbo openssl pcre zlib" && \
     apk add --no-cache --update-cache ${build_pkgs} ${runtime_pkgs} && \
     cd ${SOURCE_DIR}  && \
     git clone git://github.com/yaoweibin/ngx_http_substitutions_filter_module && \
