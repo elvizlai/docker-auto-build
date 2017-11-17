@@ -1,7 +1,8 @@
 FROM alpine
-MAINTAINER sdrzlyz@gmail.com
 
-ENV TENGINE_VERSION=2.2.0 \
+LABEL maintainer="sdrzlyz@gmail.com"
+
+ENV TENGINE_VERSION=2.2.1 \
     SOURCE_DIR=/tmp
 
 RUN build_pkgs="build-base git gperf icu-dev libjpeg-turbo-dev linux-headers openssl-dev pcre-dev tzdata wget zlib-dev" && \

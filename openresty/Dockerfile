@@ -1,7 +1,8 @@
 FROM alpine
-MAINTAINER sdrzlyz@gmail.com
 
-ENV OPENRESTY_VERSION=1.11.2.2 \
+LABEL maintainer="sdrzlyz@gmail.com"
+
+ENV OPENRESTY_VERSION=1.13.6.1 \
     SOURCE_DIR=/tmp
 
 RUN build_pkgs="build-base git gperf tzdata wget linux-headers icu-dev libjpeg-turbo-dev openssl-dev pcre-dev zlib-dev readline-dev" && \
@@ -22,28 +23,35 @@ RUN build_pkgs="build-base git gperf tzdata wget linux-headers icu-dev libjpeg-t
     --error-log-path=/var/log/nginx/error.log \
     --http-client-body-temp-path=/var/cache/nginx/client_temp \
     --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
-    --with-http_ssl_module \
-    --with-http_v2_module \
-    --with-http_realip_module \
+    --with-http_iconv_module \
+    --with-file-aio \
     --with-http_addition_module \
-    --with-http_sub_module \
+    --with-http_auth_request_module \
     --with-http_dav_module \
     --with-http_flv_module \
-    --with-http_mp4_module \
+    --with-http_geoip_module=dynamic \
     --with-http_gunzip_module \
     --with-http_gzip_static_module \
+    --with-http_image_filter_module=dynamic \
+    --with-http_mp4_module \
     --with-http_random_index_module \
+    --with-http_realip_module \
     --with-http_secure_link_module \
+    --with-http_slice_module \
+    --with-http_ssl_module \
     --with-http_stub_status_module \
-    --with-http_auth_request_module \
-    --with-http_iconv_module \
+    --with-http_sub_module \
+    --with-http_v2_module \
+    --with-http_xslt_module=dynamic \
     --with-ipv6 \
-    --with-threads \
+    --with-mail \
+    --with-mail_ssl_module \
+    --with-md5-asm \
     --with-pcre-jit \
+    --with-sha1-asm \
     --with-stream \
     --with-stream_ssl_module \
-    --with-http_slice_module \
-    --with-file-aio \
+    --with-threads \
     --add-module=${SOURCE_DIR}/ngx_http_substitutions_filter_module \
     --add-module=${SOURCE_DIR}/ngx_http_google_filter_module && \
     make && make install && \
