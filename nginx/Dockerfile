@@ -37,7 +37,6 @@ RUN build_pkgs="build-base git gperf icu-dev libjpeg-turbo-dev linux-headers ope
     --with-http_secure_link_module \
     --with-http_stub_status_module \
     --with-http_auth_request_module \
-    --with-ipv6 \
     --with-threads \
     --with-stream \
     --with-stream_ssl_module \
