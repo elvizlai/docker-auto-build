@@ -14,7 +14,7 @@ RUN build_pkgs="build-base git curl gd-dev geoip-dev libxslt-dev perl-dev readli
     git clone git://github.com/yaoweibin/nginx_upstream_check_module && \
     wget -O- https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz | tar -zx && \
     cd ${SOURCE_DIR}/openresty-${OPENRESTY_VERSION} && \
-    patch -p1 < ${SOURCE_DIR}/nginx_http_upstream_check_module/check.patch && \
+    patch -p1 < ${SOURCE_DIR}/nginx_http_upstream_check_module/check_1.12.1+.patch && \
     ./configure \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
