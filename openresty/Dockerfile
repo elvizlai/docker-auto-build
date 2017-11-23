@@ -9,10 +9,12 @@ RUN build_pkgs="build-base git curl gd-dev geoip-dev libxslt-dev perl-dev readli
     runtime_pkgs="ca-certificates gd geoip libgcc libxslt icu icu-libs libuuid libjpeg-turbo openssl pcre zlib" && \
     apk add --no-cache --update-cache ${build_pkgs} ${runtime_pkgs} && \
     cd ${SOURCE_DIR}  && \
-    git clone git://github.com/yaoweibin/ngx_http_substitutions_filter_module && \
     git clone git://github.com/cuber/ngx_http_google_filter_module && \
+    git clone git://github.com/yaoweibin/ngx_http_substitutions_filter_module && \
+    git clone git://github.com/yaoweibin/nginx_upstream_check_module && \
     wget -O- https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz | tar -zx && \
     cd ${SOURCE_DIR}/openresty-${OPENRESTY_VERSION} && \
+    patch -p1 < ${SOURCE_DIR}/nginx_http_upstream_check_module/check.patch && \
     ./configure \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
@@ -49,8 +51,9 @@ RUN build_pkgs="build-base git curl gd-dev geoip-dev libxslt-dev perl-dev readli
     --with-stream \
     --with-stream_ssl_module \
     --with-threads \
-    --add-module=${SOURCE_DIR}/ngx_http_substitutions_filter_module \
     --add-module=${SOURCE_DIR}/ngx_http_google_filter_module && \
+    --add-module=${SOURCE_DIR}/ngx_http_substitutions_filter_module \
+    --add-module=${SOURCE_DIR}/nginx_http_upstream_check_module && \
     make && make install && \
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone && \
     rm -rf /tmp/* && \
