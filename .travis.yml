@@ -3,6 +3,6 @@ services:
 
 script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - pushd nginx && docker build -t sdrzlyz/nginx . && docker push sdrzlyz/nginx && popd
-  - pushd tengine && docker build -t sdrzlyz/tengine . && docker push sdrzlyz/tengine && popd
   - pushd openresty && docker build -t sdrzlyz/openresty . && docker push sdrzlyz/openresty && popd
+  - pushd pg-jieba && docker build -t sdrzlyz/pg-jieba . && docker push sdrzlyz/pg-jieba && popd
+  - pushd ss && docker build -t sdrzlyz/ss:3.1.3 . && docker push sdrzlyz/ss:3.1.3 && popd
