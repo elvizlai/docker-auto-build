@@ -6,4 +6,4 @@ script:
   - pushd alpine && docker build -t sdrzlyz/alpine-glibc . && docker push sdrzlyz/alpine-glibc && popd
   - pushd golang && docker build -t sdrzlyz/golang . && docker push sdrzlyz/golang && popd
   - pushd pg-jieba && docker build -t sdrzlyz/pg-jieba . && docker push sdrzlyz/pg-jieba && popd
-  - pushd ss && docker build -t sdrzlyz/ss:3.1.3 . && docker push sdrzlyz/ss:3.1.3 && popd
+  - pushd ss && docker build -t sdrzlyz/ss:3.2.0 . && docker push sdrzlyz/ss:3.2.0 && popd
