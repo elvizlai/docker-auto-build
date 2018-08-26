@@ -3,7 +3,6 @@ services:
 
 script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - pushd alpine && docker build -t sdrzlyz/alpine-glibc . && docker push sdrzlyz/alpine-glibc && popd
-  - pushd golang && docker build -t sdrzlyz/golang . && docker push sdrzlyz/golang && popd
   - pushd pg-jieba && docker build -t sdrzlyz/pg-jieba . && docker push sdrzlyz/pg-jieba && popd
   - pushd ss && docker build -t sdrzlyz/ss:3.2.0 . && docker push sdrzlyz/ss:3.2.0 && popd
+  - pushd obfs && docker build -t sdrzlyz/obfs . && docker push sdrzlyz/obfs && popd
