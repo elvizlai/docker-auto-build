@@ -7,6 +7,7 @@ ENV TIMEOUT     300
 ENV ARGS=
 
 RUN set -ex \
+    && apk add --no-cache libev \
     && apk add --no-cache --virtual .build-deps \
       gcc autoconf make libtool automake openssl asciidoc xmlto libpcre32 libev-dev g++ linux-headers \
       tzdata \
@@ -16,7 +17,7 @@ RUN set -ex \
     && git clone https://github.com/shadowsocks/simple-obfs.git \
     && cd simple-obfs && git submodule update --init --recursive \
     && ./autogen.sh && ./configure && make && make install \
-    && rm -rf /tmp/* && apk del .build-deps && apk add libev
+    &&  apk del .build-deps && rm -rf /tmp/*
 
 USER root
 

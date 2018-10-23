@@ -4,9 +4,10 @@ ARG SS_VER=3.2.0
 ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VER/shadowsocks-libev-$SS_VER.tar.gz
 
 ENV SERVER_ADDR 0.0.0.0
+ENV SERVER_ADDR_IPV6 ::0
 ENV SERVER_PORT 465
 ENV PASSWORD=
-ENV METHOD      chacha20
+ENV METHOD      aes-256-cfb
 ENV TIMEOUT     300
 ENV DNS_ADDRS   8.8.8.8,8.8.4.4
 ENV ARGS=
@@ -35,15 +36,16 @@ RUN set -ex \
     && autoreconf --install --force \
     && ./configure --prefix=/usr --disable-documentation \
     && make install \
-    && apk add --no-cache \
-      rng-tools \
-      $(scanelf --needed --nobanner /usr/bin/ss-* \
-      | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-      | sort -u) \
     && git clone https://github.com/shadowsocks/simple-obfs.git \
     && cd simple-obfs && git submodule update --init --recursive \
     && ./autogen.sh && ./configure && make && make install \
-    && rm -rf /tmp/* && apk del .build-deps && apk add libev
+    && apk del .build-deps && rm -rf /tmp/* \
+    && apk add --no-cache \
+      rng-tools \
+      libev \
+      $(scanelf --needed --nobanner /usr/bin/ss-* \
+      | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+      | sort -u)
 
 USER root
 
@@ -51,6 +53,7 @@ EXPOSE $SERVER_PORT/tcp $SERVER_PORT/udp
 
 CMD exec ss-server \
       -s $SERVER_ADDR \
+      -s $SERVER_ADDR_IPV6 \
       -p $SERVER_PORT \
       -k ${PASSWORD:-$(hostname)} \
       -m $METHOD \
