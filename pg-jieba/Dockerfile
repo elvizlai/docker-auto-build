@@ -1,4 +1,4 @@
-FROM postgres:alpine
+FROM postgres:11-alpine
 
 RUN apk add --no-cache --update-cache git make cmake libstdc++ g++
 
