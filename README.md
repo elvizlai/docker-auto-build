@@ -3,3 +3,4 @@
 * sdrzlyz/openresty
 * sdrzlyz/pg-jieba
 * sdrzlyz/ss:3.2.3
+* sdrzlyz/frpc:0.22.0

@@ -5,4 +5,5 @@ script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - pushd pg-jieba && docker build -t sdrzlyz/pg-jieba:11 . && docker push sdrzlyz/pg-jieba:11 && popd
   - pushd ss && docker build -t sdrzlyz/ss:3.2.3 . && docker push sdrzlyz/ss:3.2.3 && popd
+  - pushd frpc && docker build -t sdrzlyz/frpc:0.22.0 . && docker push sdrzlyz/frpc:0.22.0 && popd
   - pushd obfs && docker build -t sdrzlyz/obfs . && docker push sdrzlyz/obfs && popd
