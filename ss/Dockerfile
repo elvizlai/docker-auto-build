@@ -24,19 +24,20 @@ RUN set -ex \
       libsodium-dev \
       linux-headers \
       mbedtls-dev \
+      pcre-dev \
       curl \
     && cd /tmp \
     && curl -sSL $SS_URL | tar xz --strip 1 \
     && autoreconf --install --force \
     && ./configure --prefix=/usr --disable-documentation \
     && make install \
-    && apk del .build-deps && rm -rf /tmp/* \
+    && apk del .build-deps \
     && apk add --no-cache \
       rng-tools \
-      libev \
       $(scanelf --needed --nobanner /usr/bin/ss-* \
       | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-      | sort -u)
+      | sort -u) \
+    && rm -rf /tmp/*
 
 USER root
 
