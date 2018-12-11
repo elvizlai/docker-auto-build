@@ -1,4 +1,4 @@
-FROM alpine
+FROM sdrzlyz/alpine
 
 ENV SS 0.0.0.0:465
 ENV SERVER_ADDR 0.0.0.0
@@ -9,10 +9,9 @@ ENV ARGS=
 RUN set -ex \
     && apk add --no-cache libev \
     && apk add --no-cache --virtual .build-deps \
-      gcc autoconf make libtool automake openssl asciidoc xmlto libpcre32 libev-dev g++ linux-headers \
-      tzdata \
+      gcc autoconf make libtool automake openssl asciidoc xmlto \
+      libpcre32 libev-dev g++ linux-headers \
       git \
-    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
     && cd /tmp \
     && git clone https://github.com/shadowsocks/simple-obfs.git \
     && cd simple-obfs && git submodule update --init --recursive \

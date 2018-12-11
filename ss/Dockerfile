@@ -1,4 +1,4 @@
-FROM alpine
+FROM sdrzlyz/alpine
 
 ARG SS_VER=3.2.3
 ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VER/shadowsocks-libev-$SS_VER.tar.gz
@@ -24,21 +24,12 @@ RUN set -ex \
       libsodium-dev \
       linux-headers \
       mbedtls-dev \
-      pcre-dev \
-      tzdata \
       curl \
-      git \
-      asciidoc \
-      xmlto \
-    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
     && cd /tmp \
     && curl -sSL $SS_URL | tar xz --strip 1 \
     && autoreconf --install --force \
     && ./configure --prefix=/usr --disable-documentation \
     && make install \
-    && git clone https://github.com/shadowsocks/simple-obfs.git \
-    && cd simple-obfs && git submodule update --init --recursive \
-    && ./autogen.sh && ./configure && make && make install \
     && apk del .build-deps && rm -rf /tmp/* \
     && apk add --no-cache \
       rng-tools \
