@@ -1,4 +1,4 @@
-FROM sdrzlyz/apline
+FROM sdrzlyz/alpine
 
 # build and runtime essential
 ENV LANG=C.UTF-8
