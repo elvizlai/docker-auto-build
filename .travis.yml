@@ -6,6 +6,6 @@ script:
   - pushd alpine && docker build -t sdrzlyz/alpine . && docker push sdrzlyz/alpine && popd
   - pushd alpine-glibc && docker build -t sdrzlyz/alpine-glibc . && docker push sdrzlyz/alpine-glibc && popd
   - pushd ss && docker build -t sdrzlyz/ss:3.2.3 . && docker push sdrzlyz/ss:3.2.3 && popd
-  - pushd frpc && docker build -t sdrzlyz/frpc:0.23.2 . && docker push sdrzlyz/frpc:0.23.2 && popd
+  - pushd frpc && docker build -t sdrzlyz/frpc:0.23.3 . && docker push sdrzlyz/frpc:0.23.3 && popd
   - pushd redis && docker build -t sdrzlyz/redis:5.0 . && docker push sdrzlyz/redis:5.0 && popd
   - pushd pg-jieba && docker build -t sdrzlyz/pg-jieba:11 . && docker push sdrzlyz/pg-jieba:11 && popd
