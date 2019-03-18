@@ -5,9 +5,9 @@ script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - pushd alpine && docker build -t sdrzlyz/alpine . && docker push sdrzlyz/alpine && popd
   - pushd alpine-glibc && docker build -t sdrzlyz/alpine-glibc . && docker push sdrzlyz/alpine-glibc && popd
-  - pushd frpc && docker build -t sdrzlyz/frpc:0.24.1 . && docker push sdrzlyz/frpc:0.24.1 && popd
+  - pushd frpc && docker build -t sdrzlyz/frpc:0.25.1 . && docker push sdrzlyz/frpc:0.25.1 && popd
   - pushd go-dev && docker build -t sdrzlyz/go-dev . && docker push sdrzlyz/go-dev && popd
   - pushd nettools && docker build -t sdrzlyz/nettools . && docker push sdrzlyz/nettools && popd
   - pushd pg-jieba && docker build -t sdrzlyz/pg-jieba:11 . && docker push sdrzlyz/pg-jieba:11 && popd
   - pushd redis && docker build -t sdrzlyz/redis:5.0 . && docker push sdrzlyz/redis:5.0 && popd
-  - pushd ss && docker build -t sdrzlyz/ss:3.2.4 . && docker push sdrzlyz/ss:3.2.4 && popd
+  - pushd ss && docker build -t sdrzlyz/ss:3.2.5 . && docker push sdrzlyz/ss:3.2.5 && popd
