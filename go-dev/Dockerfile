@@ -18,7 +18,7 @@ WORKDIR /root/go/src
 RUN cd /tmp \
     && curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-18.06.3-ce.tgz | tar zxf - && mv docker/docker $GOPATH/bin/docker \
     && curl -sSL https://dl.k8s.io/v1.13.4/kubernetes-client-linux-amd64.tar.gz | tar zxf - && mv kubernetes/client/bin/kubectl $GOPATH/bin/kubectl && mkdir ~/.kube \
-    && curl -sSL https://github.com/google/protobuf/releases/download/v3.7.0/protoc-3.7.0-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/protoc \
+    && curl -sSL https://github.com/google/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/protoc \
     && go get -d -u github.com/golang/protobuf/protoc-gen-go \
     && git -C /root/go/src/github.com/golang/protobuf checkout v1.3.1 \
     && go install github.com/golang/protobuf/protoc-gen-go \
