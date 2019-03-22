@@ -3,7 +3,7 @@ FROM sdrzlyz/alpine-glibc
 # build and runtime essential
 RUN apk --update --no-cache add curl git make bash upx
 
-ARG GO_VER=1.12
+ARG GO_VER=1.12.1
 ENV GOPATH /root/go
 ENV GOPROXY "https://goproxy.io"
 ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
@@ -20,7 +20,7 @@ RUN cd /tmp \
     && curl -sSL https://dl.k8s.io/v1.13.4/kubernetes-client-linux-amd64.tar.gz | tar zxf - && mv kubernetes/client/bin/kubectl $GOPATH/bin/kubectl && mkdir ~/.kube \
     && curl -sSL https://github.com/google/protobuf/releases/download/v3.7.0/protoc-3.7.0-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/protoc \
     && go get -d -u github.com/golang/protobuf/protoc-gen-go \
-    && git -C /root/go/src/github.com/golang/protobuf checkout v1.3.0 \
+    && git -C /root/go/src/github.com/golang/protobuf checkout v1.3.1 \
     && go install github.com/golang/protobuf/protoc-gen-go \
     && go get -u github.com/mgechev/revive \
     && go get -u github.com/rakyll/statik \
