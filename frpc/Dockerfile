@@ -8,6 +8,6 @@ RUN set -ex \
     && tar zxf frp.tgz -C . --strip-components 1 \
     && mv frpc /usr/local/bin \
     && mv frpc.ini /frpc.ini \
-    && rm -f /tmp/*
+    && rm -rf /tmp/*
 
 CMD exec frpc -c /frpc.ini
