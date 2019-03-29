@@ -2,7 +2,7 @@
 
 * sdrzlyz/alpine
 * sdrzlyz/alpine-glibc
-* sdrzlyz/frpc:0.25.1
+* sdrzlyz/frpc:0.25.3
 * sdrzlyz/go-dev
 * sdrzlyz/nettools netcat tcpdump
 * sdrzlyz/pg-jieba
