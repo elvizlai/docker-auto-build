@@ -3,7 +3,7 @@ FROM sdrzlyz/alpine-glibc
 # build and runtime essential
 RUN apk --update --no-cache add curl git make bash upx
 
-ARG GO_VER=1.12.1
+ARG GO_VER=1.12.2
 ENV GOPATH /root/go
 ENV GOPROXY "https://goproxy.io"
 ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
