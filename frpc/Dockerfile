@@ -1,6 +1,6 @@
 FROM sdrzlyz/alpine
 
-ARG FRP_VER=0.30.0
+ARG FRP_VER=0.31.0
 
 RUN set -ex \
     && cd /tmp \
