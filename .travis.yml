@@ -3,9 +3,4 @@ services:
 
 script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - pushd alpine && docker build -t sdrzlyz/alpine . && docker push sdrzlyz/alpine && popd
-  - pushd alpine-glibc && docker build -t sdrzlyz/alpine-glibc . && docker push sdrzlyz/alpine-glibc && popd
   - sh ./build.sh frpc
-  - pushd nettools && docker build -t sdrzlyz/nettools . && docker push sdrzlyz/nettools && popd
-  - pushd pg-jieba && docker build -t sdrzlyz/pg-jieba:11 . && docker push sdrzlyz/pg-jieba:11 && popd
-  - pushd redis && docker build -t sdrzlyz/redis:5.0 . && docker push sdrzlyz/redis:5.0 && popd
