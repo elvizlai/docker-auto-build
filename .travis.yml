@@ -3,4 +3,6 @@ services:
 
 script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - sh ./build.sh alpine
   - sh ./build.sh frpc
+  - sh ./build.sh nettools

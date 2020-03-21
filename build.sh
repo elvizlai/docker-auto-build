@@ -1,5 +1,5 @@
 collect() {
-    echo `cat README.md | grep sdrzlyz/$1 | awk '{print $2}'`
+    echo `cat README.md | grep sdrzlyz/$1 | head -n1 | awk '{print $2}'`
 }
 
 VER=`collect $1`
