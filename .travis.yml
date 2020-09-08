@@ -6,3 +6,4 @@ script:
   - sh ./build.sh alpine
   - sh ./build.sh frpc
   - sh ./build.sh nettools
+  - sh ./build.sh nginx

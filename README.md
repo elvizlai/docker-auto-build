@@ -6,3 +6,4 @@
 * sdrzlyz/nettools netcat tcpdump
 * sdrzlyz/pg-jieba
 * sdrlyz/redis:5.0 rejson
+* sdrzlyz/nginx
