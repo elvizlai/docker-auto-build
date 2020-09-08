@@ -10,5 +10,10 @@ BUILD_VER=${VER#*:}
 
 # echo $BUILD_VER
 
-cat $1/Dockerfile | sed "s#\$BUILD_VER#$BUILD_VER#g" | docker build -t $VER - 
+cd $1
+
+sed -i "s#\$BUILD_VER#$BUILD_VER#g" Dockerfile
+docker build -t $VER - 
 docker push $VER
+
+cd ..
