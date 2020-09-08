@@ -13,7 +13,7 @@ BUILD_VER=${VER#*:}
 cd $1
 
 sed -i "s#\$BUILD_VER#$BUILD_VER#g" Dockerfile
-docker build -t $VER - 
+docker build -t $VER .
 docker push $VER
 
 cd ..
