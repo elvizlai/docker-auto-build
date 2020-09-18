@@ -7,3 +7,4 @@ script:
   - sh ./build.sh frpc
   - sh ./build.sh nettools
   - sh ./build.sh nginx
+  - sh ./build.sh pg-ts-jieba

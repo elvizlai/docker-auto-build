@@ -270,3 +270,7 @@ stream {
 EOF
 
 /usr/local/openssl/bin/openssl dhparam -out /etc/nginx/dhparam.pem 1024
+
+# log forward
+ln -sf /dev/stdout /var/log/nginx/access.log
+ln -sf /dev/stderr /var/log/nginx/error.log
