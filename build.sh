@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 collect() {
     echo `cat README.md | grep sdrzlyz/$1 | head -n1 | awk '{print $2}'`
 }
