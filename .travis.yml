@@ -3,8 +3,8 @@ services:
 
 script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - sh ./build.sh alpine
-  - sh ./build.sh frpc
-  - sh ./build.sh nettools
-  - sh ./build.sh nginx
-  - sh ./build.sh pg-ts-jieba
+  - bash ./build.sh alpine
+  - bash ./build.sh frpc
+  - bash ./build.sh nettools
+  - bash ./build.sh nginx
+  - bash ./build.sh pg-ts-jieba
