@@ -5,5 +5,5 @@
 * sdrzlyz/frpc:0.34.0
 * sdrzlyz/nettools netcat tcpdump
 * sdrzlyz/pg-ts-jieba
-* sdrlyz/redis:5.0 rejson
+* sdrzlyz/redis:5.0 rejson
 * sdrzlyz/nginx

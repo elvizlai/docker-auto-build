@@ -2,18 +2,27 @@ collect() {
     echo `cat README.md | grep sdrzlyz/$1 | head -n1 | awk '{print $2}'`
 }
 
-VER=`collect $1`
+BUILD_INFO=`collect $1`
 
-# echo $VER
+# echo $BUILD_INFO
 
-BUILD_VER=${VER#*:}
+IFS=":" read -ra TARGET <<< "$BUILD_INFO"
 
-# echo $BUILD_VER
+DNAME=${TARGET[0]}
+DTAG=${TARGET[1]:-latest}
+
+echo "name:$DNAME, tag:$DTAG"
 
 cd $1
 
-sed -i "s#\$BUILD_VER#$BUILD_VER#g" Dockerfile
-docker build -t $VER .
-docker push $VER
+sed -i "s#\$BUILD_VER#$DTAG#g" Dockerfile
+docker build -t $DNAME:$DTAG .
+docker push $DNAME:$DTAG
+
+# latest
+if [ "$DTAG" != "latest" ];then
+    docker tag $DNAME:$DTAG $DNAME:latest
+    docker push $DNAME:latest
+fi
 
 cd ..
