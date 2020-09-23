@@ -2,9 +2,11 @@ services:
   - docker
 
 script:
+  - git submodule init
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - bash ./build.sh alpine
   - bash ./build.sh frpc
   - bash ./build.sh nettools
   - bash ./build.sh nginx
   - bash ./build.sh pg-ts-jieba
+  - bash ./build.sh ikev2

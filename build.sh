@@ -10,7 +10,7 @@ BUILD_INFO=`collect $1`
 
 IFS=":" read -ra TARGET <<< "$BUILD_INFO"
 
-DNAME=${TARGET[0]}
+DNAME=${TARGET[0]:-$1}
 DTAG=${TARGET[1]:-latest}
 
 echo "name:$DNAME, tag:$DTAG"
