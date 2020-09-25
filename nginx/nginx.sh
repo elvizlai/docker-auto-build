@@ -26,13 +26,17 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 git clone https://github.com/winshining/nginx-http-flv-module
 git clone https://github.com/arut/nginx-ts-module
-git clone https://github.com/vozlt/nginx-module-vts
-git clone https://github.com/vozlt/nginx-module-sts
-git clone https://github.com/vozlt/nginx-module-stream-sts
 git clone https://github.com/openresty/echo-nginx-module
 git clone https://github.com/openresty/headers-more-nginx-module
 git clone https://github.com/openresty/srcache-nginx-module
+git clone https://github.com/openresty/replace-filter-nginx-module
 git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module
+
+DYNAMIC_MODULES=""
+for dir in `ls module/dynamic`
+do
+    DYNAMIC_MODULES=$DYNAMIC_MODULES"--add-dynamic-module=./module/dynamic/$dir "
+done
 
 cd $NGINXDIR
 curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1 && rm -rf nginx.tgz
@@ -81,15 +85,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-module=./module/njs/nginx \
     --add-module=./module/ngx_devel_kit-$NGINXNDK \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
-    --add-dynamic-module=./module/dynamic/nginx-ts-module \
-    --add-dynamic-module=./module/dynamic/nginx-http-flv-module \
-    --add-dynamic-module=./module/dynamic/nginx-module-vts \
-    --add-dynamic-module=./module/dynamic/nginx-module-sts \
-    --add-dynamic-module=./module/dynamic/nginx-module-stream-sts \
-    --add-dynamic-module=./module/dynamic/echo-nginx-module \
-    --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
-    --add-dynamic-module=./module/dynamic/srcache-nginx-module \
-    --add-dynamic-module=./module/dynamic/ngx_http_substitutions_filter_module
+    $DYNAMIC_MODULES
 
 make -j$(nproc)
 # make -j$(nproc) -f objs/Makefile modules
