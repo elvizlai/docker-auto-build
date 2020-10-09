@@ -1,7 +1,7 @@
 yum install -y which patch libxml2-devel libxslt-devel gd-devel GeoIP GeoIP-devel GeoIP-data
 
 NGINXVER=1.18.0
-NGINXNJS=0.4.3
+NGINXNJS=0.4.4
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.17
@@ -29,14 +29,7 @@ git clone https://github.com/arut/nginx-ts-module
 git clone https://github.com/openresty/echo-nginx-module
 git clone https://github.com/openresty/headers-more-nginx-module
 git clone https://github.com/openresty/srcache-nginx-module
-git clone https://github.com/openresty/replace-filter-nginx-module
 git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module
-
-DYNAMIC_MODULES=""
-for dir in `ls module/dynamic`
-do
-    DYNAMIC_MODULES=$DYNAMIC_MODULES"--add-dynamic-module=./module/dynamic/$dir "
-done
 
 cd $NGINXDIR
 curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1 && rm -rf nginx.tgz
@@ -85,7 +78,12 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-module=./module/njs/nginx \
     --add-module=./module/ngx_devel_kit-$NGINXNDK \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
-    $DYNAMIC_MODULES
+    --add-dynamic-module=./module/dynamic/nginx-http-flv-module \
+    --add-dynamic-module=./module/dynamic/nginx-ts-module \
+    --add-dynamic-module=./module/dynamic/echo-nginx-module \
+    --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
+    --add-dynamic-module=./module/dynamic/srcache-nginx-module \
+    --add-dynamic-module=./module/dynamic/ngx_http_substitutions_filter_module
 
 make -j$(nproc)
 # make -j$(nproc) -f objs/Makefile modules
@@ -93,7 +91,7 @@ make -j$(nproc)
 make install
 
 # delete old modules
-rm -f /etc/nginx/modules/*.so.old
+# rm -f /etc/nginx/modules/*.so.old
 
 # dynamic modules in nginx.conf
 # load_module "modules/xxxx.so"
@@ -134,6 +132,7 @@ rm -rf lua-cjson-$LUACJSON
 # 开机自启动
 mkdir -p /var/cache/nginx/client_temp
 mkdir -p /etc/nginx/conf.d
+
 cat > /etc/systemd/system/nginx.service <<EOF
 [Unit]
 Description=nginx
@@ -160,15 +159,12 @@ user root;
 worker_processes auto;
 worker_rlimit_nofile 65535;
 
-# load_module "modules/ngx_http_echo_module.so";
-# load_module "modules/ngx_http_flv_live_module.so";
-# load_module "modules/ngx_http_geoip_module.so";
-# load_module "modules/ngx_http_srcache_filter_module.so";
-# load_module "modules/ngx_http_stream_server_traffic_status_module.so";
-# load_module "modules/ngx_http_subs_filter_module.so";
-# load_module "modules/ngx_http_ts_module.so";
-# load_module "modules/ngx_http_vhost_traffic_status_module.so";
-# load_module "modules/ngx_stream_server_traffic_status_module.so";
+#load_module "modules/ngx_http_echo_module.so";
+#load_module "modules/ngx_http_flv_live_module.so";
+#load_module "modules/ngx_http_geoip_module.so";
+#load_module "modules/ngx_http_srcache_filter_module.so";
+#load_module "modules/ngx_http_subs_filter_module.so";
+#load_module "modules/ngx_http_ts_module.so";
 
 #error_log  logs/error.log;
 #error_log  logs/error.log  notice;
@@ -176,8 +172,8 @@ worker_rlimit_nofile 65535;
 #pid        logs/nginx.pid;
 
 events {
-    multi_accept        on;
-    worker_connections  65535;
+    multi_accept       on;
+    worker_connections 65535;
 }
 
 http {
@@ -187,8 +183,8 @@ http {
     lua_package_cpath "/etc/nginx/lualib/?.so;;";
 
     # MIME
-    include       mime.types;
-    default_type  application/octet-stream;
+    include      mime.types;
+    default_type application/octet-stream;
 
     # logging
     log_format main '\$request_id \$remote_addr [\$time_local] \$ssl_protocol/\$ssl_cipher "\$request" \$status \$body_bytes_sent "\$http_referer" "\$http_host" '
@@ -196,11 +192,11 @@ http {
 
     access_log /var/log/nginx/access.log main;
 
-    sendfile        on;
-    tcp_nodelay     on;
-    tcp_nopush      on;
-    server_tokens   off;
-    keepalive_timeout  65;
+    sendfile      on;
+    tcp_nodelay   on;
+    tcp_nopush    on;
+    server_tokens off;
+    keepalive_timeout 65;
     reset_timedout_connection on;
 
     gzip  on;
@@ -210,18 +206,18 @@ http {
     gzip_min_length 1000;
     gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
 
-    brotli               on;
-    brotli_comp_level    6;
-    brotli_buffers       16 8k;
-    brotli_min_length    20;
-    brotli_types         *;
+    brotli            on;
+    brotli_comp_level 6;
+    brotli_buffers    16 8k;
+    brotli_min_length 20;
+    brotli_types      *;
 
     # SSL
     ssl_session_timeout 1d;
-    ssl_session_cache builtin:1000 shared:SSL:50m;
+    ssl_session_cache   builtin:1000 shared:SSL:50m;
     ssl_session_tickets off;
     # Diffie-Hellman parameter for DHE ciphersuites
-    ssl_dhparam /etc/nginx/dhparam.pem;
+    ssl_dhparam   /etc/nginx/dhparam.pem;
     ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
     ssl_ciphers   TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-128-CCM-8-SHA256:TLS13-AES-128-CCM-SHA256:EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
     ssl_prefer_server_ciphers on;
@@ -232,8 +228,8 @@ http {
     resolver_timeout 5s;
 
     server {
-        listen       80 default;
-        server_name  _;
+        listen      80 default;
+        server_name _;
         return 444;
     }
 

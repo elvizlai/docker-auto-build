@@ -2,9 +2,9 @@ yum install -y git gcc gcc-c++ bzip2 systemd-devel make
 
 PCRE=pcre-8.44
 ZLIB=zlib-1.2.11
-OPENSSL=openssl-1.1.1g
+OPENSSL=openssl-1.1.1h
 JEMALLOC=5.2.1
-LUAJIT=v2.1-20200102
+LUAJIT=v2.1-20201002
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -29,18 +29,18 @@ make clean
 ./config --prefix=/usr/local/openssl --libdir=/usr/local/lib shared
 make -j4 && make install && cd ..
 
-# lua-jit
-mkdir -p luajit2.1
-curl -sSL https://github.com/openresty/luajit2/archive/$LUAJIT.tar.gz | tar zxf - -C luajit2.1 --strip-components 1
-cd luajit2.1
-make clean
-make -j4 && make install && cd ..
-
 # jemalloc
 curl -sSL https://github.com/jemalloc/jemalloc/releases/download/$JEMALLOC/jemalloc-$JEMALLOC.tar.bz2 | tar xjf -
 cd jemalloc-$JEMALLOC
 make clean
 ./configure --prefix=/usr/local/jemalloc --libdir=/usr/local/lib
+make -j4 && make install && cd ..
+
+# lua-jit
+mkdir -p luajit2.1
+curl -sSL https://github.com/openresty/luajit2/archive/$LUAJIT.tar.gz | tar zxf - -C luajit2.1 --strip-components 1
+cd luajit2.1
+make clean
 make -j4 && make install && cd ..
 
 # TODO optimize
