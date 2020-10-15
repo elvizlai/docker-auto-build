@@ -3,7 +3,7 @@
 * sdrzlyz/alpine
 * sdrzlyz/alpine-glibc
 * sdrzlyz/frpc:0.34.0
-* sdrzlyz/tools netcat tcpdump mycli
+* sdrzlyz/tools netcat tcpdump psql mycli
 * sdrzlyz/pg-ts-jieba
 * sdrzlyz/redis:5.0 rejson
 * sdrzlyz/nginx
