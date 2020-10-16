@@ -31,14 +31,14 @@ git clone https://github.com/openresty/srcache-nginx-module
 git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 cd $NGINXDIR
-curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1 && rm -rf nginx.tgz
+curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1
+# curl -sSL https://x.morn.io/dl/nginx-$NGINXVER.tgz | tar zxf - -C . --strip-components 1
 
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
-
 ./configure \
-    --with-cc-opt="-I/usr/local/openssl/include" \
-    --with-ld-opt="-Wl,-rpath,$LUAJIT_LIB -ljemalloc" \
+    --with-cc-opt="-I/usr/local/openssl/include -DTCP_FASTOPEN=23" \
+    --with-ld-opt="-ljemalloc -Wl,-rpath,$LUAJIT_LIB" \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
     --sbin-path=/usr/sbin/nginx \
@@ -92,7 +92,7 @@ make install
 # delete old modules
 # rm -f /etc/nginx/modules/*.so.old
 
-# dynamic modules in nginx.conf
+# dynamic modules usage in nginx.conf
 # load_module "modules/xxxx.so"
 
 # https://github.com/bungle/awesome-resty
@@ -193,6 +193,11 @@ PrivateTmp=true
 WantedBy=multi-user.target
 EOF
 
+# cert gen
+mkdir -p /etc/nginx/conf.d /etc/nginx/cert
+/usr/local/openssl/bin/openssl dhparam -out /etc/nginx/dhparam.pem 1024
+/usr/local/openssl/bin/openssl req -x509 -nodes -days 36500 -newkey rsa:1024 -keyout /etc/nginx/cert/default.key -out /etc/nginx/cert/default.crt -subj "/C=HJ/ST=HiJack/L=HiJack/O=HiJack/OU=IT/CN=hijack.com"
+
 cat > /etc/nginx/nginx.conf <<EOF
 user root;
 worker_processes auto;
@@ -201,9 +206,12 @@ worker_rlimit_nofile 65535;
 #load_module "modules/ngx_http_echo_module.so";
 #load_module "modules/ngx_http_flv_live_module.so";
 #load_module "modules/ngx_http_geoip_module.so";
+#load_module "modules/ngx_http_headers_more_filter_module.so";
+#load_module "modules/ngx_http_image_filter_module.so";
 #load_module "modules/ngx_http_srcache_filter_module.so";
 #load_module "modules/ngx_http_subs_filter_module.so";
 #load_module "modules/ngx_http_ts_module.so";
+#load_module "modules/ngx_http_xslt_filter_module.so";
 
 #error_log  logs/error.log;
 #error_log  logs/error.log  notice;
@@ -257,9 +265,9 @@ http {
     ssl_session_tickets off;
     # Diffie-Hellman parameter for DHE ciphersuites
     ssl_dhparam   /etc/nginx/dhparam.pem;
-    ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers   TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-128-CCM-8-SHA256:TLS13-AES-128-CCM-SHA256:EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
-    ssl_prefer_server_ciphers on;
+    ssl_prefer_server_ciphers off;
     ssl_stapling on;
     ssl_stapling_verify on;
     ssl_early_data on;
@@ -269,6 +277,15 @@ http {
     server {
         listen      80 default;
         server_name _;
+        return 444;
+    }
+
+    server {
+        listen      443 default_server ssl http2 fastopen=512 backlog=4096 reuseport so_keepalive=120s:60s:10;
+        server_name _;
+        ssl_stapling off;
+        ssl_certificate /etc/nginx/cert/default.crt;
+        ssl_certificate_key /etc/nginx/cert/default.key;
         return 444;
     }
 
@@ -300,7 +317,7 @@ stream {
 }
 EOF
 
-/usr/local/openssl/bin/openssl dhparam -out /etc/nginx/dhparam.pem 1024
+
 
 # log forward
 ln -sf /dev/stdout /var/log/nginx/access.log
