@@ -168,6 +168,18 @@ LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
 mv -f lua-cjson-$LUA_CJSON/cjson.so .
 rm -rf lua-cjson-$LUA_CJSON
 
+# yaml
+LIB_YAML=0.2.5
+curl -sSL http://pyyaml.org/download/libyaml/yaml-$LIB_YAML.tar.gz | tar zxf -
+cd yaml-$LIB_YAML && ./configure && make && make install && cd ..
+rm -rf yaml-$LIB_YAML
+
+LYAML=6.2.6
+curl -sSL https://github.com/gvvaughan/lyaml/archive/v$LYAML.tar.gz | tar zxf -
+cd lyaml-$LYAML && build-aux/luke LYAML_DIR=./target LUA_INCDIR=/usr/local/include/luajit-2.1 && build-aux/luke PREFIX=./target install && cd ..
+mv lyaml-$LYAML/target/{lib/lua/5.1/yaml.so,share/lua/5.1/lyaml} .
+rm -rf lyaml-$LYAML
+
 mkdir -p /var/cache/nginx/client_temp
 mkdir -p /etc/nginx/conf.d
 
