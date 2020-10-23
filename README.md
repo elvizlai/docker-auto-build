@@ -1,4 +1,7 @@
+[![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)
 [![Build Status](https://www.travis-ci.org/elvizlai/docker-auto-build.svg?branch=master)](https://www.travis-ci.org/elvizlai/docker-auto-build)
+
+#### Apps
 
 * sdrzlyz/alpine
 * sdrzlyz/alpine-glibc
@@ -8,3 +11,20 @@
 * sdrzlyz/redis:5.0 rejson
 * sdrzlyz/nginx
 * sdrzlyz/ikev2
+
+#### [CentOS Docker](https://docs.docker.com/engine/install/centos/)
+```
+sudo yum install -y yum-utils
+
+sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+sudo yum install -y docker-ce docker-ce-cli containerd.io
+sudo systemctl start docker && sudo systemctl enable docker
+```
+```
+# adding to '/etc/sysctl.conf', then 'sysctl -p'
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+```
