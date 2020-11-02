@@ -4,7 +4,7 @@ NGINXVER=1.18.0
 NGINXNJS=0.4.4
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
-NGINXLUA=0.10.17
+NGINXLUA=0.10.18
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -101,7 +101,7 @@ make install
 mkdir -p /etc/nginx/lualib
 cd /etc/nginx/lualib
 
-LUA_RESTY_CORE=0.1.19
+LUA_RESTY_CORE=0.1.20
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -126,7 +126,7 @@ curl -sSL https://github.com/thibaultcha/lua-resty-mlcache/archive/$LUA_RESTY_ML
 /bin/cp -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE/lib/* .
 rm -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE
 
-LUA_RESTY_WEBSOCKET=0.07
+LUA_RESTY_WEBSOCKET=0.08
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET

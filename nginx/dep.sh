@@ -4,7 +4,7 @@ PCRE=pcre-8.44
 ZLIB=zlib-1.2.11
 OPENSSL=openssl-1.1.1h
 JEMALLOC=5.2.1
-LUAJIT=v2.1-20201012-2
+LUAJIT=v2.1-20201027
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
