@@ -7,7 +7,7 @@ RUN set -ex;\
 	apt-get install -y --no-install-recommends $DEPS;
 
 RUN mkdir /REJSON; \
-    curl -sSL https://github.com/RedisLabsModules/rejson/archive/v1.0.3.tar.gz | tar zxvf - --strip-components 1 -C /REJSON; \
+    curl -sSL https://github.com/RedisLabsModules/rejson/archive/v1.0.5.tar.gz | tar zxvf - --strip-components 1 -C /REJSON; \
     cd /REJSON; \
     make;
 
