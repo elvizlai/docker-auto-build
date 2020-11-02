@@ -6,7 +6,8 @@ script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - bash ./build.sh alpine
   - bash ./build.sh frpc
-  - bash ./build.sh tools
+  - bash ./build.sh go-dev
+  - bash ./build.sh ikev2
   - bash ./build.sh nginx
   - bash ./build.sh pg-ts-jieba
-  - bash ./build.sh ikev2
+  - bash ./build.sh tools

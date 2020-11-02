@@ -1,29 +1,18 @@
-FROM sdrzlyz/alpine-glibc
+FROM golang:1.15-buster
 
-# build and runtime essential
-RUN apk --update --no-cache add curl git make bash upx
+ENV GOPROXY "https://goproxy.cn|https://gocenter.io|direct"
+ENV PATH $PATH:$GOPATH/bin
 
-ARG GO_VER=1.12.4
-ENV GOPATH /root/go
-ENV GOPROXY "https://goproxy.io"
-ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
-
-RUN curl -sSL https://dl.google.com/go/go$GO_VER.linux-amd64.tar.gz | tar zxf - && mv go /usr/local/go && mkdir -p $GOPATH/bin
+# runtime essential
+RUN apt-get update && apt-get install --no-install-recommends -y unzip upx-ucl
 
 WORKDIR /root/go/src
 
-# docker kubectl
-# protoc protoc-gen-go
-# revive statik
+# docker protoc revive
 RUN cd /tmp \
-    && curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-18.06.3-ce.tgz | tar zxf - && mv docker/docker $GOPATH/bin/docker \
-    && curl -sSL https://dl.k8s.io/v1.14.1/kubernetes-client-linux-amd64.tar.gz | tar zxf - && mv kubernetes/client/bin/kubectl $GOPATH/bin/kubectl && mkdir ~/.kube \
-    && curl -sSL https://github.com/google/protobuf/releases/download/v3.7.1/protoc-3.7.1-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/protoc \
-    && go get -d -u github.com/golang/protobuf/protoc-gen-go \
-    && git -C /root/go/src/github.com/golang/protobuf checkout v1.3.1 \
-    && go install github.com/golang/protobuf/protoc-gen-go \
+    && curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-19.03.9.tgz | tar zxf - && mv docker/docker $GOPATH/bin/docker \
+    && curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protoc-3.13.0-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/protoc \
     && go get -u github.com/mgechev/revive \
-    && go get -u github.com/rakyll/statik \
     && upx -f -q /usr/local/go/bin/* $GOPATH/bin/* || true \
-    && apk del upx \
-    && rm -rf /root/go/src/* /root/go/pkg/* /root/.cache/go-build/* /tmp/*
+    && apt-get purge --auto-remove -y upx-ucl \
+    && rm -rf /root/go/src/* /root/go/pkg/* /root/.cache/go-build/* /tmp/* /var/lib/apt/lists/*
