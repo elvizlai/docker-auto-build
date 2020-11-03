@@ -37,7 +37,7 @@ curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --s
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
 ./configure \
-    --with-cc-opt="-I/usr/local/openssl/include -DTCP_FASTOPEN=23" \
+    --with-cc-opt="-DTCP_FASTOPEN=23" \
     --with-ld-opt="-ljemalloc -Wl,-rpath,$LUAJIT_LIB" \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
@@ -90,10 +90,7 @@ make -j$(nproc)
 make install
 
 # delete old modules
-# rm -f /etc/nginx/modules/*.so.old
-
-# dynamic modules usage in nginx.conf
-# load_module "modules/xxxx.so"
+rm -f /etc/nginx/modules/*.so.old || true
 
 # https://github.com/bungle/awesome-resty
 
@@ -207,8 +204,11 @@ EOF
 
 # cert gen
 mkdir -p /etc/nginx/conf.d /etc/nginx/cert
-/usr/local/openssl/bin/openssl dhparam -out /etc/nginx/dhparam.pem 1024
-/usr/local/openssl/bin/openssl req -x509 -nodes -days 36500 -newkey rsa:1024 -keyout /etc/nginx/cert/default.key -out /etc/nginx/cert/default.crt -subj "/C=HJ/ST=HiJack/L=HiJack/O=HiJack/OU=IT/CN=hijack.com"
+/usr/local/bin/openssl dhparam -out /etc/nginx/dhparam.pem 1024
+/usr/local/bin/openssl req -x509 -nodes -days 36500 -newkey rsa:1024 -keyout /etc/nginx/default.key -out /etc/nginx/default.crt -subj "/C=HJ/ST=HiJack/L=HiJack/O=HiJack/OU=IT/CN=hijack.com"
+
+# dynamic modules usage in nginx.conf
+# load_module "modules/xxxx.so"
 
 cat > /etc/nginx/nginx.conf <<EOF
 user root;
@@ -276,7 +276,7 @@ http {
     ssl_session_cache   builtin:1000 shared:SSL:50m;
     ssl_session_tickets off;
     # Diffie-Hellman parameter for DHE ciphersuites
-    ssl_dhparam   /etc/nginx/dhparam.pem;
+    ssl_dhparam   dhparam.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers   TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-128-CCM-8-SHA256:TLS13-AES-128-CCM-SHA256:EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
     ssl_prefer_server_ciphers off;
@@ -296,8 +296,8 @@ http {
         listen      443 default_server ssl http2 fastopen=512 backlog=4096 reuseport so_keepalive=120s:60s:10;
         server_name _;
         ssl_stapling off;
-        ssl_certificate /etc/nginx/cert/default.crt;
-        ssl_certificate_key /etc/nginx/cert/default.key;
+        ssl_certificate default.crt;
+        ssl_certificate_key default.key;
         return 444;
     }
 
@@ -328,7 +328,6 @@ stream {
     include /etc/nginx/conf.d/*.stream;
 }
 EOF
-
 
 
 # log forward

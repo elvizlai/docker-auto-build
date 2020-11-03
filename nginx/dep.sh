@@ -26,14 +26,14 @@ make -j4 && make install && cd ..
 curl -sSL https://www.openssl.org/source/$OPENSSL.tar.gz | tar zxf -
 cd $OPENSSL
 make clean
-./config --prefix=/usr/local/openssl --libdir=/usr/local/lib shared
+./config --prefix=/usr/local --libdir=/usr/local/lib shared
 make -j4 && make install && cd ..
 
 # jemalloc
 curl -sSL https://github.com/jemalloc/jemalloc/releases/download/$JEMALLOC/jemalloc-$JEMALLOC.tar.bz2 | tar xjf -
 cd jemalloc-$JEMALLOC
 make clean
-./configure --prefix=/usr/local/jemalloc --libdir=/usr/local/lib
+./configure --prefix=/usr/local --libdir=/usr/local/lib
 make -j4 && make install && cd ..
 
 # lua-jit
