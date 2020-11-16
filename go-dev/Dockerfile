@@ -10,8 +10,8 @@ WORKDIR /root/go/src
 
 # docker protoc revive
 RUN cd /tmp \
-    && curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-19.03.9.tgz | tar zxf - && mv docker/docker $GOPATH/bin/docker \
-    && curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protoc-3.13.0-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/protoc \
+    && curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-19.03.13.tgz | tar zxf - && mv docker/docker $GOPATH/bin/docker \
+    && curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v3.14.0/protoc-3.14.0-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/protoc \
     && go get -u github.com/mgechev/revive \
     && upx -f -q /usr/local/go/bin/* $GOPATH/bin/* || true \
     && apt-get purge --auto-remove -y upx-ucl \
