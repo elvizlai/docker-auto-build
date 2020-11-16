@@ -5,12 +5,12 @@
 
 * sdrzlyz/alpine
 * sdrzlyz/alpine-glibc
-* sdrzlyz/frpc:0.34.0
+* sdrzlyz/frpc:0.34.2
 * sdrzlyz/go-dev docker protoc revive
 * sdrzlyz/ikev2
 * sdrzlyz/nginx
 * sdrzlyz/pg-ts-jieba
-* sdrzlyz/redis:5.0 rejson
+* sdrzlyz/redis:5.0
 * sdrzlyz/tools netcat tcpdump psql mycli
 
 #### [CentOS Docker](https://docs.docker.com/engine/install/centos/)
