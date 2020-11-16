@@ -2,7 +2,7 @@ services:
   - docker
 
 before_script:
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker login -u=sdrzlyz -p="$DOCKER_PASSWORD"
 
 jobs:
   include:
@@ -10,6 +10,7 @@ jobs:
       name: alpine
       script:
         - bash ./build.sh alpine
+        - bash ./build.sh alpine-glibc
     - stage: parallel
       script: bash ./build.sh frpc
       name: frpc
