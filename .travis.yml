@@ -1,13 +1,27 @@
 services:
   - docker
 
-script:
-  - git submodule init
+before_script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - bash ./build.sh alpine
-  - bash ./build.sh frpc
-  - bash ./build.sh go-dev
-  - bash ./build.sh ikev2
-  - bash ./build.sh nginx
-  - bash ./build.sh pg-ts-jieba
-  - bash ./build.sh tools
+
+jobs:
+  include:
+    - stage: basic
+      name: alpine
+      script:
+        - bash ./build.sh alpine
+    - stage: parallel
+      script: bash ./build.sh frpc
+      name: frpc
+    - script: bash ./build.sh go-dev
+      name: go-dev
+    - script: bash ./build.sh ikev2
+      name: ikev2
+    - script: bash ./build.sh nginx
+      name: nginx
+    - script: bash ./build.sh pg-ts-jieba
+      name: pg-ts-jieba
+    - script: bash ./build.sh redis
+      name: redis
+    - script: bash ./build.sh tools
+      name: tools
