@@ -1,3 +1,5 @@
+ARG VERSION=5.0
+
 # https://redislabs.com/redis-enterprise-software/download-center/modules/
 
 # https://hub.docker.com/r/redislabs/redisearch
@@ -13,7 +15,7 @@ FROM redislabs/rebloom:2.2.4 as rebloom
 
 
 # redis release
-FROM bitnami/redis:5.0
+FROM bitnami/redis:${VERSION}
 
 ARG DEPS="ca-certificates libgomp1"
 ENV LIBDIR /opt/modules

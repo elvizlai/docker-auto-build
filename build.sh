@@ -20,7 +20,7 @@ cd $1
 imgList=()
 
 sed -i "s#\$BUILD_VER#$DTAG#g" Dockerfile
-docker build -t "$DNAME:$DTAG" .
+docker build -t "$DNAME:$DTAG" --build-arg VERSION=$DTAG .
 imgList+=("$DNAME:$DTAG")
 
 # latest
