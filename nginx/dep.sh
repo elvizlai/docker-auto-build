@@ -22,21 +22,21 @@ make clean
 ./configure --static 
 make -j4 && make install && cd ..
 
-# openssl
+# openssl https://www.openssl.org
 curl -sSL https://www.openssl.org/source/$OPENSSL.tar.gz | tar zxf -
 cd $OPENSSL
 make clean
 ./config --prefix=/usr/local --libdir=/usr/local/lib shared
 make -j4 && make install && cd ..
 
-# jemalloc
+# jemalloc https://github.com/jemalloc/jemalloc
 curl -sSL https://github.com/jemalloc/jemalloc/releases/download/$JEMALLOC/jemalloc-$JEMALLOC.tar.bz2 | tar xjf -
 cd jemalloc-$JEMALLOC
 make clean
 ./configure --prefix=/usr/local --libdir=/usr/local/lib
 make -j4 && make install && cd ..
 
-# lua-jit
+# lua-jit https://github.com/openresty/luajit2
 mkdir -p luajit2.1
 curl -sSL https://github.com/openresty/luajit2/archive/$LUAJIT.tar.gz | tar zxf - -C luajit2.1 --strip-components 1
 cd luajit2.1

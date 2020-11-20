@@ -5,7 +5,7 @@
 
 * sdrzlyz/alpine
 * sdrzlyz/alpine-glibc
-* sdrzlyz/frpc:0.34.2
+* sdrzlyz/frpc:0.34.3
 * sdrzlyz/go-dev docker protoc revive
 * sdrzlyz/ikev2:5.9.1
 * sdrzlyz/nginx

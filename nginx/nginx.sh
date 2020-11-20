@@ -4,7 +4,7 @@ NGINXVER=1.18.0
 NGINXNJS=0.4.4
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
-NGINXLUA=0.10.18
+NGINXLUA=0.10.19
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -17,6 +17,8 @@ cd ..
 git clone -b $NGINXNJS https://github.com/nginx/njs
 
 curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz | tar zxf -
+
+# https://github.com/openresty/lua-nginx-module
 curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.gz | tar zxf -
 
 # dynamic modules
