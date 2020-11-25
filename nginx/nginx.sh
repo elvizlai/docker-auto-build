@@ -1,6 +1,6 @@
 yum install -y which patch libxml2-devel libxslt-devel gd-devel GeoIP GeoIP-devel GeoIP-data
 
-NGINXVER=1.18.0
+NGINXVER=${1:-1.18.0}
 NGINXNJS=0.4.4
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
@@ -100,7 +100,7 @@ rm -f /etc/nginx/modules/*.so.old || true
 mkdir -p /etc/nginx/lualib
 cd /etc/nginx/lualib
 
-LUA_RESTY_CORE=0.1.20
+LUA_RESTY_CORE=0.1.21
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE

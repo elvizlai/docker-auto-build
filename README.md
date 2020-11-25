@@ -8,7 +8,7 @@
 * sdrzlyz/frpc:0.34.3
 * sdrzlyz/go-dev docker protoc revive
 * sdrzlyz/ikev2:5.9.1
-* sdrzlyz/nginx
+* sdrzlyz/nginx:1.18.0
 * sdrzlyz/pg-ts-jieba
 * sdrzlyz/redis:5.0
 * sdrzlyz/tools netcat tcpdump psql mycli
