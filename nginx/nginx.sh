@@ -207,7 +207,30 @@ EOF
 # cert gen
 mkdir -p /etc/nginx/conf.d /etc/nginx/cert
 /usr/local/bin/openssl dhparam -out /etc/nginx/dhparam.pem 1024
-/usr/local/bin/openssl req -x509 -nodes -days 36500 -newkey rsa:1024 -keyout /etc/nginx/default.key -out /etc/nginx/default.crt -subj "/C=HJ/ST=HiJack/L=HiJack/O=HiJack/OU=IT/CN=hijack.com"
+/usr/local/bin/openssl req \
+-x509 \
+-nodes \
+-days 36500 \
+-newkey rsa:2048 \
+-sha256 \
+-keyout /etc/nginx/default.key \
+-out /etc/nginx/default.crt \
+-extensions 'v3_req' \
+-config <( \
+  echo '[req]'; \
+  echo 'distinguished_name = req_distinguished_name'; \
+  echo 'x509_extensions = v3_req'; \
+  echo 'prompt = no'; \
+  echo '[req_distinguished_name]'; \
+  echo 'C = HJ'; \
+  echo 'OU = IT'; \
+  echo 'CN = hijack.local'; \
+  echo '[v3_req]'; \
+  echo 'keyUsage = digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment'; \
+  echo 'extendedKeyUsage = serverAuth,clientAuth'; \
+  echo 'subjectAltName = @alt_names'; \
+  echo '[alt_names]'; \
+  echo 'DNS.1 = hijack.local')
 
 # dynamic modules usage in nginx.conf
 # load_module "modules/xxxx.so"
