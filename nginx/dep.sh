@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 yum install -y git gcc gcc-c++ bzip2 systemd-devel make
 
 PCRE=pcre-8.44

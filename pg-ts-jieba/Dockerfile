@@ -11,7 +11,7 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
     && git clone https://github.com/jaiminpan/pg_jieba \
     && cd pg_jieba && git submodule update --init --recursive \
     && mkdir build && cd build && cmake .. && make && make install && cd ../.. \
-    && git clone -b v3.1.0 --depth=1 https://github.com/pgRouting/pgrouting \
+    && git clone -b v3.1.1 --depth=1 https://github.com/pgRouting/pgrouting \
     && cd pgrouting \
     && mkdir build && cd build && cmake .. && make && make install && cd ../.. \
     && rm -rf /pg_jieba /pgrouting && apk del git make cmake libstdc++ g++ perl boost-dev

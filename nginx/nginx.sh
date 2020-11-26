@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 yum install -y which patch libxml2-devel libxslt-devel gd-devel GeoIP GeoIP-devel GeoIP-data
 
 NGINXVER=${1:-1.18.0}
@@ -135,7 +137,7 @@ curl -sSL https://github.com/bungle/lua-resty-template/archive/v$LUA_RESTY_TPL.t
 /bin/cp -rf lua-resty-template-$LUA_RESTY_TPL/lib/* .
 rm -rf lua-resty-template-$LUA_RESTY_TPL
 
-LUA_RESTY_MYSQL=0.22
+LUA_RESTY_MYSQL=0.23
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL

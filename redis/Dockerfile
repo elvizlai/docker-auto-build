@@ -3,13 +3,13 @@ ARG VERSION=5.0
 # https://redislabs.com/redis-enterprise-software/download-center/modules/
 
 # https://hub.docker.com/r/redislabs/redisearch
-FROM redislabs/redisearch:1.6.13 as redisearch
+FROM redislabs/redisearch:1.6.14 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph
-FROM redislabs/redisgraph:2.2.5 as redisgraph
+FROM redislabs/redisgraph:2.2.8 as redisgraph
 # https://hub.docker.com/r/redislabs/rejson
-FROM redislabs/rejson:1.0.4 as rejson
+FROM redislabs/rejson:1.0.6 as rejson
 # https://hub.docker.com/r/redislabs/redistimeseries
-FROM redislabs/redistimeseries:1.4.3 as redistimeseries
+FROM redislabs/redistimeseries:1.4.6 as redistimeseries
 # https://hub.docker.com/r/redislabs/rebloom
 FROM redislabs/rebloom:2.2.4 as rebloom
 
