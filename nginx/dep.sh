@@ -4,7 +4,7 @@ yum install -y git gcc gcc-c++ bzip2 systemd-devel make
 
 PCRE=pcre-8.44
 ZLIB=zlib-1.2.11
-OPENSSL=openssl-1.1.1h
+OPENSSL=openssl-1.1.1i
 JEMALLOC=5.2.1
 LUAJIT=v2.1-20201027
 

@@ -3,7 +3,7 @@
 yum install -y which patch libxml2-devel libxslt-devel gd-devel GeoIP GeoIP-devel GeoIP-data
 
 NGINXVER=${1:-1.18.0}
-NGINXNJS=0.4.4
+NGINXNJS=0.5.0
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.19
@@ -175,7 +175,7 @@ curl -sSL http://pyyaml.org/download/libyaml/yaml-$LIB_YAML.tar.gz | tar zxf -
 cd yaml-$LIB_YAML && ./configure && make && make install && cd ..
 rm -rf yaml-$LIB_YAML
 
-LYAML=6.2.6
+LYAML=6.2.7
 curl -sSL https://github.com/gvvaughan/lyaml/archive/v$LYAML.tar.gz | tar zxf -
 cd lyaml-$LYAML && build-aux/luke LYAML_DIR=./target LUA_INCDIR=/usr/local/include/luajit-2.1 && build-aux/luke PREFIX=./target install && cd ..
 mv lyaml-$LYAML/target/{lib/lua/5.1/yaml.so,share/lua/5.1/lyaml} .
