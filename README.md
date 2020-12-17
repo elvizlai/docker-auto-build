@@ -12,6 +12,7 @@
 * sdrzlyz/pg-ts-jieba
 * sdrzlyz/redis:5.0
 * sdrzlyz/tools netcat tcpdump psql mycli
+* sdrzlyz/ubuntu
 
 #### [CentOS Docker](https://docs.docker.com/engine/install/centos/)
 ```

@@ -11,6 +11,7 @@ jobs:
       script:
         - bash ./build.sh alpine
         - bash ./build.sh alpine-glibc
+        - bash ./build.sh ubuntu
     - stage: parallel
       script: bash ./build.sh frpc
       name: frpc
