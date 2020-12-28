@@ -2,7 +2,7 @@
 
 yum install -y which patch libxml2-devel libxslt-devel gd-devel GeoIP GeoIP-devel GeoIP-data
 
-NGINXVER=${1:-1.18.0}
+NGINXVER=${1:-1.16.1}
 NGINXNJS=0.5.0
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
@@ -23,6 +23,16 @@ curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz 
 # https://github.com/openresty/lua-nginx-module
 curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.gz | tar zxf -
 
+# cmake3 https://cmake.org/download/
+curl -sSL https://cmake.org/files/v3.19/cmake-3.19.2.tar.gz | tar zxf -
+cd cmake-3.*
+./bootstrap --prefix=/usr/local
+make -j$(nproc) && make install
+
+# rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source $HOME/.cargo/env
+
 # dynamic modules
 rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
@@ -38,12 +48,17 @@ cd $NGINXDIR
 curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1
 # curl -sSL https://x.morn.io/dl/nginx-$NGINXVER.tgz | tar zxf - -C . --strip-components 1
 
+# patch quic http3
+git clone --recursive https://github.com/cloudflare/quiche module/quiche
+patch -p01 < ./module/quiche/extras/nginx/nginx-1.16.patch
+
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
 ./configure \
     --with-cc-opt="-DTCP_FASTOPEN=23" \
     --with-ld-opt="-ljemalloc -Wl,-rpath,$LUAJIT_LIB" \
     --prefix=/etc/nginx \
+    --build="quiche-$(git --git-dir=./module/quiche/.git rev-parse --short HEAD)" \
     --conf-path=/etc/nginx/nginx.conf \
     --sbin-path=/usr/sbin/nginx \
     --pid-path=/var/run/nginx.pid \
@@ -70,6 +85,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-http_stub_status_module \
     --with-http_sub_module \
     --with-http_v2_module \
+    --with-http_v3_module \
     --with-http_xslt_module=dynamic \
     --with-mail \
     --with-mail_ssl_module \
@@ -77,6 +93,8 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-stream \
     --with-stream_ssl_module \
     --with-threads \
+    --with-openssl=./module/quiche/deps/boringssl \
+    --with-quiche=./module/quiche \
     --add-module=./module/ngx_brotli \
     --add-module=./module/njs/nginx \
     --add-module=./module/ngx_devel_kit-$NGINXNDK \
@@ -95,6 +113,9 @@ make install
 
 # remove source
 rm -rf /opt/*
+# remove rust
+rm -rf /root/.cargo /root/.rustup
+
 
 # delete old modules
 rm -f /etc/nginx/modules/*.so.old || true
@@ -324,6 +345,7 @@ http {
 
     server {
         listen    443 default_server ssl http2 fastopen=512 backlog=4096 reuseport so_keepalive=120s:60s:10;
+        listen    443 quic reuseport;
         server_name _;
         ssl_stapling off;
         ssl_certificate default.crt;
