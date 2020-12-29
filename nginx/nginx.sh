@@ -27,6 +27,7 @@ curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.g
 rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
+git clone https://github.com/ADD-SP/ngx_waf
 git clone https://github.com/winshining/nginx-http-flv-module
 git clone https://github.com/arut/nginx-ts-module
 git clone https://github.com/openresty/echo-nginx-module
@@ -81,6 +82,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-module=./module/njs/nginx \
     --add-module=./module/ngx_devel_kit-$NGINXNDK \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
+    --add-dynamic-module=./module/dynamic/ngx_waf \
     --add-dynamic-module=./module/dynamic/nginx-http-flv-module \
     --add-dynamic-module=./module/dynamic/nginx-ts-module \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
@@ -245,6 +247,7 @@ user root;
 worker_processes auto;
 worker_rlimit_nofile 65535;
 
+#load_module "modules/ngx_http_waf_module.so"
 #load_module "modules/ngx_http_echo_module.so";
 #load_module "modules/ngx_http_flv_live_module.so";
 #load_module "modules/ngx_http_geoip_module.so";
