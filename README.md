@@ -3,18 +3,20 @@
 
 #### Apps
 
-* sdrzlyz/alpine
-* sdrzlyz/alpine-glibc
-* sdrzlyz/frpc:0.34.3
-* sdrzlyz/go-dev docker protoc revive
-* sdrzlyz/ikev2:5.9.1
-* sdrzlyz/nginx:1.18.0
-* sdrzlyz/pg-ts-jieba
-* sdrzlyz/redis:5.0
-* sdrzlyz/tools netcat tcpdump psql mycli
-* sdrzlyz/ubuntu
+- sdrzlyz/alpine
+- sdrzlyz/alpine-glibc
+- sdrzlyz/centos-sshd
+- sdrzlyz/frpc:0.34.3
+- sdrzlyz/go-dev docker protoc revive
+- sdrzlyz/ikev2:5.9.1
+- sdrzlyz/nginx:1.18.0
+- sdrzlyz/pg-ts-jieba
+- sdrzlyz/redis:5.0
+- sdrzlyz/tools netcat tcpdump psql mycli
+- sdrzlyz/ubuntu
 
 #### [CentOS Docker](https://docs.docker.com/engine/install/centos/)
+
 ```
 sudo yum install -y yum-utils
 
@@ -25,6 +27,7 @@ sudo yum-config-manager \
 sudo yum install -y docker-ce docker-ce-cli containerd.io
 sudo systemctl start docker && sudo systemctl enable docker
 ```
+
 ```
 # adding to '/etc/sysctl.conf', then 'sysctl -p'
 net.bridge.bridge-nf-call-iptables = 1
