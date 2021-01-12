@@ -1,5 +1,5 @@
 [![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)
-[![Build Status](https://www.travis-ci.org/elvizlai/docker-auto-build.svg?branch=master)](https://www.travis-ci.org/elvizlai/docker-auto-build)
+[![Build Status](https://travis-ci.com/elvizlai/docker-auto-build.svg?branch=master)](https://travis-ci.com/elvizlai/docker-auto-build)
 
 #### Apps
 

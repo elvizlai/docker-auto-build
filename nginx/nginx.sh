@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-yum install -y which patch libxml2-devel libxslt-devel gd-devel GeoIP GeoIP-devel GeoIP-data
+set -e
+
+source scl_source enable devtoolset-9 || true
+
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel
 
 NGINXVER=${1:-1.18.0}
 NGINXNJS=0.5.0
@@ -30,6 +35,7 @@ cd $NGINXDIR/module/dynamic
 git clone https://github.com/ADD-SP/ngx_waf
 git clone https://github.com/winshining/nginx-http-flv-module
 git clone https://github.com/arut/nginx-ts-module
+git clone https://github.com/leev/ngx_http_geoip2_module
 git clone https://github.com/openresty/echo-nginx-module
 git clone https://github.com/openresty/headers-more-nginx-module
 git clone https://github.com/openresty/srcache-nginx-module
@@ -58,7 +64,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-http_auth_request_module \
     --with-http_dav_module \
     --with-http_flv_module \
-    --with-http_geoip_module=dynamic \
     --with-http_gunzip_module \
     --with-http_gzip_static_module \
     --with-http_image_filter_module=dynamic \
@@ -85,6 +90,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-dynamic-module=./module/dynamic/ngx_waf \
     --add-dynamic-module=./module/dynamic/nginx-http-flv-module \
     --add-dynamic-module=./module/dynamic/nginx-ts-module \
+    --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
     --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
     --add-dynamic-module=./module/dynamic/srcache-nginx-module \
@@ -95,11 +101,8 @@ make -j$(nproc)
 
 make install
 
-# remove source
-rm -rf /opt/*
-
 # delete old modules
-rm -f /etc/nginx/modules/*.so.old || true
+# rm -f /etc/nginx/modules/*.so.old || true
 
 # https://github.com/bungle/awesome-resty
 
@@ -112,15 +115,30 @@ curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.t
 /bin/cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
 
+LUA_RESTY_HTTP=0.15
+curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
+rm -rf lua-resty-http-$LUA_RESTY_HTTP
+
+LUA_RESTY_OPENSSL=0.6.9
+curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/0.6.9.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
+rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
+
+LUA_RESTY_ACME=0.5.11
+curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
+rm -rf lua-resty-acme-$LUA_RESTY_ACME
+
 LUA_RESTY_STRING=0.12
 curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
 rm -rf lua-resty-string-$LUA_RESTY_STRING
 
-LUA_RESTY_CACHE=0.10
-curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_CACHE.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-lrucache-$LUA_RESTY_CACHE/lib/* .
-rm -rf lua-resty-lrucache-$LUA_RESTY_CACHE
+LUA_RESTY_LRUCACHE=0.10
+curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
+rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 LUA_RESTY_LOCK=0.08
 curl -sSL https://github.com/openresty/lua-resty-lock/archive/v$LUA_RESTY_LOCK.tar.gz | tar zxf -
@@ -186,8 +204,7 @@ cd lyaml-$LYAML && build-aux/luke LYAML_DIR=./target LUA_INCDIR=/usr/local/inclu
 mv lyaml-$LYAML/target/{lib/lua/5.1/yaml.so,share/lua/5.1/lyaml} .
 rm -rf lyaml-$LYAML
 
-mkdir -p /var/cache/nginx/client_temp
-mkdir -p /etc/nginx/conf.d
+mkdir -p /etc/nginx/conf.d /var/cache/nginx/client_temp
 
 # 开机自启动
 cat > /etc/systemd/system/nginx.service <<EOF
@@ -212,9 +229,12 @@ WantedBy=multi-user.target
 EOF
 
 # cert gen
-mkdir -p /etc/nginx/conf.d /etc/nginx/cert
-/usr/local/bin/openssl dhparam -out /etc/nginx/dhparam.pem 1024
-/usr/local/bin/openssl req \
+mkdir -p /etc/nginx/conf.d /etc/nginx/cert /var/log/nginx
+openssl dhparam -out /etc/nginx/dhparam.pem 1024
+
+# rsa
+openssl req \
+-new \
 -x509 \
 -nodes \
 -days 36500 \
@@ -239,6 +259,36 @@ mkdir -p /etc/nginx/conf.d /etc/nginx/cert
   echo '[alt_names]'; \
   echo 'DNS.1 = hijack.local')
 
+# ecc
+openssl req \
+-new \
+-x509 \
+-nodes \
+-days 36500 \
+-newkey ec:<(openssl ecparam -name prime256v1) \
+-sha256 \
+-keyout /etc/nginx/default-ecc.key \
+-out /etc/nginx/default-ecc.crt \
+-extensions 'v3_req' \
+-config <( \
+  echo '[req]'; \
+  echo 'distinguished_name = req_distinguished_name'; \
+  echo 'x509_extensions = v3_req'; \
+  echo 'prompt = no'; \
+  echo '[req_distinguished_name]'; \
+  echo 'C = HJ'; \
+  echo 'OU = IT'; \
+  echo 'CN = hijack.local'; \
+  echo '[v3_req]'; \
+  echo 'keyUsage = digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment'; \
+  echo 'extendedKeyUsage = serverAuth,clientAuth'; \
+  echo 'subjectAltName = @alt_names'; \
+  echo '[alt_names]'; \
+  echo 'DNS.1 = hijack.local')
+
+# create account key
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/nginx/account.key
+
 # dynamic modules usage in nginx.conf
 # load_module "modules/xxxx.so"
 
@@ -250,7 +300,7 @@ worker_rlimit_nofile 65535;
 #load_module "modules/ngx_http_waf_module.so"
 #load_module "modules/ngx_http_echo_module.so";
 #load_module "modules/ngx_http_flv_live_module.so";
-#load_module "modules/ngx_http_geoip_module.so";
+#load_module "modules/ngx_http_geoip2_module.so";
 #load_module "modules/ngx_http_headers_more_filter_module.so";
 #load_module "modules/ngx_http_image_filter_module.so";
 #load_module "modules/ngx_http_srcache_filter_module.so";
@@ -316,8 +366,34 @@ http {
     ssl_stapling on;
     ssl_stapling_verify on;
     ssl_early_data on;
-    resolver 8.8.8.8 8.8.4.4 208.67.222.222 208.67.220.220 valid=60s;
+    resolver 8.8.8.8 8.8.4.4 208.67.222.222 208.67.220.220 valid=60s ipv6=off;
     resolver_timeout 5s;
+
+    lua_shared_dict acme 16m;
+    # required to verify Let's Encrypt API
+    lua_ssl_trusted_certificate /etc/ssl/certs/ca-bundle.crt;
+    lua_ssl_verify_depth 2;
+
+    init_by_lua_block {
+        require("resty.acme.autossl").init({
+            -- setting the following to true
+            -- implies that you read and accepted https://letsencrypt.org/repository/
+            tos_accepted = true,
+            -- uncomment following for first time setup
+            staging = true,
+            -- uncomment following to enable RSA + ECC double cert
+            domain_key_types = { 'rsa', 'ecc' },
+            -- uncomment following to enable tls-alpn-01 challenge
+            -- enabled_challenge_handlers = { 'http-01', 'tls-alpn-01' },
+            account_key_path = "/etc/nginx/account.key",
+            account_email = "sdrzlyz@gmail.com",
+            domain_whitelist = { "example.com" },
+        })
+    }
+
+    init_worker_by_lua_block {
+        require("resty.acme.autossl").init_worker()
+    }
 
     server {
         listen      80 default;
@@ -331,6 +407,8 @@ http {
         ssl_stapling off;
         ssl_certificate default.crt;
         ssl_certificate_key default.key;
+        ssl_certificate default-ecc.crt;
+        ssl_certificate_key default-ecc.key;
         return 444;
     }
 
@@ -362,7 +440,15 @@ stream {
 }
 EOF
 
+touch /var/log/nginx/{access,stream,error}.log
 
 # log forward
 ln -sf /dev/stdout /var/log/nginx/access.log
+ln -sf /dev/stdout /var/log/nginx/stream.log
 ln -sf /dev/stderr /var/log/nginx/error.log
+
+# remove cache
+yum remove -y devtoolset-9-* centos-release-scl scl-utils-build scl-utils make git \
+    patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel
+yum clean all
+rm -rf /opt/{lib-src,nginx-*} /tmp/*
