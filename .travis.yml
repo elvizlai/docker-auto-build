@@ -22,8 +22,8 @@ jobs:
       name: ikev2
     - script: bash ./build.sh nginx
       name: nginx
-    - script: bash ./build.sh pg-ts-jieba
-      name: pg-ts-jieba
+    - script: bash ./build.sh pg
+      name: pg
     - script: bash ./build.sh redis
       name: redis
     - script: bash ./build.sh tools
