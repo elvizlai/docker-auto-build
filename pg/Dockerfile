@@ -2,11 +2,11 @@ ARG VERSION=12
 
 FROM postgres:${VERSION}-alpine
 
-ARG CITUS_VERSION=9.5.1 \
-    CSTORE_VERSION=1.7.0 \
-    POSTGIS_VERSION=3.1.0 \
-    PGROUTING_VERSION=3.1.2 \
-    TIMESCALE_VERSION=2.0.0
+ARG CITUS_VERSION=9.5.1
+ARG CSTORE_VERSION=1.7.0
+ARG POSTGIS_VERSION=3.1.0
+ARG PGROUTING_VERSION=3.1.2
+ARG TIMESCALE_VERSION=2.0.0
 
 RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /etc/apk/repositories \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
