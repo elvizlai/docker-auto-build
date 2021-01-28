@@ -380,14 +380,17 @@ http {
             -- implies that you read and accepted https://letsencrypt.org/repository/
             tos_accepted = true,
             -- uncomment following for first time setup
-            staging = true,
+            -- staging = true,
             -- uncomment following to enable RSA + ECC double cert
             domain_key_types = { 'rsa', 'ecc' },
             -- uncomment following to enable tls-alpn-01 challenge
             -- enabled_challenge_handlers = { 'http-01', 'tls-alpn-01' },
             account_key_path = "/etc/nginx/account.key",
             account_email = "sdrzlyz@gmail.com",
-            domain_whitelist = { "example.com" },
+            -- domain_whitelist = { "example.com" },
+            domain_whitelist_callback = function(domain)
+                return ngx.re.match(domain, [[.*]], "jo")
+            end
         })
     }
 
