@@ -8,7 +8,7 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel
 
 NGINXVER=${1:-1.18.0}
-NGINXNJS=0.5.0
+NGINXNJS=0.5.1
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.19
@@ -32,18 +32,17 @@ curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.g
 rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
-git clone https://github.com/ADD-SP/ngx_waf
-git clone https://github.com/winshining/nginx-http-flv-module
-git clone https://github.com/arut/nginx-ts-module
-git clone https://github.com/leev/ngx_http_geoip2_module
-git clone https://github.com/openresty/echo-nginx-module
-git clone https://github.com/openresty/headers-more-nginx-module
-git clone https://github.com/openresty/srcache-nginx-module
-git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module
+git clone -b v3.1.2 https://github.com/ADD-SP/ngx_waf
+git clone -b v1.2.8 https://github.com/winshining/nginx-http-flv-module
+git clone -b 3.3 https://github.com/leev/ngx_http_geoip2_module
+git clone -b v0.62 https://github.com/openresty/echo-nginx-module
+git clone -b v0.33 https://github.com/openresty/headers-more-nginx-module
+git clone -b v0.32 https://github.com/openresty/srcache-nginx-module
+git clone -b v0.6.4 https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
+# https://nginx.org/en/download.html
 cd $NGINXDIR
 curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1
-# curl -sSL https://x.morn.io/dl/nginx-$NGINXVER.tgz | tar zxf - -C . --strip-components 1
 
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
@@ -89,7 +88,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-module=./module/lua-nginx-module-$NGINXLUA \
     --add-dynamic-module=./module/dynamic/ngx_waf \
     --add-dynamic-module=./module/dynamic/nginx-http-flv-module \
-    --add-dynamic-module=./module/dynamic/nginx-ts-module \
     --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
     --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
@@ -110,94 +108,110 @@ make install
 mkdir -p /etc/nginx/lualib
 cd /etc/nginx/lualib
 
+# https://github.com/openresty/lua-resty-core/releases
 LUA_RESTY_CORE=0.1.21
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
 
+# https://github.com/ledgetech/lua-resty-http/releases
 LUA_RESTY_HTTP=0.15
 curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
-LUA_RESTY_OPENSSL=0.6.9
+# https://github.com/fffonion/lua-resty-openssl/releases
+LUA_RESTY_OPENSSL=0.7.0
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/0.6.9.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
-LUA_RESTY_ACME=0.5.11
+# https://github.com/fffonion/lua-resty-acme/releases
+LUA_RESTY_ACME=0.6.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
 
-LUA_RESTY_STRING=0.12
+# https://github.com/openresty/lua-resty-string/releases
+LUA_RESTY_STRING=0.13
 curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
 rm -rf lua-resty-string-$LUA_RESTY_STRING
 
+# https://github.com/openresty/lua-resty-lrucache/releases
 LUA_RESTY_LRUCACHE=0.10
 curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
+# https://github.com/openresty/lua-resty-lock/releases
 LUA_RESTY_LOCK=0.08
 curl -sSL https://github.com/openresty/lua-resty-lock/archive/v$LUA_RESTY_LOCK.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-lock-$LUA_RESTY_LOCK/lib/* .
 rm -rf lua-resty-lock-$LUA_RESTY_LOCK
 
-LUA_RESTY_MLCACHE=2.4.1
+# https://github.com/thibaultcha/lua-resty-mlcache/releases
+LUA_RESTY_MLCACHE=2.5.0
 curl -sSL https://github.com/thibaultcha/lua-resty-mlcache/archive/$LUA_RESTY_MLCACHE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE/lib/* .
 rm -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE
 
+# https://github.com/openresty/lua-resty-websocket/releases
 LUA_RESTY_WEBSOCKET=0.08
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
 
+# https://github.com/bungle/lua-resty-template/releases
 LUA_RESTY_TPL=2.0
 curl -sSL https://github.com/bungle/lua-resty-template/archive/v$LUA_RESTY_TPL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-template-$LUA_RESTY_TPL/lib/* .
 rm -rf lua-resty-template-$LUA_RESTY_TPL
 
+# https://github.com/openresty/lua-resty-mysql/releases
 LUA_RESTY_MYSQL=0.23
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
 
+# https://github.com/openresty/lua-resty-redis/releases
 LUA_RESTY_REDIS=0.29
 curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-redis-$LUA_RESTY_REDIS/lib/* .
 rm -rf lua-resty-redis-$LUA_RESTY_REDIS
 
-LUA_PGMOON=1.11.0
+# https://github.com/leafo/pgmoon/releases
+LUA_PGMOON=1.12.0
 curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf -
 /bin/cp -rf pgmoon-$LUA_PGMOON/pgmoon .
 rm -rf pgmoon-$LUA_PGMOON
 
+# https://github.com/starwing/lua-protobuf/releases
 LUA_PROTOBUF=0.3.2
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
 cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && /bin/cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
 
+# https://github.com/ysugimoto/lua-resty-grpc-gateway/releases
 LUA_RESTY_GRPC_GW=1.2.4
 curl -sSL https://github.com/ysugimoto/lua-resty-grpc-gateway/archive/v$LUA_RESTY_GRPC_GW.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW/grpc-gateway .
 rm -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW
 
-# cjson
+# https://github.com/openresty/lua-cjson/releases
 LUA_CJSON=2.1.0.8
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
 mv -f lua-cjson-$LUA_CJSON/cjson.so .
 rm -rf lua-cjson-$LUA_CJSON
 
-# yaml
+# https://pyyaml.org
 LIB_YAML=0.2.5
 curl -sSL http://pyyaml.org/download/libyaml/yaml-$LIB_YAML.tar.gz | tar zxf -
 cd yaml-$LIB_YAML && ./configure && make && make install && cd ..
 rm -rf yaml-$LIB_YAML
 
+# https://github.com/gvvaughan/lyaml/releases
 LYAML=6.2.7
 curl -sSL https://github.com/gvvaughan/lyaml/archive/v$LYAML.tar.gz | tar zxf -
 cd lyaml-$LYAML && build-aux/luke LYAML_DIR=./target LUA_INCDIR=/usr/local/include/luajit-2.1 && build-aux/luke PREFIX=./target install && cd ..
@@ -297,16 +311,16 @@ user root;
 worker_processes auto;
 worker_rlimit_nofile 65535;
 
+#load_module "modules/ngx_http_echo_module.so"
+#load_module "modules/ngx_http_flv_live_module.so"
+#load_module "modules/ngx_http_geoip2_module.so"
+#load_module "modules/ngx_http_headers_more_filter_module.so"
+#load_module "modules/ngx_http_image_filter_module.so"
+#load_module "modules/ngx_http_srcache_filter_module.so"
+#load_module "modules/ngx_http_subs_filter_module.so"
 #load_module "modules/ngx_http_waf_module.so"
-#load_module "modules/ngx_http_echo_module.so";
-#load_module "modules/ngx_http_flv_live_module.so";
-#load_module "modules/ngx_http_geoip2_module.so";
-#load_module "modules/ngx_http_headers_more_filter_module.so";
-#load_module "modules/ngx_http_image_filter_module.so";
-#load_module "modules/ngx_http_srcache_filter_module.so";
-#load_module "modules/ngx_http_subs_filter_module.so";
-#load_module "modules/ngx_http_ts_module.so";
-#load_module "modules/ngx_http_xslt_filter_module.so";
+#load_module "modules/ngx_http_xslt_filter_module.so"
+#load_module "modules/ngx_stream_geoip2_module.so"
 
 #error_log  logs/error.log;
 #error_log  logs/error.log  notice;

@@ -11,7 +11,7 @@ source scl_source enable devtoolset-9 || true
 
 PCRE=pcre-8.44
 ZLIB=zlib-1.2.11
-OPENSSL=openssl-1.1.1i
+OPENSSL=openssl-1.1.1j
 JEMALLOC=5.2.1
 LUAJIT=v2.1-20201229
 LUAROCKS=3.5.0
@@ -48,7 +48,7 @@ curl -sSL https://github.com/openresty/luajit2/archive/$LUAJIT.tar.gz | tar zxf 
 cd luajit2.1
 make -j4 && make install && cd ..
 
-# luarocks
+# luarocks https://luarocks.org
 curl -sSL http://luarocks.github.io/luarocks/releases/luarocks-$LUAROCKS.tar.gz | tar zxf -
 cd luarocks-$LUAROCKS
 ./configure
