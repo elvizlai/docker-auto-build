@@ -1,6 +1,6 @@
 FROM sdrzlyz/alpine
 
-ARG VERSION=0.34.3
+ARG VERSION=0.35.1
 
 RUN set -ex \
     && cd /tmp \
