@@ -1,4 +1,6 @@
-FROM envoyproxy/envoy-alpine:v1.17.0
+ARG VERSION=1.17.0
+
+FROM envoyproxy/envoy-alpine:v${VERSION}
 
 COPY dep.sh /opt/
 
