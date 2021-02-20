@@ -6,7 +6,8 @@
 - sdrzlyz/alpine
 - sdrzlyz/alpine-glibc
 - sdrzlyz/centos-sshd
-- sdrzlyz/frpc:0.34.3
+- sdrzlyz/envoy
+- sdrzlyz/frpc:0.35.1
 - sdrzlyz/go-dev docker protoc revive
 - sdrzlyz/ikev2:5.9.1
 - sdrzlyz/nginx:1.18.0

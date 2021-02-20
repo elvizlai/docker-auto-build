@@ -14,7 +14,9 @@ jobs:
         - bash ./build.sh ubuntu
         - bash ./build.sh centos-sshd
     - stage: parallel
-      script: bash ./build.sh frpc
+      script: bash ./build.sh envoy
+      name: envoy
+    - script: bash ./build.sh frpc
       name: frpc
     - script: bash ./build.sh go-dev
       name: go-dev
