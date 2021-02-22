@@ -122,7 +122,7 @@ rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/releases
 LUA_RESTY_OPENSSL=0.7.0
-curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/0.6.9.tar.gz | tar zxf -
+curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
