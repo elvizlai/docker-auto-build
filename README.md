@@ -9,7 +9,7 @@
 - sdrzlyz/envoy:1.17.0
 - sdrzlyz/frpc:0.35.1
 - sdrzlyz/go-dev docker protoc revive
-- sdrzlyz/ikev2:5.9.1
+- sdrzlyz/ikev2:5.9.2
 - sdrzlyz/nginx:1.18.0
 - sdrzlyz/pg:12
 - sdrzlyz/redis:5.0
