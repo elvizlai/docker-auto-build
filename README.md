@@ -11,7 +11,7 @@
 - sdrzlyz/go-dev docker protoc revive
 - sdrzlyz/ikev2:5.9.2
 - sdrzlyz/nginx:1.18.0
-- sdrzlyz/pg:12
+- sdrzlyz/pg:13
 - sdrzlyz/redis:5.0
 - sdrzlyz/tools netcat tcpdump psql mycli
 - sdrzlyz/ubuntu

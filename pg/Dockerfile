@@ -1,37 +1,35 @@
-ARG VERSION=12
+ARG VERSION=13
 
 FROM postgres:${VERSION}-alpine
 
-ARG CITUS_VERSION=9.5.1
-ARG CSTORE_VERSION=1.7.0
-ARG POSTGIS_VERSION=3.1.0
-ARG PGROUTING_VERSION=3.1.2
-ARG TIMESCALE_VERSION=2.0.0
+ARG CITUS_VERSION=10.0.3
+ARG POSTGIS_VERSION=3.1.1
+ARG PGROUTING_VERSION=3.1.3
+ARG TIMESCALE_VERSION=2.1.0
 
 RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /etc/apk/repositories \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
     && apk add --no-cache --virtual .fetch-deps ca-certificates openssl tar \
     && apk add --no-cache --virtual .build-deps \
+        build-base \
+        boost-dev \
         autoconf \
         automake \
         file \
         json-c-dev \
         libtool \
         libxml2-dev \
-        make \
         perl \
         clang-dev \
-        g++ \
-        gcc \
         gdal-dev \
         geos-dev \
         llvm10-dev \
         proj-dev \
         protobuf-c-dev \
         curl-dev \
+        openssl-dev \
         icu-dev \
         cmake \
-        boost-dev \
     && apk add --no-cache --virtual .run-deps \
         json-c \
         geos \
@@ -39,20 +37,17 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         proj \
         libstdc++ \
         protobuf-c \
-# citus https://github.com/citusdata/citus
+        zstd \
+        zstd-dev \        
+        lz4 \
+        lz4-dev \
+# citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile-alpine
     && wget -O /tmp/citus.tar.gz "https://github.com/citusdata/citus/archive/v${CITUS_VERSION}.tar.gz" \
         && mkdir -p /tmp/citus \
         && tar --extract --file /tmp/citus.tar.gz --directory /tmp/citus --strip-components 1 \
         && cd /tmp/citus \
         && ./configure \
         && make -j$(nproc) && make install \
-# !pg 13 not support now.
-# cstore_fdw https://github.com/citusdata/cstore_fdw
-    && wget -O /tmp/cstore_fdw.tar.gz "https://github.com/citusdata/cstore_fdw/archive/v${CSTORE_VERSION}.tar.gz" \
-         && mkdir -p /tmp/cstore_fdw \
-         && tar --extract --file /tmp/cstore_fdw.tar.gz --directory /tmp/cstore_fdw --strip-components 1 \
-         && cd /tmp/cstore_fdw \
-         && make -j$(nproc) && make install \
 # postgis https://github.com/postgis/postgis
     && wget -O /tmp/postgis.tar.gz "https://github.com/postgis/postgis/archive/${POSTGIS_VERSION}.tar.gz" \
         && mkdir -p /tmp/postgis \
@@ -71,7 +66,6 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         && cd /tmp/pgrouting/build \
         && cmake .. \
         && make && make install \
-# !pg 13 not support now.
 # timescale https://github.com/timescale/timescaledb
     && wget -O /tmp/timescale.tar.gz "https://github.com/timescale/timescaledb/archive/${TIMESCALE_VERSION}.tar.gz" \
         && mkdir -p /tmp/timescale \
@@ -80,10 +74,15 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         && ./bootstrap -DREGRESS_CHECKS=OFF -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && make install \
 # clean
-    && echo "shared_preload_libraries='citus,cstore_fdw,timescaledb'" >> /usr/local/share/postgresql/postgresql.conf.sample \
     && cd / \
     && rm -rf /tmp/* \
     && apk del .fetch-deps .build-deps
+
+RUN echo "shared_preload_libraries='citus,timescaledb'" >> /usr/local/share/postgresql/postgresql.conf.sample
+
+# entry point unsets PGPASSWORD, but we need it to connect to workers
+# https://github.com/docker-library/postgres/blob/33bccfcaddd0679f55ee1028c012d26cd196537d/12/docker-entrypoint.sh#L303
+RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
 
 COPY pg_healthcheck /
 
