@@ -8,7 +8,7 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel
 
 NGINXVER=${1:-1.18.0}
-NGINXNJS=0.5.1
+NGINXNJS=0.5.2
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.19
