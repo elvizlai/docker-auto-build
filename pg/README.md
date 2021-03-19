@@ -1,12 +1,21 @@
 usage `psql -U postgres`
 ```
-CREATE EXTENSION IF NOT EXISTS citus CASCADE;
-CREATE EXTENSION IF NOT EXISTS cstore_fdw CASCADE;
-CREATE EXTENSION IF NOT EXISTS postgis CASCADE;
-CREATE EXTENSION IF NOT EXISTS pgrouting CASCADE;
-CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+CREATE EXTENSION IF NOT EXISTS citus
+
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS postgis_topology;
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
+CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
+
+CREATE EXTENSION IF NOT EXISTS pgrouting;
+CREATE EXTENSION IF NOT EXISTS timescaledb;
 
 -- \dx or SELECT * FROM pg_extension;
+```
+
+citus check node
+```
+select master_get_active_worker_nodes();
 ```
 
 citus check
