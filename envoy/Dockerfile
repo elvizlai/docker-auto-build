@@ -1,4 +1,4 @@
-ARG VERSION=1.17.0
+ARG VERSION=1.17.1
 
 FROM envoyproxy/envoy-alpine:v${VERSION}
 
