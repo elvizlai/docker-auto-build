@@ -8,7 +8,7 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel
 
 NGINXVER=${1:-1.18.0}
-NGINXNJS=0.5.2
+NGINXNJS=0.5.3
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.19
@@ -32,7 +32,7 @@ curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.g
 rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
-git clone -b v3.1.2 https://github.com/ADD-SP/ngx_waf
+git clone -b v5.0.0 https://github.com/ADD-SP/ngx_waf
 git clone -b v1.2.8 https://github.com/winshining/nginx-http-flv-module
 git clone -b 3.3 https://github.com/leev/ngx_http_geoip2_module
 git clone -b v0.62 https://github.com/openresty/echo-nginx-module
@@ -115,13 +115,13 @@ curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.t
 rm -rf lua-resty-core-$LUA_RESTY_CORE
 
 # https://github.com/ledgetech/lua-resty-http/releases
-LUA_RESTY_HTTP=0.15
+LUA_RESTY_HTTP=0.16
 curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/releases
-LUA_RESTY_OPENSSL=0.7.0
+LUA_RESTY_OPENSSL=0.7.2
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
