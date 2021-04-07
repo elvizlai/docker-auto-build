@@ -38,7 +38,7 @@ git clone -b 3.3 https://github.com/leev/ngx_http_geoip2_module
 git clone -b v0.62 https://github.com/openresty/echo-nginx-module
 git clone -b v0.33 https://github.com/openresty/headers-more-nginx-module
 git clone -b v0.32 https://github.com/openresty/srcache-nginx-module
-git clone -b v0.6.4 https://github.com/yaoweibin/ngx_http_substitutions_filter_module
+git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 # https://nginx.org/en/download.html
 cd $NGINXDIR
