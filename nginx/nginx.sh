@@ -115,7 +115,7 @@ curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.t
 rm -rf lua-resty-core-$LUA_RESTY_CORE
 
 # https://github.com/ledgetech/lua-resty-http/releases
-LUA_RESTY_HTTP=0.16
+LUA_RESTY_HTTP=0.16.1
 curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
 rm -rf lua-resty-http-$LUA_RESTY_HTTP

@@ -6,6 +6,8 @@ COPY dep.sh nginx.sh build.sh /opt/
 
 RUN chmod +x /opt/{dep.sh,nginx.sh,build.sh} && /opt/build.sh
 
+COPY cors.conf /etc/nginx
+
 EXPOSE 80 443
 
 STOPSIGNAL SIGTERM
