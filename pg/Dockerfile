@@ -6,6 +6,7 @@ FROM golang:${GO_VERSION}-alpine AS tools
 
 ENV TOOLS_VERSION 0.8.1
 
+# https://github.com/timescale/timescaledb-docker/blob/master/Dockerfile
 RUN apk update && apk add --no-cache git \
     && mkdir -p ${GOPATH}/src/github.com/timescale/ \
     && cd ${GOPATH}/src/github.com/timescale/ \
@@ -29,6 +30,7 @@ ARG CITUS_VERSION=10.0.3
 ARG POSTGIS_VERSION=3.1.1
 ARG PGROUTING_VERSION=3.1.3
 ARG TIMESCALE_VERSION=2.1.1
+ARG GOSU_VERSION=1.12
 
 RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /etc/apk/repositories \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
@@ -54,6 +56,7 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         openssl-dev \
         icu-dev \
         cmake \
+        dpkg \
     && apk add --no-cache --virtual .run-deps \
         json-c \
         geos \
@@ -66,7 +69,7 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         zstd-dev \        
         lz4 \
         lz4-dev \
-# citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile-alpine
+# citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
     && wget -O /tmp/citus.tar.gz "https://github.com/citusdata/citus/archive/v${CITUS_VERSION}.tar.gz" \
         && mkdir -p /tmp/citus \
         && tar --extract --file /tmp/citus.tar.gz --directory /tmp/citus --strip-components 1 \
@@ -99,31 +102,23 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         && cd /tmp/timescale \
         && ./bootstrap -DREGRESS_CHECKS=OFF -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && make install \
+# gosu https://github.com/tianon/gosu/blob/master/INSTALL.md
+    && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
+    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
+    && chmod +x /usr/local/bin/gosu \
 # clean
     && cd / \
     && rm -rf /tmp/* \
     && apk del .fetch-deps .build-deps
 
-RUN echo "shared_preload_libraries='citus,timescaledb'" >> /usr/local/share/postgresql/postgresql.conf.sample
+# multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
+RUN echo "shared_preload_libraries='citus'" >> /usr/local/share/postgresql/postgresql.conf.sample
 
 # add scripts to run after initdb
 COPY extension/ /docker-entrypoint-initdb.d/
 
 # add tools
 COPY --from=tools /go/bin/* /usr/local/bin/
-
-# https://github.com/tianon/gosu/blob/master/INSTALL.md
-ARG GOSU_VERSION=1.12
-RUN set -eux; \
-	apk add --no-cache --virtual .gosu-deps \
-		ca-certificates \
-		dpkg \
-		gnupg; \
-	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
-	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
-    apk del --no-network .gosu-deps; \
-    chmod +x /usr/local/bin/gosu;
 
 # add health check script
 COPY pg_healthcheck wait-for-manager.sh /
@@ -133,5 +128,9 @@ RUN chmod +x /wait-for-manager.sh
 # https://github.com/docker-library/postgres/blob/33bccfcaddd0679f55ee1028c012d26cd196537d/12/docker-entrypoint.sh#L303
 RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh \
     && ln -sf /usr/local/bin/docker-entrypoint.sh /docker-entrypoint.sh 
+
+# config tuning
+# replace last docker_temp_server_stop with sed to change max_connections
+RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 100/max_connections = 1000/" /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
 
 HEALTHCHECK --interval=4s --start-period=6s CMD ./pg_healthcheck
