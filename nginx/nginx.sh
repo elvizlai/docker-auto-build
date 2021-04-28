@@ -7,7 +7,7 @@ source scl_source enable devtoolset-9 || true
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel
 
-NGINXVER=${1:-1.18.0}
+NGINXVER=${1:-1.20.0}
 NGINXNJS=0.5.3
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
@@ -32,8 +32,8 @@ curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.g
 rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
-git clone -b v5.0.0 https://github.com/ADD-SP/ngx_waf
-git clone -b v1.2.8 https://github.com/winshining/nginx-http-flv-module
+git clone -b v5.1.1 https://github.com/ADD-SP/ngx_waf
+git clone -b v1.2.9 https://github.com/winshining/nginx-http-flv-module
 git clone -b 3.3 https://github.com/leev/ngx_http_geoip2_module
 git clone -b v0.62 https://github.com/openresty/echo-nginx-module
 git clone -b v0.33 https://github.com/openresty/headers-more-nginx-module
@@ -380,6 +380,7 @@ http {
     ssl_stapling on;
     ssl_stapling_verify on;
     ssl_early_data on;
+
     resolver 8.8.8.8 8.8.4.4 208.67.222.222 208.67.220.220 valid=60s ipv6=off;
     resolver_timeout 5s;
 

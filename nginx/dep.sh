@@ -30,7 +30,7 @@ cd $ZLIB
 ./configure --static 
 make -j4 && make install && cd ..
 
-# openssl https://www.openssl.org
+# openssl https://www.openssl.org/source
 curl -sSL https://www.openssl.org/source/$OPENSSL.tar.gz | tar zxf -
 cd $OPENSSL
 ./config --prefix=/usr/local --libdir=/usr/local/lib shared
