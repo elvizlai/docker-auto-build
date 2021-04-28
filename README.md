@@ -6,11 +6,11 @@
 - sdrzlyz/alpine
 - sdrzlyz/alpine-glibc
 - sdrzlyz/centos-sshd
-- sdrzlyz/envoy:1.17.1
+- sdrzlyz/envoy:1.18.2
 - sdrzlyz/frpc:0.36.2
-- sdrzlyz/go-dev docker protoc revive
+- sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.2
-- sdrzlyz/nginx:1.18.0
+- sdrzlyz/nginx:1.20.0
 - sdrzlyz/pg:13
 - sdrzlyz/redis:5.0
 - sdrzlyz/tools netcat tcpdump psql mycli
