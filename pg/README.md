@@ -1,3 +1,21 @@
+Single Node Example
+```
+docker run -itd \
+    --restart always \
+    --name pg \
+    -e POSTGRES_HOST_AUTH_METHOD=trust \
+    -p 5432:5432 \
+    sdrzlyz/pg:13
+```
+
+PostgREST
+```
+CREATE ROLE web_anon NOLOGIN; 
+GRANT USAGE ON SCHEMA PUBLIC TO web_anon; 
+GRANT SELECT ON ALL TABLES IN SCHEMA PUBLIC TO web_anon;
+```
+
+Extension  
 usage `psql -U postgres`
 ```
 CREATE EXTENSION IF NOT EXISTS citus
