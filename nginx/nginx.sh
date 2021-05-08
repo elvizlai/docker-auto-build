@@ -32,7 +32,7 @@ curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.g
 rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
-git clone -b v5.1.1 https://github.com/ADD-SP/ngx_waf
+git clone -b v5.2.0 https://github.com/ADD-SP/ngx_waf
 git clone -b v1.2.9 https://github.com/winshining/nginx-http-flv-module
 git clone -b 3.3 https://github.com/leev/ngx_http_geoip2_module
 git clone -b v0.62 https://github.com/openresty/echo-nginx-module
