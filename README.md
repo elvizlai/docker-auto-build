@@ -6,8 +6,7 @@
 - sdrzlyz/alpine
 - sdrzlyz/alpine-glibc
 - sdrzlyz/centos-sshd
-- sdrzlyz/envoy:1.18.2
-- sdrzlyz/frpc:0.36.2
+- sdrzlyz/envoy:1.18.3
 - sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.2
 - sdrzlyz/nginx:1.20.0

@@ -12,6 +12,7 @@ NGINXNJS=0.5.3
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.19
+NGINXSTREAMLUA=0.0.9
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -28,12 +29,19 @@ curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz 
 # https://github.com/openresty/lua-nginx-module
 curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.gz | tar zxf -
 
+# https://github.com/openresty/stream-lua-nginx-module
+curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXSTREAMLUA.tar.gz | tar zxf -
+
+# https://github.com/pingostack/pingos
+# replacement of https://github.com/winshining/nginx-http-flv-module
+git clone https://github.com/pingostack/pingos.git
+mv pingos/modules/* .
+
 # dynamic modules
 rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
-git clone -b v5.2.0 https://github.com/ADD-SP/ngx_waf
-git clone -b v1.2.9 https://github.com/winshining/nginx-http-flv-module
+git clone -b v5.1.1 https://github.com/ADD-SP/ngx_waf
 git clone -b 3.3 https://github.com/leev/ngx_http_geoip2_module
 git clone -b v0.62 https://github.com/openresty/echo-nginx-module
 git clone -b v0.33 https://github.com/openresty/headers-more-nginx-module
@@ -86,8 +94,12 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-module=./module/njs/nginx \
     --add-module=./module/ngx_devel_kit-$NGINXNDK \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
+    --add-module=./module/stream-lua-nginx-module-$NGINXSTREAMLUA \
+    --add-module=./module/nginx-rtmp-module \
+    --add-module=./module/nginx-client-module \
+    --add-module=./module/nginx-multiport-module \
+    --add-module=./module/nginx-toolkit-module \
     --add-dynamic-module=./module/dynamic/ngx_waf \
-    --add-dynamic-module=./module/dynamic/nginx-http-flv-module \
     --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
     --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
@@ -102,10 +114,10 @@ make install
 # delete old modules
 # rm -f /etc/nginx/modules/*.so.old || true
 
-# https://github.com/bungle/awesome-resty
+mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/nginx/lualib
 
 # lualib module
-mkdir -p /etc/nginx/lualib
+# https://github.com/bungle/awesome-resty
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/releases
@@ -218,7 +230,6 @@ cd lyaml-$LYAML && build-aux/luke LYAML_DIR=./target LUA_INCDIR=/usr/local/inclu
 mv lyaml-$LYAML/target/{lib/lua/5.1/yaml.so,share/lua/5.1/lyaml} .
 rm -rf lyaml-$LYAML
 
-mkdir -p /etc/nginx/conf.d /var/cache/nginx/client_temp
 
 # 开机自启动
 cat > /etc/systemd/system/nginx.service <<EOF
@@ -243,7 +254,7 @@ WantedBy=multi-user.target
 EOF
 
 # cert gen
-mkdir -p /etc/nginx/conf.d /etc/nginx/cert /var/log/nginx
+mkdir -p /etc/nginx/cert
 openssl dhparam -out /etc/nginx/dhparam.pem 1024
 
 # rsa
@@ -311,16 +322,15 @@ user root;
 worker_processes auto;
 worker_rlimit_nofile 65535;
 
-#load_module "modules/ngx_http_echo_module.so"
-#load_module "modules/ngx_http_flv_live_module.so"
-#load_module "modules/ngx_http_geoip2_module.so"
-#load_module "modules/ngx_http_headers_more_filter_module.so"
-#load_module "modules/ngx_http_image_filter_module.so"
-#load_module "modules/ngx_http_srcache_filter_module.so"
-#load_module "modules/ngx_http_subs_filter_module.so"
-#load_module "modules/ngx_http_waf_module.so"
-#load_module "modules/ngx_http_xslt_filter_module.so"
-#load_module "modules/ngx_stream_geoip2_module.so"
+#load_module "modules/ngx_http_echo_module.so";
+#load_module "modules/ngx_http_geoip2_module.so";
+#load_module "modules/ngx_http_headers_more_filter_module.so";
+#load_module "modules/ngx_http_image_filter_module.so";
+#load_module "modules/ngx_http_srcache_filter_module.so";
+#load_module "modules/ngx_http_subs_filter_module.so";
+#load_module "modules/ngx_http_waf_module.so";
+#load_module "modules/ngx_http_xslt_filter_module.so";
+#load_module "modules/ngx_stream_geoip2_module.so";
 
 #error_log  logs/error.log;
 #error_log  logs/error.log  notice;
@@ -328,15 +338,45 @@ worker_rlimit_nofile 65535;
 #pid        logs/nginx.pid;
 
 events {
-    multi_accept       on;
+    use epoll;
+    multi_accept on;
     worker_connections 65535;
+    multi_listen unix:/tmp/rtmp 1935;
+}
+
+rtmp {
+    out_queue           4096;
+    out_cork            8;
+    max_streams         512;
+    timeout             15s;
+    drop_idle_publisher 15s;
+
+    rtmp_auto_pull on;
+    rtmp_auto_pull_port unix:/tmp/rtmp;
+
+    include /etc/nginx/conf.d/*.rtmp;
+}
+
+stream {
+    lua_package_path  "/etc/nginx/lualib/?.lua;/etc/nginx/lualib/?/init.lua;;";
+    lua_package_cpath "/etc/nginx/lualib/?.so;;";
+
+    log_format stream '\$remote_addr [\$time_local] '
+                 '\$protocol $status \$bytes_sent \$bytes_received '
+                 '\$session_time "\$upstream_addr" '
+                 '"\$upstream_bytes_sent" "\$upstream_bytes_received" "\$upstream_connect_time"';
+
+    access_log /var/log/nginx/stream.log stream;
+    open_log_file_cache off;
+
+    include /etc/nginx/conf.d/*.stream;
 }
 
 http {
-    charset utf-8;
-
     lua_package_path  "/etc/nginx/lualib/?.lua;/etc/nginx/lualib/?/init.lua;;";
     lua_package_cpath "/etc/nginx/lualib/?.so;;";
+
+    charset utf-8;
 
     # MIME
     include      mime.types;
@@ -444,19 +484,11 @@ http {
     include /etc/nginx/conf.d/*.conf;
     # proxy_cache_path /var/www/ngx_cache levels=1:2 keys_zone=ngx_cache:10m max_size=8g inactive=168h use_temp_path=off;
 }
-
-stream {
-    log_format stream '\$remote_addr [\$time_local] '
-                 '\$protocol $status \$bytes_sent \$bytes_received '
-                 '\$session_time "\$upstream_addr" '
-                 '"\$upstream_bytes_sent" "\$upstream_bytes_received" "\$upstream_connect_time"';
-
-    access_log /var/log/nginx/stream.log stream;
-    open_log_file_cache off;
-
-    include /etc/nginx/conf.d/*.stream;
-}
 EOF
+
+# static file copy
+mkdir -p /etc/nginx/html/rtmp
+\cp $NGINXDIR/module/pingos/resource/stat.xsl /etc/nginx/html/rtmp/stat.xsl
 
 touch /var/log/nginx/{access,stream,error}.log
 

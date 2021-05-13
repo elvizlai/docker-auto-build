@@ -15,7 +15,11 @@ IFS=":" read -ra TARGET <<< "$BUILD_INFO"
 DNAME=${TARGET[0]:-$1}
 DTAG=${TARGET[1]:-latest}
 
-echo -e "\033[33mname:$DNAME, tag:$DTAG\033[0m"
+if [ "$2" != "" ];then
+    DTAG=$2
+fi
+
+echo -e "\033[33mimg-->$DNAME:$DTAG\033[0m"
 
 cd $1
 
@@ -26,7 +30,7 @@ docker build -t "$DNAME:$DTAG" --build-arg VERSION=$DTAG .
 imgList+=("$DNAME:$DTAG")
 
 # latest
-if [ "$DTAG" != "latest" ];then
+if [ "$DTAG" != "latest" -a "$2" = "" ];then
     docker tag "$DNAME:$DTAG" "$DNAME:latest"
     imgList+=("$DNAME:latest")
 fi
@@ -34,6 +38,7 @@ fi
 if [ "$DSKIPPUSH" != "true" ];then
     for img in "${imgList[@]}"
     do
+        echo "img to push $img"
         docker push "$img"
     done
 fi

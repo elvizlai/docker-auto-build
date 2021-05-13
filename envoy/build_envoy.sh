@@ -3,7 +3,7 @@
 # need if GFW:
 # export https_proxy=http://192.168.3.63:7890 http_proxy=http://192.168.3.63:7890 all_proxy=socks5://192.168.3.63:7890
 
-git clone -b v1.18.2 --depth 1 https://github.com/envoyproxy/envoy envoy-src
+git clone -b v1.18.3 --depth 1 https://github.com/envoyproxy/envoy envoy-src
 
 cd envoy-src
 

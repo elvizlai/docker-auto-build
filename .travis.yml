@@ -16,14 +16,14 @@ jobs:
     - stage: parallel
       script: bash ./build.sh envoy
       name: envoy
-    - script: bash ./build.sh frpc
-      name: frpc
     - script: bash ./build.sh go-dev
       name: go-dev
     - script: bash ./build.sh ikev2
       name: ikev2
     - script: bash ./build.sh nginx
       name: nginx
+    - script: bash ./build.sh nginx ffmpeg
+      name: nginx-ffmpeg
     - script: bash ./build.sh pg
       name: pg
     - script: bash ./build.sh redis

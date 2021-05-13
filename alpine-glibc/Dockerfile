@@ -3,6 +3,7 @@ FROM sdrzlyz/alpine
 # build and runtime essential
 ENV LANG=C.UTF-8
 
+# https://github.com/sgerrand/alpine-pkg-glibc
 # Here we install GNU libc (aka glibc) and set C.UTF-8 locale as default.
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
     && ALPINE_GLIBC_PACKAGE_VERSION="2.33-r0" \
@@ -15,6 +16,7 @@ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
     "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
     "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" \
     && apk add --no-cache "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
+    && ln -sf /usr/glibc-compat/lib/ld-2.33.so /usr/glibc-compat/lib/ld-linux-x86-64.so.2 \
     && apk add --no-cache "$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" \
     && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && rm -rf "/etc/apk/keys/sgerrand.rsa.pub" \
@@ -24,3 +26,4 @@ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
     /var/cache/apk/* \
     /tmp/*
 
+# trick to suppress warning for line 19: https://github.com/sgerrand/alpine-pkg-glibc/issues/119
