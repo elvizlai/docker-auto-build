@@ -7,6 +7,7 @@
 - sdrzlyz/alpine-glibc
 - sdrzlyz/centos-sshd
 - sdrzlyz/envoy:1.18.3
+- sdrzlyz/ffmpeg-static
 - sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.2
 - sdrzlyz/nginx:1.20.0

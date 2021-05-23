@@ -16,6 +16,8 @@ jobs:
     - stage: parallel
       script: bash ./build.sh envoy
       name: envoy
+    - script: bash ./build.sh ffmpeg-static
+      name: ffmpeg-static
     - script: bash ./build.sh go-dev
       name: go-dev
     - script: bash ./build.sh ikev2
