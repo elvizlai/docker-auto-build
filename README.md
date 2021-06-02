@@ -10,7 +10,7 @@
 - sdrzlyz/ffmpeg-static
 - sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.2
-- sdrzlyz/nginx:1.20.0
+- sdrzlyz/nginx:1.20.1
 - sdrzlyz/pg:13
 - sdrzlyz/redis:5.0
 - sdrzlyz/tools netcat tcpdump psql mycli

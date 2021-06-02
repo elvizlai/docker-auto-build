@@ -1,6 +1,6 @@
 FROM centos:7
 
-ARG VERSION=1.20.0
+ARG VERSION=1.20.1
 
 COPY dep.sh nginx.sh build.sh ffmpeg.sh /opt/
 
