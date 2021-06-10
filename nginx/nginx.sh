@@ -341,7 +341,7 @@ events {
     use epoll;
     multi_accept on;
     worker_connections 65535;
-    multi_listen unix:/tmp/rtmp 1935;
+    #multi_listen unix:/tmp/rtmp 1935;
 }
 
 rtmp {
