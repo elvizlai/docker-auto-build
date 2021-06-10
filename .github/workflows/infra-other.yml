@@ -1,0 +1,30 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+name: Infra Other
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: "true"
+
+      # https://github.com/docker/login-action
+      - name: Log into docker hub
+        uses: docker/login-action@v1
+        with:
+          username: sdrzlyz
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build infra image
+        run: |
+          bash ./build.sh go-dev
+          bash ./build.sh ikev2
+          bash ./build.sh envoy
+          bash ./build.sh redis
+          bash ./build.sh tools
