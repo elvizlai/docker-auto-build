@@ -1,6 +1,4 @@
-[![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)
-
-#### Apps
+#### Images
 
 - sdrzlyz/alpine
 - sdrzlyz/alpine-glibc
