@@ -28,6 +28,7 @@ FROM postgres:${VERSION}-alpine
 
 ARG CITUS_VERSION=10.0.3
 ARG POSTGIS_VERSION=3.1.2
+ARG PG_CRON=1.3.1
 ARG PGROUTING_VERSION=3.2.0
 ARG TIMESCALE_VERSION=2.3.0
 ARG GOSU_VERSION=1.12
@@ -88,6 +89,14 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         # --with-gui \
         --with-pcredir="$(pcre-config --prefix)" \
         && make -j$(nproc) && make install \
+# pg_cron https://github.com/citusdata/pg_cron https://github.com/citusdata/pg_cron/issues/17
+    && wget -O /tmp/pg_cron.tar.gz "https://github.com/citusdata/pg_cron/archive/v${PG_CRON}.tar.gz" \
+        && mkdir -p /tmp/pg_cron \
+        && tar --extract --file /tmp/pg_cron.tar.gz --directory /tmp/pg_cron --strip-components 1 \
+        && cd /tmp/pg_cron \
+        && sed -i.bak -e 's/-Werror//g' Makefile \
+        && sed -i.bak -e 's/-Wno-implicit-fallthrough//g' Makefile \
+        && make && make install \
 # pgrouting https://github.com/pgRouting/pgrouting https://github.com/pgRouting/docker-pgrouting
     && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING_VERSION}.tar.gz" \
         && mkdir -p /tmp/pgrouting/build \
@@ -112,7 +121,7 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
     && apk del .fetch-deps .build-deps
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
-RUN echo "shared_preload_libraries='citus,timescaledb'" >> /usr/local/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries='citus,timescaledb,pg_cron'" >> /usr/local/share/postgresql/postgresql.conf.sample
 
 # add scripts to run after initdb
 COPY extension/ /docker-entrypoint-initdb.d/

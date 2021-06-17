@@ -28,6 +28,8 @@ CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
 CREATE EXTENSION IF NOT EXISTS pgrouting;
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
 -- \dx or SELECT * FROM pg_extension;
 ```
 
