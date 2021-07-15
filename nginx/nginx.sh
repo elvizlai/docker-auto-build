@@ -8,11 +8,11 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel
 
 NGINXVER=${1:-1.20.1}
-NGINXNJS=0.5.3
+NGINXNJS=0.6.1
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
-NGINXLUA=0.10.19
-NGINXSTREAMLUA=0.0.9
+NGINXLUA=0.10.20
+NGINXSTREAMLUA=0.0.10
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -121,7 +121,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/releases
-LUA_RESTY_CORE=0.1.21
+LUA_RESTY_CORE=0.1.22
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -133,25 +133,25 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/releases
-LUA_RESTY_OPENSSL=0.7.2
+LUA_RESTY_OPENSSL=0.7.3
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/releases
-LUA_RESTY_ACME=0.6.0
+LUA_RESTY_ACME=0.7.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
 
 # https://github.com/openresty/lua-resty-string/releases
-LUA_RESTY_STRING=0.13
+LUA_RESTY_STRING=0.14
 curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
 rm -rf lua-resty-string-$LUA_RESTY_STRING
 
 # https://github.com/openresty/lua-resty-lrucache/releases
-LUA_RESTY_LRUCACHE=0.10
+LUA_RESTY_LRUCACHE=0.11
 curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
@@ -181,7 +181,7 @@ curl -sSL https://github.com/bungle/lua-resty-template/archive/v$LUA_RESTY_TPL.t
 rm -rf lua-resty-template-$LUA_RESTY_TPL
 
 # https://github.com/openresty/lua-resty-mysql/releases
-LUA_RESTY_MYSQL=0.23
+LUA_RESTY_MYSQL=0.24
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
