@@ -26,14 +26,17 @@ RUN apk update && apk add --no-cache git \
 # postgres
 FROM postgres:${VERSION}-alpine
 
-ARG CITUS_VERSION=10.1.0
-ARG POSTGIS_VERSION=3.1.3
+ARG CITUS=10.1.0
+ARG POSTGRESQL_HLL=2.15.1
+ARG POSTGRESQL_TOPN=2.3.1
+ARG POSTGIS=3.1.3
 ARG PG_CRON=1.3.1
-ARG PGROUTING_VERSION=3.2.0
-ARG TIMESCALE_VERSION=2.3.1
-ARG GOSU_VERSION=1.12
+ARG PGROUTING=3.2.0
+ARG TIMESCALE=2.3.1
+ARG GOSU=1.12
 
-RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /etc/apk/repositories \
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+    # && sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /etc/apk/repositories \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
     && apk add --no-cache --virtual .fetch-deps ca-certificates openssl tar \
     && apk add --no-cache --virtual .build-deps \
@@ -67,18 +70,30 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         libstdc++ \
         protobuf-c \
         zstd \
-        zstd-dev \        
+        zstd-dev \
         lz4 \
         lz4-dev \
-# citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
-    && wget -O /tmp/citus.tar.gz "https://github.com/citusdata/citus/archive/v${CITUS_VERSION}.tar.gz" \
+# citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/alpine/Dockerfile
+    && wget -O /tmp/citus.tar.gz "https://github.com/citusdata/citus/archive/v${CITUS}.tar.gz" \
         && mkdir -p /tmp/citus \
         && tar --extract --file /tmp/citus.tar.gz --directory /tmp/citus --strip-components 1 \
         && cd /tmp/citus \
         && ./configure --with-security-flags \
         && make -j$(nproc) && make install \
+# postgresql-hll https://github.com/citusdata/postgresql-hll
+    && wget -O /tmp/postgresql-hll.tar.gz "https://github.com/citusdata/postgresql-hll/archive/v${POSTGRESQL_HLL}.tar.gz" \
+        && mkdir -p /tmp/postgresql-hll \
+        && tar --extract --file /tmp/postgresql-hll.tar.gz --directory /tmp/postgresql-hll --strip-components 1 \
+        && cd /tmp/postgresql-hll \
+        && make -j$(nproc) && make install \
+# postgresql-topn https://github.com/citusdata/postgresql-topn
+    && wget -O /tmp/postgresql-topn.tar.gz "https://github.com/citusdata/postgresql-topn/archive/v${POSTGRESQL_TOPN}.tar.gz" \
+        && mkdir -p /tmp/postgresql-topn \
+        && tar --extract --file /tmp/postgresql-topn.tar.gz --directory /tmp/postgresql-topn --strip-components 1 \
+        && cd /tmp/postgresql-topn \
+        && make -j$(nproc) && make install \
 # postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis
-    && wget -O /tmp/postgis.tar.gz "https://github.com/postgis/postgis/archive/${POSTGIS_VERSION}.tar.gz" \
+    && wget -O /tmp/postgis.tar.gz "https://github.com/postgis/postgis/archive/${POSTGIS}.tar.gz" \
         && mkdir -p /tmp/postgis \
         && tar --extract --file /tmp/postgis.tar.gz --directory /tmp/postgis --strip-components 1 \
         && cd /tmp/postgis \
@@ -98,14 +113,14 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         && sed -i.bak -e 's/-Wno-implicit-fallthrough//g' Makefile \
         && make && make install \
 # pgrouting https://github.com/pgRouting/pgrouting https://github.com/pgRouting/docker-pgrouting
-    && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING_VERSION}.tar.gz" \
+    && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING}.tar.gz" \
         && mkdir -p /tmp/pgrouting/build \
         && tar --extract --file /tmp/pgrouting.tar.gz --directory /tmp/pgrouting --strip-components 1 \
         && cd /tmp/pgrouting/build \
         && cmake .. \
         && make && make install \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
-    && wget -O /tmp/timescale.tar.gz "https://github.com/timescale/timescaledb/archive/${TIMESCALE_VERSION}.tar.gz" \
+    && wget -O /tmp/timescale.tar.gz "https://github.com/timescale/timescaledb/archive/${TIMESCALE}.tar.gz" \
         && mkdir -p /tmp/timescale \
         && tar --extract --file /tmp/timescale.tar.gz --directory /tmp/timescale --strip-components 1 \
         && cd /tmp/timescale \
@@ -113,7 +128,7 @@ RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /e
         && cd build && make -j$(nproc) && make install \
 # gosu https://github.com/tianon/gosu/blob/master/INSTALL.md
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
+    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU/gosu-$dpkgArch" \
     && chmod +x /usr/local/bin/gosu \
 # clean
     && cd / \
