@@ -49,10 +49,11 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repos
         libtool \
         libxml2-dev \
         perl \
+        llvm \
         clang-dev \
         gdal-dev \
         geos-dev \
-        llvm10-dev \
+        llvm-dev \
         proj-dev \
         protobuf-c-dev \
         pcre-dev \
