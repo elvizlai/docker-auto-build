@@ -41,7 +41,7 @@ echo "timescaledb.telemetry_level=${TS_TELEMETRY}" >> ${POSTGRESQL_CONF_DIR}/pos
 
 # create extension timescaledb in initial databases
 psql -U "${POSTGRES_USER}" postgres -f ${create_sql}
-psql -U "${POSTGRES_USER}" template1 -f ${create_sql}
+# psql -U "${POSTGRES_USER}" template1 -f ${create_sql}
 
 if [ "${POSTGRES_DB:-postgres}" != 'postgres' ]; then
     psql -U "${POSTGRES_USER}" "${POSTGRES_DB}" -f ${create_sql}

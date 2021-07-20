@@ -158,4 +158,6 @@ RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh \
 # replace last docker_temp_server_stop with sed to change max_connections
 RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 100/max_connections = 1000/" /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
 
+ENV TIMESCALEDB_TELEMETRY off
+
 HEALTHCHECK --interval=4s --start-period=6s CMD ./pg_healthcheck
