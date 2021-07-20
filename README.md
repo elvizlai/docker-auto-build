@@ -3,7 +3,7 @@
 - sdrzlyz/alpine
 - sdrzlyz/alpine-glibc
 - sdrzlyz/centos-sshd
-- sdrzlyz/envoy:1.18.3
+- sdrzlyz/envoy:1.19.0
 - sdrzlyz/ffmpeg
 - sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.3
