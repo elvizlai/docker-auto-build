@@ -26,11 +26,11 @@ RUN apk update && apk add --no-cache git \
 # postgres
 FROM postgres:${VERSION}-alpine
 
-ARG CITUS_VERSION=10.0.3
-ARG POSTGIS_VERSION=3.1.2
+ARG CITUS_VERSION=10.1.0
+ARG POSTGIS_VERSION=3.1.3
 ARG PG_CRON=1.3.1
 ARG PGROUTING_VERSION=3.2.0
-ARG TIMESCALE_VERSION=2.3.0
+ARG TIMESCALE_VERSION=2.3.1
 ARG GOSU_VERSION=1.12
 
 RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /etc/apk/repositories \
