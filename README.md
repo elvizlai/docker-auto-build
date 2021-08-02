@@ -9,7 +9,7 @@
 - sdrzlyz/ikev2:5.9.3
 - sdrzlyz/nginx:1.20.1
 - sdrzlyz/pg:13
-- sdrzlyz/redis:5.0
+- sdrzlyz/redis:6.2
 - sdrzlyz/tools netcat tcpdump psql mycli
 - sdrzlyz/ubuntu
 
