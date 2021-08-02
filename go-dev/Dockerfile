@@ -16,7 +16,7 @@ RUN mkdir -p /tmp/jemalloc-temp && cd /tmp/jemalloc-temp \
     && ./configure --with-jemalloc-prefix='je_' --with-malloc-conf='background_thread:true,metadata_thp:auto' \
     && make && make install
 
-# docker kubectl buf protoc protoc-gen-go protoc-gen-grpc-gateway protoc-gen-openapiv2 revive protoc-gen-go-json protoc-gen-go-grpc protoc-gen-validate
+# docker kubectl buf protoc protoc-gen-go protoc-gen-grpc-gateway protoc-gen-openapiv2 revive protoc-gen-go-json protoc-gen-go-grpc protoc-gen-validate stringer
 RUN cd /tmp \
     && curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.7.tgz | tar zxf - && mv docker/docker $GOPATH/bin/docker \
     && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && chmod +x kubectl && mv kubectl $GOPATH/bin/ \
@@ -29,6 +29,7 @@ RUN cd /tmp \
     github.com/mitchellh/protoc-gen-go-json \
     google.golang.org/grpc/cmd/protoc-gen-go-grpc \
     github.com/envoyproxy/protoc-gen-validate \
+    golang.org/x/tools/cmd/stringer \
     && upx -f -q /usr/local/go/bin/* $GOPATH/bin/* || true
 
 # clean
