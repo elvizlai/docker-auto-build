@@ -5,7 +5,7 @@ set -e
 source scl_source enable devtoolset-9 || true
 
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel
+yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel flex bison
 
 NGINXVER=${1:-1.20.1}
 NGINXNJS=0.6.1
@@ -41,7 +41,25 @@ mv pingos/modules/* .
 rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
-git clone -b v5.1.1 https://github.com/ADD-SP/ngx_waf
+
+# begin ngx_waf
+git clone -b lts https://github.com/ADD-SP/ngx_waf
+cd ngx_waf
+git clone https://github.com/libinjection/libinjection.git inc/libinjection
+make
+cd $NGINXDIR/module/dynamic
+
+git clone https://github.com/jedisct1/libsodium.git --branch stable libsodium-src
+cd libsodium-src
+./configure --prefix=/opt/nginx-${NGINXVER}/libsodium --with-pic
+make -j$(nproc) && make install
+export LIB_SODIUM=/opt/nginx-${NGINXVER}/libsodium
+cd $NGINXDIR/module/dynamic
+
+git clone https://github.com/troydhanson/uthash.git /usr/local/src/uthash
+export LIB_UTHASH=/usr/local/src/uthash
+# end ngx_waf
+
 git clone -b 3.3 https://github.com/leev/ngx_http_geoip2_module
 git clone -b v0.62 https://github.com/openresty/echo-nginx-module
 git clone -b v0.33 https://github.com/openresty/headers-more-nginx-module
@@ -133,13 +151,13 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/releases
-LUA_RESTY_OPENSSL=0.7.3
+LUA_RESTY_OPENSSL=0.7.4
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/releases
-LUA_RESTY_ACME=0.7.0
+LUA_RESTY_ACME=0.7.1
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
@@ -199,7 +217,7 @@ curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf 
 rm -rf pgmoon-$LUA_PGMOON
 
 # https://github.com/starwing/lua-protobuf/releases
-LUA_PROTOBUF=0.3.2
+LUA_PROTOBUF=0.3.3
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
 cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && /bin/cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
@@ -421,8 +439,8 @@ http {
     ssl_stapling_verify on;
     ssl_early_data on;
 
-    resolver 8.8.8.8 8.8.4.4 208.67.222.222 208.67.220.220 valid=60s ipv6=off;
-    resolver_timeout 5s;
+    resolver 8.8.8.8 223.5.5.5 119.29.29.29 valid=60s ipv6=off;
+    resolver_timeout 15s;
 
     lua_shared_dict acme 16m;
     # required to verify Let's Encrypt API
@@ -443,8 +461,8 @@ http {
             account_key_path = "/etc/nginx/account.key",
             account_email = "sdrzlyz@gmail.com",
             -- domain_whitelist = { "example.com" },
-            domain_whitelist_callback = function(domain)
-                return ngx.re.match(domain, [[.*]], "jo")
+            domain_whitelist_callback = function(domain, is_new_cert_needed)
+                return true
             end
         })
     }
