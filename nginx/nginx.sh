@@ -272,7 +272,7 @@ WantedBy=multi-user.target
 EOF
 
 # cert gen
-mkdir -p /etc/nginx/cert
+mkdir -p /etc/nginx/cert /etc/nginx/acme
 openssl dhparam -out /etc/nginx/dhparam.pem 1024
 
 # rsa
@@ -455,15 +455,20 @@ http {
             -- uncomment following for first time setup
             -- staging = true,
             -- uncomment following to enable RSA + ECC double cert
-            domain_key_types = { 'rsa', 'ecc' },
+            domain_key_types = { "rsa", "ecc" },
             -- uncomment following to enable tls-alpn-01 challenge
-            -- enabled_challenge_handlers = { 'http-01', 'tls-alpn-01' },
+            -- enabled_challenge_handlers = { "http-01", "tls-alpn-01" },
             account_key_path = "/etc/nginx/account.key",
             account_email = "sdrzlyz@gmail.com",
             -- domain_whitelist = { "example.com" },
             domain_whitelist_callback = function(domain, is_new_cert_needed)
                 return true
-            end
+            end,
+            renew_check_interval = 24 * 3600,
+            storage_adapter = "file",
+            storage_config = {
+                dir = "/etc/nginx/acme",
+            },
         })
     }
 
@@ -489,7 +494,7 @@ http {
     }
 
     server {
-        listen 127.0.0.1:80;
+        listen 80;
         server_name 127.0.0.1;
         location /nginx_status {
             access_log off;
