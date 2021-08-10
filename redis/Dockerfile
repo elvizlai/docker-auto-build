@@ -11,7 +11,7 @@ FROM redislabs/rejson:1.0.7 as rejson
 # https://hub.docker.com/r/redislabs/redistimeseries
 FROM redislabs/redistimeseries:1.4.10 as redistimeseries
 # https://hub.docker.com/r/redislabs/rebloom
-FROM redislabs/rebloom:2.2.4 as rebloom
+FROM redislabs/rebloom:2.2.6 as rebloom
 
 
 # redis release

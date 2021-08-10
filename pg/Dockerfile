@@ -26,13 +26,13 @@ RUN apk update && apk add --no-cache git \
 # postgres
 FROM postgres:${VERSION}-alpine
 
-ARG CITUS=10.1.0
+ARG CITUS=10.1.1
 ARG POSTGRESQL_HLL=2.15.1
 ARG POSTGRESQL_TOPN=2.3.1
 ARG POSTGIS=3.1.3
 ARG PG_CRON=1.3.1
 ARG PGROUTING=3.2.1
-ARG TIMESCALE=2.3.1
+ARG TIMESCALE=2.4.0
 ARG GOSU=1.12
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
