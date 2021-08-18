@@ -7,6 +7,7 @@
 - sdrzlyz/ffmpeg
 - sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.3
+- sdrzlyz/m7s
 - sdrzlyz/nginx:1.20.1
 - sdrzlyz/pg:13
 - sdrzlyz/redis:6.2

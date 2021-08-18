@@ -28,6 +28,7 @@ jobs:
           bash ./build.sh envoy
           bash ./build.sh ffmpeg
           bash ./build.sh ffmpeg 4
+          bash ./build.sh m7s
           bash ./build.sh nginx
           bash ./build.sh nginx ffmpeg
           bash ./build.sh pg

@@ -28,3 +28,4 @@ jobs:
           bash ./build.sh envoy
           bash ./build.sh redis
           bash ./build.sh tools
+          bash ./build.sh m7s
