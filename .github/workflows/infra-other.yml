@@ -23,9 +23,9 @@ jobs:
 
       - name: Build infra image
         run: |
+          bash ./build.sh envoy
           bash ./build.sh go-dev
           bash ./build.sh ikev2
-          bash ./build.sh envoy
+          bash ./build.sh m7s
           bash ./build.sh redis
           bash ./build.sh tools
-          bash ./build.sh m7s
