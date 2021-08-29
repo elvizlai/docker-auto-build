@@ -32,7 +32,7 @@ ARG POSTGRESQL_TOPN=2.3.1
 ARG POSTGIS=3.1.3
 ARG PG_CRON=1.3.1
 ARG PGROUTING=3.2.1
-ARG TIMESCALE=2.4.0
+ARG TIMESCALE=2.4.1
 ARG GOSU=1.14
 
 RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /etc/apk/repositories \
