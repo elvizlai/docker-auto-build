@@ -8,7 +8,7 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel flex bison
 
 NGINXVER=${1:-1.20.1}
-NGINXNJS=0.6.1
+NGINXNJS=0.6.2
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.20
@@ -163,7 +163,7 @@ curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
 
 # https://github.com/openresty/lua-resty-string/releases
-LUA_RESTY_STRING=0.14
+LUA_RESTY_STRING=0.15
 curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
 rm -rf lua-resty-string-$LUA_RESTY_STRING
