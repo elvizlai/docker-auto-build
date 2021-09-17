@@ -35,6 +35,8 @@ ARG PGROUTING=3.2.1
 ARG TIMESCALE=2.4.1
 ARG GOSU=1.14
 
+ENV LANG zh_CN.utf8
+
 RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /etc/apk/repositories \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
     && apk add --no-cache --virtual .fetch-deps ca-certificates openssl tar \
