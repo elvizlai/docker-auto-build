@@ -37,8 +37,8 @@ ARG GOSU=1.14
 
 ENV LANG zh_CN.utf8
 
-RUN sed 's#https://dl-cdn.alpinelinux.org#https://mirrors.aliyun.com#g' -i /etc/apk/repositories \
-    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
+# sed 's#https://dl-cdn.alpinelinux.org#https://mirrors.aliyun.com#g' -i /etc/apk/repositories \
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
     && apk add --no-cache --virtual .fetch-deps ca-certificates openssl tar \
     && apk add --no-cache --virtual .build-deps \
         build-base \
