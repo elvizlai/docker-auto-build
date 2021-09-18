@@ -26,18 +26,18 @@ RUN apk update && apk add --no-cache git \
 # postgres
 FROM postgres:${VERSION}-alpine
 
-ARG CITUS=10.1.2
-ARG POSTGRESQL_HLL=2.15.1
-ARG POSTGRESQL_TOPN=2.3.1
+ARG CITUS=10.2.0
+ARG POSTGRESQL_HLL=2.16
+ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.1.4
-ARG PG_CRON=1.3.1
+ARG PG_CRON=1.4.0
 ARG PGROUTING=3.2.1
 ARG TIMESCALE=2.4.1
 ARG GOSU=1.14
 
 ENV LANG zh_CN.utf8
 
-RUN sed 's/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g' -i /etc/apk/repositories \
+RUN sed 's#https://dl-cdn.alpinelinux.org#https://mirrors.aliyun.com#g' -i /etc/apk/repositories \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
     && apk add --no-cache --virtual .fetch-deps ca-certificates openssl tar \
     && apk add --no-cache --virtual .build-deps \

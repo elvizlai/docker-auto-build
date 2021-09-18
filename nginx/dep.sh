@@ -9,7 +9,7 @@ yum install -y devtoolset-9-gcc devtoolset-9-gcc-c++
 
 source scl_source enable devtoolset-9 || true
 
-PCRE=pcre-8.44
+PCRE=pcre-8.45
 ZLIB=zlib-1.2.11
 OPENSSL=openssl-1.1.1l
 JEMALLOC=5.2.1
@@ -18,12 +18,14 @@ LUAROCKS=3.7.0
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
+# https://ftp.pcre.org/pub/pcre
 # pcre `pcre-config --version`
 curl -sSL https://ftp.pcre.org/pub/pcre/$PCRE.tar.gz | tar zxf -
 cd $PCRE
 ./configure --enable-utf8 --enable-jit
 make -j4 && make install && cd ..
 
+# http://zlib.net
 # zlib
 curl -sSL http://zlib.net/$ZLIB.tar.gz | tar zxf -
 cd $ZLIB

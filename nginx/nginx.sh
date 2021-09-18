@@ -26,10 +26,10 @@ git clone -b $NGINXNJS https://github.com/nginx/njs
 
 curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz | tar zxf -
 
-# https://github.com/openresty/lua-nginx-module
+# https://github.com/openresty/lua-nginx-module/releases
 curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.gz | tar zxf -
 
-# https://github.com/openresty/stream-lua-nginx-module
+# https://github.com/openresty/stream-lua-nginx-module/releases
 curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXSTREAMLUA.tar.gz | tar zxf -
 
 # https://github.com/pingostack/pingos
