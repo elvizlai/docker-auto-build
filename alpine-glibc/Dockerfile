@@ -1,6 +1,6 @@
 FROM sdrzlyz/alpine
 
-ENV LANG=en_US.UTF-8
+ENV LANG=C.UTF-8
 
 # https://github.com/sgerrand/alpine-pkg-glibc
 # Here we install GNU libc (aka glibc) and set en_US.UTF-8 locale as default.
