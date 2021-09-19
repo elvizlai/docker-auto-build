@@ -1,6 +1,6 @@
 FROM golang:1.17-buster
 
-ENV GOPROXY "https://goproxy.cn|https://gocenter.io|direct"
+ENV GOPROXY "https://mirrors.tencent.com/go/|https://goproxy.cn|https://goproxy.io|direct"
 ENV PATH $PATH:$GOPATH/bin
 
 # runtime essential
