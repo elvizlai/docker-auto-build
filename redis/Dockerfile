@@ -5,7 +5,7 @@ ARG VERSION=6.2
 # https://hub.docker.com/r/redislabs/redisearch
 FROM redislabs/redisearch:2.0.12 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph
-FROM redislabs/redisgraph:2.4.7 as redisgraph
+FROM redislabs/redisgraph:2.4.10 as redisgraph
 # https://hub.docker.com/r/redislabs/rejson
 FROM redislabs/rejson:1.0.8 as rejson
 # https://hub.docker.com/r/redislabs/redistimeseries
