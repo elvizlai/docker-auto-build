@@ -33,6 +33,7 @@ ARG POSTGIS=3.1.4
 ARG PG_CRON=1.4.0
 ARG PGROUTING=3.2.1
 ARG TIMESCALE=2.4.1
+ARG PGAUDIT=1.5.0
 ARG GOSU=1.14
 
 ENV LANG zh_CN.utf8
@@ -128,6 +129,12 @@ RUN sed 's#https://dl-cdn.alpinelinux.org#https://mirrors.aliyun.com#g' -i /etc/
         && cd /tmp/timescale \
         && ./bootstrap -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && make install \
+# pgaudit https://github.com/pgaudit/pgaudit
+    && wget -O /tmp/pgaudit.tar.gz "https://github.com/pgaudit/pgaudit/archive/${PGAUDIT}.tar.gz" \
+        && mkdir -p /tmp/pgaudit \
+        && tar --extract --file /tmp/pgaudit.tar.gz --directory /tmp/pgaudit --strip-components 1 \
+        && cd /tmp/pgaudit \
+        && make install USE_PGXS=1 \
 # gosu https://github.com/tianon/gosu/blob/master/INSTALL.md
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU/gosu-$dpkgArch" \
@@ -138,7 +145,15 @@ RUN sed 's#https://dl-cdn.alpinelinux.org#https://mirrors.aliyun.com#g' -i /etc/
     && apk del .fetch-deps .build-deps
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
-RUN echo "shared_preload_libraries='citus,timescaledb,pg_cron'" >> /usr/local/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries='citus,timescaledb,pg_cron,pgaudit'" >> /usr/local/share/postgresql/postgresql.conf.sample
+
+# select name,setting from pg_settings where name like 'pgaudit%';
+# all but except misc
+#pgaudit.log = 'all, -misc'
+#pgaudit.log_client = on
+#pgaudit.log_parameter = on
+#pgaudit.log_relation = on
+#pgaudit.log_statement_once = on
 
 # add scripts to run after initdb
 COPY extension/ /docker-entrypoint-initdb.d/
