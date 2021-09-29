@@ -137,7 +137,7 @@ RUN sed 's#https://dl-cdn.alpinelinux.org#https://mirrors.cloud.tencent.com#g' -
         && make install USE_PGXS=1 \
 # gosu https://github.com/tianon/gosu/blob/master/INSTALL.md
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU/gosu-$dpkgArch" \
+    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/archive/$GOSU/gosu-$dpkgArch" \
     && chmod +x /usr/local/bin/gosu \
 # clean
     && cd / \
