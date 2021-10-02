@@ -24,104 +24,45 @@ RUN apk update && apk add --no-cache git \
     && go build -o /go/bin/timescaledb-parallel-copy
 
 # postgres
-FROM postgres:${VERSION}-alpine
+FROM postgres:${VERSION}
 
-ARG CITUS=10.2.0
+ARG CITUS=10.2.1
 ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
-ARG POSTGIS=3.1.4
-ARG PG_CRON=1.4.0
+ARG POSTGIS=3.1.4+dfsg-1.pgdg110+1
+ARG PG_CRON=1.4.1
 ARG PGROUTING=3.2.1
 ARG TIMESCALE=2.4.1
 ARG PGAUDIT=1.5.0
 ARG GOSU=1.14
 
-ENV LANG zh_CN.utf8
-
-RUN sed 's#https://dl-cdn.alpinelinux.org#https://mirrors.cloud.tencent.com#g' -i /etc/apk/repositories \
-    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone \
-    && apk add --no-cache --virtual .fetch-deps ca-certificates openssl tar \
-    && apk add --no-cache --virtual .build-deps \
-        build-base \
-        boost-dev \
-        autoconf \
-        automake \
-        file \
-        json-c-dev \
-        libtool \
-        libxml2-dev \
-        perl \
-        llvm \
-        clang-dev \
-        gdal-dev \
-        geos-dev \
-        llvm-dev \
-        proj-dev \
-        protobuf-c-dev \
-        pcre-dev \
-        curl-dev \
-        openssl-dev \
-        icu-dev \
-        cmake \
-        dpkg \
-    && apk add --no-cache --virtual .run-deps \
-        json-c \
-        geos \
-        gdal \
-        proj \
-        pcre \
-        libstdc++ \
-        protobuf-c \
-        zstd \
-        zstd-dev \
-        lz4 \
-        lz4-dev \
-# citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/alpine/Dockerfile
-    && wget -O /tmp/citus.tar.gz "https://github.com/citusdata/citus/archive/v${CITUS}.tar.gz" \
-        && mkdir -p /tmp/citus \
-        && tar --extract --file /tmp/citus.tar.gz --directory /tmp/citus --strip-components 1 \
-        && cd /tmp/citus \
-        && ./configure --with-security-flags \
-        && make -j$(nproc) && make install \
-# postgresql-hll https://github.com/citusdata/postgresql-hll
-    && wget -O /tmp/postgresql-hll.tar.gz "https://github.com/citusdata/postgresql-hll/archive/v${POSTGRESQL_HLL}.tar.gz" \
-        && mkdir -p /tmp/postgresql-hll \
-        && tar --extract --file /tmp/postgresql-hll.tar.gz --directory /tmp/postgresql-hll --strip-components 1 \
-        && cd /tmp/postgresql-hll \
-        && make -j$(nproc) && make install \
-# postgresql-topn https://github.com/citusdata/postgresql-topn
-    && wget -O /tmp/postgresql-topn.tar.gz "https://github.com/citusdata/postgresql-topn/archive/v${POSTGRESQL_TOPN}.tar.gz" \
-        && mkdir -p /tmp/postgresql-topn \
-        && tar --extract --file /tmp/postgresql-topn.tar.gz --directory /tmp/postgresql-topn --strip-components 1 \
-        && cd /tmp/postgresql-topn \
-        && make -j$(nproc) && make install \
-# postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis
-    && wget -O /tmp/postgis.tar.gz "https://github.com/postgis/postgis/archive/${POSTGIS}.tar.gz" \
-        && mkdir -p /tmp/postgis \
-        && tar --extract --file /tmp/postgis.tar.gz --directory /tmp/postgis --strip-components 1 \
-        && cd /tmp/postgis \
-        && ./autogen.sh \
-        # configure options taken from:
-        # https://anonscm.debian.org/cgit/pkg-grass/postgis.git/tree/debian/rules?h=jessie
-        && ./configure \
-        # --with-gui \
-        --with-pcredir="$(pcre-config --prefix)" \
-        && make -j$(nproc) && make install \
-# pg_cron https://github.com/citusdata/pg_cron https://github.com/citusdata/pg_cron/issues/17
-    && wget -O /tmp/pg_cron.tar.gz "https://github.com/citusdata/pg_cron/archive/v${PG_CRON}.tar.gz" \
-        && mkdir -p /tmp/pg_cron \
-        && tar --extract --file /tmp/pg_cron.tar.gz --directory /tmp/pg_cron --strip-components 1 \
-        && cd /tmp/pg_cron \
-        && sed -i.bak -e 's/-Werror//g' Makefile \
-        && sed -i.bak -e 's/-Wno-implicit-fallthrough//g' Makefile \
-        && make && make install \
-# pgrouting https://github.com/pgRouting/pgrouting https://github.com/pgRouting/docker-pgrouting
-    && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING}.tar.gz" \
-        && mkdir -p /tmp/pgrouting/build \
-        && tar --extract --file /tmp/pgrouting.tar.gz --directory /tmp/pgrouting --strip-components 1 \
-        && cd /tmp/pgrouting/build \
-        && cmake .. \
-        && make && make install \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       ca-certificates \
+       procps \
+       \
+       curl \
+       build-essential \
+       libssl-dev \
+       dpkg-dev \
+       gcc \
+       libc-dev \
+       make \
+       cmake \
+       wget \
+       postgresql-server-dev-13 \
+       libkrb5-dev \
+# citus hll topn
+# citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
+    && curl -s https://install.citusdata.com/community/deb.sh | bash \       
+    && apt-get install -y postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
+                          postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
+                          postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
+# postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/13-3.1/Dockerfile
+                          postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
+                          postgresql-$PG_MAJOR-postgis-3-scripts \
+# pgcron https://github.com/citusdata/pg_cron
+                          postgresql-13-cron \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
     && wget -O /tmp/timescale.tar.gz "https://github.com/timescale/timescaledb/archive/${TIMESCALE}.tar.gz" \
         && mkdir -p /tmp/timescale \
@@ -137,15 +78,32 @@ RUN sed 's#https://dl-cdn.alpinelinux.org#https://mirrors.cloud.tencent.com#g' -
         && make install USE_PGXS=1 \
 # gosu https://github.com/tianon/gosu/blob/master/INSTALL.md
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/archive/$GOSU/gosu-$dpkgArch" \
-    && chmod +x /usr/local/bin/gosu \
+        && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU/gosu-$dpkgArch" \
+        && chmod +x /usr/local/bin/gosu \
+# locale
+    && echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && echo 'zh_CN.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen \
 # clean
-    && cd / \
-    && rm -rf /tmp/* \
-    && apk del .fetch-deps .build-deps
+    && apt-get autoremove --purge -y \
+        curl \
+        build-essential \
+        libssl-dev \
+        dpkg-dev \
+        gcc \
+        libc-dev \
+        make \
+        cmake \
+        wget \
+        postgresql-server-dev-13 \
+        libkrb5-dev \
+    && apt-get clean -y \
+    && rm -rf \
+      "${HOME}/.cache" \
+        /var/lib/apt/lists/* \
+        /tmp/*               \
+        /var/tmp/*
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
-RUN echo "shared_preload_libraries='citus,timescaledb,pg_cron,pgaudit'" >> /usr/local/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries='citus,timescaledb,pg_cron,pgaudit'" >> /usr/share/postgresql/postgresql.conf.sample
 
 # select name,setting from pg_settings where name like 'pgaudit%';
 # all but except misc
