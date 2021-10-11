@@ -44,6 +44,7 @@ RUN apt-get update \
        curl \
        build-essential \
        libssl-dev \
+       git \
        dpkg-dev \
        gcc \
        libc-dev \
@@ -54,7 +55,7 @@ RUN apt-get update \
        libkrb5-dev \
 # citus hll topn
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
-    && curl -s https://install.citusdata.com/community/deb.sh | bash \       
+    && curl -s https://install.citusdata.com/community/deb.sh | bash \
     && apt-get install -y postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
                           postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
                           postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
@@ -64,9 +65,7 @@ RUN apt-get update \
 # pgcron https://github.com/citusdata/pg_cron
                           postgresql-13-cron \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
-    && wget -O /tmp/timescale.tar.gz "https://github.com/timescale/timescaledb/archive/${TIMESCALE}.tar.gz" \
-        && mkdir -p /tmp/timescale \
-        && tar --extract --file /tmp/timescale.tar.gz --directory /tmp/timescale --strip-components 1 \
+    && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \
         && cd /tmp/timescale \
         && ./bootstrap -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && make install \
@@ -76,6 +75,13 @@ RUN apt-get update \
         && tar --extract --file /tmp/pgaudit.tar.gz --directory /tmp/pgaudit --strip-components 1 \
         && cd /tmp/pgaudit \
         && make install USE_PGXS=1 \
+# pg_jieba https://github.com/jaiminpan/pg_jieba
+    && git clone https://github.com/jaiminpan/pg_jieba /tmp/pg_jieba \
+        && cd /tmp/pg_jieba \
+        && git submodule update --init --recursive \
+        && mkdir build && cd build \
+        && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/13 -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/13/server .. \
+        && make && make install \
 # gosu https://github.com/tianon/gosu/blob/master/INSTALL.md
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
         && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU/gosu-$dpkgArch" \
@@ -87,6 +93,7 @@ RUN apt-get update \
         curl \
         build-essential \
         libssl-dev \
+        git \
         dpkg-dev \
         gcc \
         libc-dev \
@@ -125,8 +132,7 @@ RUN chmod +x /wait-for-manager.sh
 
 # entry point unsets PGPASSWORD, but we need it to connect to workers
 # https://github.com/docker-library/postgres/blob/33bccfcaddd0679f55ee1028c012d26cd196537d/12/docker-entrypoint.sh#L303
-RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh \
-    && ln -sf /usr/local/bin/docker-entrypoint.sh /docker-entrypoint.sh 
+RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
 
 # config tuning
 # replace last docker_temp_server_stop with sed to change max_connections
