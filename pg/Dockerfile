@@ -56,7 +56,7 @@ RUN apt-get update \
 # citus hll topn
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
     && curl -s https://install.citusdata.com/community/deb.sh | bash \
-    && apt-get install -y postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
+    && apt-get install -y --no-install-recommends postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
                           postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
                           postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
 # postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/13-3.1/Dockerfile
