@@ -8,7 +8,7 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel flex bison
 
 NGINXVER=${1:-1.20.1}
-NGINXNJS=0.6.2
+NGINXNJS=0.7.0
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.20
@@ -151,13 +151,13 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/releases
-LUA_RESTY_OPENSSL=0.7.4
+LUA_RESTY_OPENSSL=0.7.5
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/releases
-LUA_RESTY_ACME=0.7.1
+LUA_RESTY_ACME=0.7.2
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
@@ -211,7 +211,7 @@ curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS
 rm -rf lua-resty-redis-$LUA_RESTY_REDIS
 
 # https://github.com/leafo/pgmoon/releases
-LUA_PGMOON=1.12.0
+LUA_PGMOON=1.13.0
 curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf -
 /bin/cp -rf pgmoon-$LUA_PGMOON/pgmoon .
 rm -rf pgmoon-$LUA_PGMOON
