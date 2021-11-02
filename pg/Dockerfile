@@ -36,7 +36,11 @@ ARG TIMESCALE=2.4.2
 ARG PGAUDIT=1.5.0
 ARG GOSU=1.14
 
-RUN apt-get update \
+COPY _curl.sh /usr/local/bin/
+
+RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bullseye.deb > groonga.deb \
+    && apt install -y ./groonga.deb \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
        ca-certificates \
        procps \
@@ -64,6 +68,8 @@ RUN apt-get update \
                           postgresql-$PG_MAJOR-postgis-3-scripts \
 # pgcron https://github.com/citusdata/pg_cron
                           postgresql-$PG_MAJOR-cron \
+# pgroonga https://github.com/pgroonga/pgroonga
+                          postgresql-$PG_MAJOR-pgdg-pgroonga \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
     && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \
         && cd /tmp/timescale \
