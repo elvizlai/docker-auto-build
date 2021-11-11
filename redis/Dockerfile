@@ -2,15 +2,15 @@ ARG VERSION=6.2
 
 # https://redislabs.com/redis-enterprise-software/download-center/modules/
 
-# https://hub.docker.com/r/redislabs/redisearch
+# https://hub.docker.com/r/redislabs/redisearch/tags
 FROM redislabs/redisearch:2.0.13 as redisearch
-# https://hub.docker.com/r/redislabs/redisgraph
-FROM redislabs/redisgraph:2.4.13 as redisgraph
-# https://hub.docker.com/r/redislabs/rejson
+# https://hub.docker.com/r/redislabs/redisgraph/tags
+FROM redislabs/redisgraph:2.4.12 as redisgraph
+# https://hub.docker.com/r/redislabs/rejson/tags
 FROM redislabs/rejson:1.0.8 as rejson
-# https://hub.docker.com/r/redislabs/redistimeseries
-FROM redislabs/redistimeseries:1.4.13 as redistimeseries
-# https://hub.docker.com/r/redislabs/rebloom
+# https://hub.docker.com/r/redislabs/redistimeseries/tags
+FROM redislabs/redistimeseries:1.4.10 as redistimeseries
+# https://hub.docker.com/r/redislabs/rebloom/tags
 FROM redislabs/rebloom:2.2.9 as rebloom
 
 
