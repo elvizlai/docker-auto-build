@@ -18,7 +18,8 @@ LUAROCKS=3.7.0
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
-# https://ftp.pcre.org/pub/pcre
+# https://www.pcre.org/
+# for ftp download is closed nowm, use morn mirror instead.
 # pcre `pcre-config --version`
 curl -sSL https://x.morn.io/dl/$PCRE.tar.gz | tar zxf -
 cd $PCRE

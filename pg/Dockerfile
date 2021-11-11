@@ -29,9 +29,9 @@ FROM postgres:${VERSION}
 ARG CITUS=10.2.2
 ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
-ARG POSTGIS=3.1.4+dfsg-1.pgdg110+1
+ARG POSTGIS=3.1.4+dfsg-3.pgdg110+1
+ARG PGROUTING=3.2.2
 ARG PG_CRON=1.4.1
-ARG PGROUTING=3.2.1
 ARG TIMESCALE=2.4.2
 ARG PGAUDIT=1.5.0
 ARG GOSU=1.14
@@ -57,10 +57,12 @@ RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bulls
        wget \
        postgresql-server-dev-$PG_MAJOR \
        libkrb5-dev \
+       libboost-graph-dev \
 # citus hll topn
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
     && curl -s https://install.citusdata.com/community/deb.sh | bash \
-    && apt-get install -y --no-install-recommends postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
+    && apt-get install -y --no-install-recommends \
+                          postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
                           postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
                           postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
 # postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/13-3.1/Dockerfile
@@ -70,6 +72,13 @@ RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bulls
                           postgresql-$PG_MAJOR-cron \
 # pgroonga https://github.com/pgroonga/pgroonga
                           postgresql-$PG_MAJOR-pgdg-pgroonga \
+# pgrouting https://github.com/pgRouting/pgrouting https://github.com/pgRouting/docker-pgrouting
+    && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING}.tar.gz" \
+        && mkdir -p /tmp/pgrouting/build \
+        && tar --extract --file /tmp/pgrouting.tar.gz --directory /tmp/pgrouting --strip-components 1 \
+        && cd /tmp/pgrouting/build \
+        && cmake .. \
+        && make && make install \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
     && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \
         && cd /tmp/timescale \
@@ -108,6 +117,7 @@ RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bulls
         wget \
         postgresql-server-dev-$PG_MAJOR \
         libkrb5-dev \
+        libboost-graph-dev \
     && apt-get clean -y \
     && rm -rf \
         "${HOME}/.cache" \
