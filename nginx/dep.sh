@@ -20,7 +20,7 @@ mkdir -p /opt/lib-src && cd /opt/lib-src
 
 # https://ftp.pcre.org/pub/pcre
 # pcre `pcre-config --version`
-curl -sSL https://ftp.pcre.org/pub/pcre/$PCRE.tar.gz | tar zxf -
+curl -sSL https://x.morn.io/dl/$PCRE.tar.gz | tar zxf -
 cd $PCRE
 ./configure --enable-utf8 --enable-jit
 make -j4 && make install && cd ..
