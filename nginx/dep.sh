@@ -56,6 +56,9 @@ cd luarocks-$LUAROCKS
 ./configure
 make && make install && cd ..
 
+# lfs
+luarocks install luafilesystem
+
 # TODO optimize
 if [ ! -f "/etc/ld.so.conf.d/usr_local_lib.conf" ];then
     touch /etc/ld.so.conf.d/usr_local_lib.conf

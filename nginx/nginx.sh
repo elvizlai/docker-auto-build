@@ -26,10 +26,10 @@ git clone -b $NGINXNJS https://github.com/nginx/njs
 
 curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz | tar zxf -
 
-# https://github.com/openresty/lua-nginx-module/releases
+# https://github.com/openresty/lua-nginx-module/tags
 curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.gz | tar zxf -
 
-# https://github.com/openresty/stream-lua-nginx-module/releases
+# https://github.com/openresty/stream-lua-nginx-module/tags
 curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXSTREAMLUA.tar.gz | tar zxf -
 
 # https://github.com/pingostack/pingos
@@ -138,97 +138,97 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 # https://github.com/bungle/awesome-resty
 cd /etc/nginx/lualib
 
-# https://github.com/openresty/lua-resty-core/releases
+# https://github.com/openresty/lua-resty-core/tags
 LUA_RESTY_CORE=0.1.22
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
 
-# https://github.com/ledgetech/lua-resty-http/releases
+# https://github.com/ledgetech/lua-resty-http/tags
 LUA_RESTY_HTTP=0.16.1
 curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
-# https://github.com/fffonion/lua-resty-openssl/releases
-LUA_RESTY_OPENSSL=0.7.5
+# https://github.com/fffonion/lua-resty-openssl/tags
+LUA_RESTY_OPENSSL=0.8.1
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
-# https://github.com/fffonion/lua-resty-acme/releases
+# https://github.com/fffonion/lua-resty-acme/tags
 LUA_RESTY_ACME=0.7.2
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
 
-# https://github.com/openresty/lua-resty-string/releases
+# https://github.com/openresty/lua-resty-string/tags
 LUA_RESTY_STRING=0.15
 curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
 rm -rf lua-resty-string-$LUA_RESTY_STRING
 
-# https://github.com/openresty/lua-resty-lrucache/releases
+# https://github.com/openresty/lua-resty-lrucache/tags
 LUA_RESTY_LRUCACHE=0.11
 curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
-# https://github.com/openresty/lua-resty-lock/releases
+# https://github.com/openresty/lua-resty-lock/tags
 LUA_RESTY_LOCK=0.08
 curl -sSL https://github.com/openresty/lua-resty-lock/archive/v$LUA_RESTY_LOCK.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-lock-$LUA_RESTY_LOCK/lib/* .
 rm -rf lua-resty-lock-$LUA_RESTY_LOCK
 
-# https://github.com/thibaultcha/lua-resty-mlcache/releases
+# https://github.com/thibaultcha/lua-resty-mlcache/tags
 LUA_RESTY_MLCACHE=2.5.0
 curl -sSL https://github.com/thibaultcha/lua-resty-mlcache/archive/$LUA_RESTY_MLCACHE.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE/lib/* .
 rm -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE
 
-# https://github.com/openresty/lua-resty-websocket/releases
+# https://github.com/openresty/lua-resty-websocket/tags
 LUA_RESTY_WEBSOCKET=0.08
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
 
-# https://github.com/bungle/lua-resty-template/releases
+# https://github.com/bungle/lua-resty-template/tags
 LUA_RESTY_TPL=2.0
 curl -sSL https://github.com/bungle/lua-resty-template/archive/v$LUA_RESTY_TPL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-template-$LUA_RESTY_TPL/lib/* .
 rm -rf lua-resty-template-$LUA_RESTY_TPL
 
-# https://github.com/openresty/lua-resty-mysql/releases
+# https://github.com/openresty/lua-resty-mysql/tags
 LUA_RESTY_MYSQL=0.24
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
 
-# https://github.com/openresty/lua-resty-redis/releases
+# https://github.com/openresty/lua-resty-redis/tags
 LUA_RESTY_REDIS=0.29
 curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-redis-$LUA_RESTY_REDIS/lib/* .
 rm -rf lua-resty-redis-$LUA_RESTY_REDIS
 
-# https://github.com/leafo/pgmoon/releases
+# https://github.com/leafo/pgmoon/tags
 LUA_PGMOON=1.13.0
 curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf -
 /bin/cp -rf pgmoon-$LUA_PGMOON/pgmoon .
 rm -rf pgmoon-$LUA_PGMOON
 
-# https://github.com/starwing/lua-protobuf/releases
+# https://github.com/starwing/lua-protobuf/tags
 LUA_PROTOBUF=0.3.3
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
 cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && /bin/cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
 
-# https://github.com/ysugimoto/lua-resty-grpc-gateway/releases
+# https://github.com/ysugimoto/lua-resty-grpc-gateway/tags
 LUA_RESTY_GRPC_GW=1.2.4
 curl -sSL https://github.com/ysugimoto/lua-resty-grpc-gateway/archive/v$LUA_RESTY_GRPC_GW.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW/grpc-gateway .
 rm -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW
 
-# https://github.com/openresty/lua-cjson/releases
+# https://github.com/openresty/lua-cjson/tags
 LUA_CJSON=2.1.0.8
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
@@ -241,7 +241,7 @@ curl -sSL http://pyyaml.org/download/libyaml/yaml-$LIB_YAML.tar.gz | tar zxf -
 cd yaml-$LIB_YAML && ./configure && make && make install && cd ..
 rm -rf yaml-$LIB_YAML
 
-# https://github.com/gvvaughan/lyaml/releases
+# https://github.com/gvvaughan/lyaml/tags
 LYAML=6.2.7
 curl -sSL https://github.com/gvvaughan/lyaml/archive/v$LYAML.tar.gz | tar zxf -
 cd lyaml-$LYAML && build-aux/luke LYAML_DIR=./target LUA_INCDIR=/usr/local/include/luajit-2.1 && build-aux/luke PREFIX=./target install && cd ..
