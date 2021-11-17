@@ -31,37 +31,46 @@ ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.1.4+dfsg-3.pgdg110+1
 ARG PGROUTING=3.2.2
+ARG ORAFCE=3_17_0
 ARG PG_CRON=1.4.1
 ARG TIMESCALE=2.4.2
+ARG ZOMBODB=3000.0.5
 ARG PGAUDIT=1.5.0
 ARG GOSU=1.14
 
 COPY _curl.sh /usr/local/bin/
 
-RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bullseye.deb > groonga.deb \
-    && apt install -y ./groonga.deb \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-       ca-certificates \
-       procps \
-       \
-       curl \
-       build-essential \
-       libssl-dev \
-       git \
-       dpkg-dev \
-       gcc \
-       libc-dev \
-       make \
-       cmake \
-       wget \
-       postgresql-server-dev-$PG_MAJOR \
-       libkrb5-dev \
-       libboost-graph-dev \
+RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bullseye.deb > /tmp/groonga.deb \
+    && apt install -y /tmp/groonga.deb \
+    && apt-get update && apt-get install -y --no-install-recommends sudo \
+    && echo "postgres ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER postgres
+
+RUN sudo apt-get install -y --no-install-recommends \
+        ca-certificates \
+        procps \
+        \
+        curl \
+        build-essential \
+        libssl-dev \
+        git \
+        dpkg-dev \
+        gcc \
+        libc-dev \
+        make \
+        cmake \
+        wget \
+        postgresql-server-dev-$PG_MAJOR \
+        libkrb5-dev \
+        libboost-graph-dev \
+        \
+        bison flex zlib1g zlib1g-dev \
+        pkg-config libreadline-dev \
 # citus hll topn
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
-    && curl -s https://install.citusdata.com/community/deb.sh | bash \
-    && apt-get install -y --no-install-recommends \
+    && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
+    && sudo apt-get install -y --no-install-recommends \
                           postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
                           postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
                           postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
@@ -78,33 +87,48 @@ RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bulls
         && tar --extract --file /tmp/pgrouting.tar.gz --directory /tmp/pgrouting --strip-components 1 \
         && cd /tmp/pgrouting/build \
         && cmake .. \
-        && make && make install \
+        && make && sudo make install \
+# orafce https://github.com/orafce/orafce
+    && wget -O /tmp/orafce.tar.gz "https://github.com/orafce/orafce/archive/VERSION_${ORAFCE}.tar.gz" \
+        && mkdir -p /tmp/orafce \
+        && tar --extract --file /tmp/orafce.tar.gz --directory /tmp/orafce --strip-components 1 \
+        && cd /tmp/orafce \
+        && make && sudo make install \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
     && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \
         && cd /tmp/timescale \
         && ./bootstrap -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
-        && cd build && make -j$(nproc) && make install \
+        && cd build && make -j$(nproc) && sudo make install \
+# zombodb https://github.com/zombodb/zombodb
+    && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
+        && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
+        && cargo install cargo-pgx \
+        && cargo pgx init --pg13=`which pg_config` \
+        && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
+        && cd /tmp/zombodb \
+        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
+        && rm -rf /var/lib/postgresql/.pgx \
 # pgaudit https://github.com/pgaudit/pgaudit
     && wget -O /tmp/pgaudit.tar.gz "https://github.com/pgaudit/pgaudit/archive/${PGAUDIT}.tar.gz" \
         && mkdir -p /tmp/pgaudit \
         && tar --extract --file /tmp/pgaudit.tar.gz --directory /tmp/pgaudit --strip-components 1 \
         && cd /tmp/pgaudit \
-        && make install USE_PGXS=1 \
+        && sudo make install USE_PGXS=1 \
 # pg_jieba https://github.com/jaiminpan/pg_jieba
     && git clone https://github.com/jaiminpan/pg_jieba /tmp/pg_jieba \
         && cd /tmp/pg_jieba \
         && git submodule update --init --recursive \
         && mkdir build && cd build \
         && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/$PG_MAJOR -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$PG_MAJOR/server .. \
-        && make && make install \
+        && make && sudo make install \
 # gosu https://github.com/tianon/gosu/blob/master/INSTALL.md
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-        && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU/gosu-$dpkgArch" \
-        && chmod +x /usr/local/bin/gosu \
+        && sudo wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU/gosu-$dpkgArch" \
+        && sudo chmod +x /usr/local/bin/gosu \
 # locale
-    && echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && echo 'zh_CN.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen \
+    && sudo bash -c 'echo -e "en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8" >> /etc/locale.gen' && sudo locale-gen \
 # clean
-    && apt-get autoremove --purge -y \
+    && sudo apt-get autoremove --purge -y --allow-remove-essential \
         curl \
         build-essential \
         libssl-dev \
@@ -118,12 +142,16 @@ RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bulls
         postgresql-server-dev-$PG_MAJOR \
         libkrb5-dev \
         libboost-graph-dev \
-    && apt-get clean -y \
-    && rm -rf \
+        bison flex zlib1g-dev \
+        pkg-config libreadline-dev \
+    && sudo apt-get clean -y \
+    && sudo rm -rf \
         "${HOME}/.cache" \
         /var/lib/apt/lists/* \
         /tmp/* \
         /var/tmp/*
+
+USER root
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
 RUN echo "shared_preload_libraries='citus,timescaledb,pg_cron,pgaudit'" >> /usr/share/postgresql/postgresql.conf.sample
