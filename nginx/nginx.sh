@@ -7,7 +7,7 @@ source scl_source enable devtoolset-9 || true
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel flex bison
 
-NGINXVER=${1:-1.20.1}
+NGINXVER=${1:-1.20.2}
 NGINXNJS=0.7.0
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
@@ -151,7 +151,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.1
+LUA_RESTY_OPENSSL=0.8.2
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL

@@ -8,7 +8,7 @@
 - sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.4
 - sdrzlyz/m7s:3.0.0
-- sdrzlyz/nginx:1.20.1
+- sdrzlyz/nginx:1.20.2
 - sdrzlyz/pg:13
 - sdrzlyz/redis:6.2
 - sdrzlyz/tools netcat tcpdump psql mycli

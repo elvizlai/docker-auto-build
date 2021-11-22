@@ -1,6 +1,6 @@
-FROM golang:1.17-buster
+FROM golang:1.17-bullseye
 
-ENV GOPROXY "https://mirrors.tencent.com/go/|https://goproxy.cn|https://goproxy.io|direct"
+ENV GOPROXY "https://goproxy.cn|https://goproxy.io|https://goproxy.baidu.com/|https://mirrors.tencent.com/go/|direct"
 ENV PATH $PATH:$GOPATH/bin
 
 # runtime essential
@@ -23,8 +23,8 @@ RUN cd /tmp \
     && curl -sSL https://github.com/bufbuild/buf/releases/download/v1.0.0-rc8/buf-Linux-x86_64 > buf && chmod +x buf && mv buf $GOPATH/bin/ \
     && curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v3.19.1/protoc-3.19.1-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/ \
     && curl -sSL https://github.com/protocolbuffers/protobuf-go/releases/download/v1.27.1/protoc-gen-go.v1.27.1.linux.amd64.tar.gz | tar zxf - && chmod +x protoc-gen-go && mv protoc-gen-go $GOPATH/bin/ \
-    && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.6.0/protoc-gen-grpc-gateway-v2.6.0-linux-x86_64 > protoc-gen-grpc-gateway && chmod +x protoc-gen-grpc-gateway && mv protoc-gen-grpc-gateway $GOPATH/bin/ \
-    && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.6.0/protoc-gen-openapiv2-v2.6.0-linux-x86_64 > protoc-gen-openapiv2 && chmod +x protoc-gen-openapiv2 && mv protoc-gen-openapiv2 $GOPATH/bin/ \
+    && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.7.0/protoc-gen-grpc-gateway-v2.7.0-linux-x86_64 > protoc-gen-grpc-gateway && chmod +x protoc-gen-grpc-gateway && mv protoc-gen-grpc-gateway $GOPATH/bin/ \
+    && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.7.0/protoc-gen-openapiv2-v2.7.0-linux-x86_64 > protoc-gen-openapiv2 && chmod +x protoc-gen-openapiv2 && mv protoc-gen-openapiv2 $GOPATH/bin/ \
     && go get -v -u github.com/mgechev/revive \
     google.golang.org/grpc/cmd/protoc-gen-go-grpc \
     github.com/envoyproxy/protoc-gen-validate \

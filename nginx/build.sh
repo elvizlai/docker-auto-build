@@ -5,7 +5,7 @@ set -e
 FFMPEG=0
 
 if [ "$VERSION" = "ffmpeg" ];then
-    VERSION="1.20.1"
+    VERSION="1.20.2"
     FFMPEG=1
 fi
 
