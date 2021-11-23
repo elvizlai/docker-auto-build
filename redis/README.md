@@ -30,6 +30,5 @@ docker run -it --rm \
     --loadmodule /opt/modules/redisearch.so \
     --loadmodule /opt/modules/redisgraph.so \
     --loadmodule /opt/modules/rejson.so \
-    --loadmodule /opt/modules/redistimeseries.so \
     --loadmodule /opt/modules/redisbloom.so
 ```
