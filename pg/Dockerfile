@@ -34,8 +34,8 @@ ARG PGROUTING=3.2.2
 ARG ORAFCE=3_17_0
 ARG PG_CRON=1.4.1
 ARG TIMESCALE=2.4.2
-ARG ZOMBODB=3000.0.5
-ARG PGAUDIT=1.5.0
+ARG ZOMBODB=3000.0.6
+ARG PGAUDIT=1.5.1
 ARG GOSU=1.14
 
 COPY _curl.sh /usr/local/bin/
@@ -71,16 +71,16 @@ RUN sudo apt-get install -y --no-install-recommends \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
-                          postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
-                          postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
-                          postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
+                        postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
+                        postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
+                        postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
 # postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/13-3.1/Dockerfile
-                          postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
-                          postgresql-$PG_MAJOR-postgis-3-scripts \
+                        postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
+                        postgresql-$PG_MAJOR-postgis-3-scripts \
 # pgcron https://github.com/citusdata/pg_cron
-                          postgresql-$PG_MAJOR-cron \
+                        postgresql-$PG_MAJOR-cron \
 # pgroonga https://github.com/pgroonga/pgroonga
-                          postgresql-$PG_MAJOR-pgdg-pgroonga \
+                        postgresql-$PG_MAJOR-pgdg-pgroonga \
 # pgrouting https://github.com/pgRouting/pgrouting https://github.com/pgRouting/docker-pgrouting
     && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING}.tar.gz" \
         && mkdir -p /tmp/pgrouting/build \
