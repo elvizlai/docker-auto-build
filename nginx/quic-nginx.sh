@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# https://www.nginx.com/blog/our-roadmap-quic-http-3-support-nginx/
+
 set -e
 
 source scl_source enable devtoolset-9 || true
@@ -8,11 +10,14 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel flex bison
 
 NGINXVER=${1:-1.20.2}
-NGINXNJS=0.7.0
+NGINXNJS=0.6.2
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.20
 NGINXSTREAMLUA=0.0.10
+
+# nginx-quic
+git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -43,21 +48,7 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # ngx_waf
-git clone -b lts https://github.com/ADD-SP/ngx_waf
-cd ngx_waf
-git clone https://github.com/libinjection/libinjection.git inc/libinjection
-make
-cd $NGINXDIR/module/dynamic
-
-git clone https://github.com/jedisct1/libsodium.git --branch stable libsodium-src
-cd libsodium-src
-./configure --prefix=/opt/nginx-${NGINXVER}/libsodium --with-pic
-make -j$(nproc) && make install
-export LIB_SODIUM=/opt/nginx-${NGINXVER}/libsodium
-cd $NGINXDIR/module/dynamic
-
-git clone https://github.com/troydhanson/uthash.git /usr/local/src/uthash
-export LIB_UTHASH=/usr/local/src/uthash
+# TODO: not working with boringSSL
 # ngx_waf
 
 # pagespeed
@@ -73,13 +64,11 @@ git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
-# https://nginx.org/en/download.html
 cd $NGINXDIR
-curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1
-
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
-./configure \
+./auto/configure \
+    --build=nginx-quic \
     --with-cc-opt="-DTCP_FASTOPEN=23" \
     --with-ld-opt="-ljemalloc -Wl,-rpath,$LUAJIT_LIB" \
     --prefix=/etc/nginx \
@@ -108,6 +97,9 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-http_stub_status_module \
     --with-http_sub_module \
     --with-http_v2_module \
+    --with-http_v3_module \
+    --with-http_quic_module \
+    --with-stream_quic_module \
     --with-http_xslt_module=dynamic \
     --with-mail \
     --with-mail_ssl_module \
@@ -124,7 +116,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-module=./module/nginx-client-module \
     --add-module=./module/nginx-multiport-module \
     --add-module=./module/nginx-toolkit-module \
-    --add-dynamic-module=./module/dynamic/ngx_waf \
     --add-dynamic-module=./module/dynamic/incubator-pagespeed-ngx \
     --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
@@ -283,64 +274,6 @@ EOF
 
 # cert gen
 mkdir -p /etc/nginx/cert /etc/nginx/acme
-openssl dhparam -out /etc/nginx/dhparam.pem 1024
-
-# rsa
-openssl req \
--new \
--x509 \
--nodes \
--days 36500 \
--newkey rsa:2048 \
--sha256 \
--keyout /etc/nginx/default.key \
--out /etc/nginx/default.crt \
--extensions 'v3_req' \
--config <( \
-  echo '[req]'; \
-  echo 'distinguished_name = req_distinguished_name'; \
-  echo 'x509_extensions = v3_req'; \
-  echo 'prompt = no'; \
-  echo '[req_distinguished_name]'; \
-  echo 'C = HJ'; \
-  echo 'OU = IT'; \
-  echo 'CN = hijack.local'; \
-  echo '[v3_req]'; \
-  echo 'keyUsage = digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment'; \
-  echo 'extendedKeyUsage = serverAuth,clientAuth'; \
-  echo 'subjectAltName = @alt_names'; \
-  echo '[alt_names]'; \
-  echo 'DNS.1 = hijack.local')
-
-# ecc
-openssl req \
--new \
--x509 \
--nodes \
--days 36500 \
--newkey ec:<(openssl ecparam -name prime256v1) \
--sha256 \
--keyout /etc/nginx/default-ecc.key \
--out /etc/nginx/default-ecc.crt \
--extensions 'v3_req' \
--config <( \
-  echo '[req]'; \
-  echo 'distinguished_name = req_distinguished_name'; \
-  echo 'x509_extensions = v3_req'; \
-  echo 'prompt = no'; \
-  echo '[req_distinguished_name]'; \
-  echo 'C = HJ'; \
-  echo 'OU = IT'; \
-  echo 'CN = hijack.local'; \
-  echo '[v3_req]'; \
-  echo 'keyUsage = digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment'; \
-  echo 'extendedKeyUsage = serverAuth,clientAuth'; \
-  echo 'subjectAltName = @alt_names'; \
-  echo '[alt_names]'; \
-  echo 'DNS.1 = hijack.local')
-
-# create account key
-openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/nginx/account.key
 
 # dynamic modules usage in nginx.conf
 # load_module "modules/xxxx.so"
@@ -449,7 +382,11 @@ http {
     ssl_prefer_server_ciphers off;
     ssl_stapling on;
     ssl_stapling_verify on;
+
+    # 0-RTT
     ssl_early_data on;
+    quic_retry on;
+    quic_gso on;
 
     resolver 8.8.8.8 223.5.5.5 119.29.29.29 valid=60s ipv6=off;
     resolver_timeout 15s;
@@ -495,13 +432,13 @@ http {
     }
 
     server {
-        listen    443 default_server ssl http2 fastopen=512 backlog=4096 reuseport so_keepalive=120s:60s:10;
+        listen    443 http3 quic reuseport;
+        listen    443 default_server ssl http2 fastopen=512 backlog=4096 so_keepalive=120s:60s:10;
         server_name _;
         ssl_stapling off;
         ssl_certificate default.crt;
         ssl_certificate_key default.key;
-        ssl_certificate default-ecc.crt;
-        ssl_certificate_key default-ecc.key;
+        add_header alt-svc 'h3=":443"; ma=86400';
         return 444;
     }
 
