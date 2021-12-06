@@ -197,6 +197,12 @@ curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL
 /bin/cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
 
+# https://github.com/openresty/lua-resty-upload/tags
+LUA_RESTY_UPLOAD=0.10
+curl -sSL https://github.com/openresty/lua-resty-upload/archive/v$LUA_RESTY_UPLOAD.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-upload-$LUA_RESTY_UPLOAD/lib/* .
+rm -rf lua-resty-upload-$LUA_RESTY_UPLOAD
+
 # https://github.com/ledgetech/lua-resty-http/tags
 LUA_RESTY_HTTP=0.16.1
 curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
