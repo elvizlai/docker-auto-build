@@ -36,6 +36,7 @@ ARG PG_CRON=1.4.1
 ARG TIMESCALE=2.4.2
 ARG ZOMBODB=3000.0.6
 ARG PGAUDIT=1.5.1
+ARG REPMGR=5.3.0
 ARG GOSU=1.14
 
 COPY _curl.sh /usr/local/bin/
@@ -121,6 +122,12 @@ RUN sudo apt-get install -y --no-install-recommends \
         && mkdir build && cd build \
         && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/$PG_MAJOR -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$PG_MAJOR/server .. \
         && make && sudo make install \
+# repmgr https://github.com/EnterpriseDB/repmgr
+    && wget -O /tmp/repmgr.tar.gz "https://repmgr.org/download/repmgr-${REPMGR}.tar.gz" \
+    && mkdir -p /tmp/repmgr \
+    && tar --extract --file /tmp/repmgr.tar.gz --directory /tmp/repmgr --strip-components 1 \
+        && cd /tmp/repmgr \
+        && ./configure && make && sudo make install \
 # gosu https://github.com/tianon/gosu/blob/master/INSTALL.md
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
         && sudo wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU/gosu-$dpkgArch" \
