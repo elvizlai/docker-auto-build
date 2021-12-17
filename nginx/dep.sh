@@ -11,7 +11,7 @@ source scl_source enable devtoolset-9 || true
 
 PCRE=pcre-8.45
 ZLIB=zlib-1.2.11
-OPENSSL=openssl-1.1.1l
+OPENSSL=openssl-1.1.1m
 JEMALLOC=5.2.1
 LUAJIT=v2.1-20210510
 LUAROCKS=3.7.0
