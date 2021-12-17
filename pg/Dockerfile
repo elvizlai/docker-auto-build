@@ -26,18 +26,21 @@ RUN apk update && apk add --no-cache git \
 # postgres
 FROM postgres:${VERSION}
 
-ARG CITUS=10.2.2
+ARG CITUS=10.2.3
 ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.1.4+dfsg-3.pgdg110+1
 ARG PGROUTING=3.2.2
 ARG ORAFCE=3_17_0
 ARG PG_CRON=1.4.1
-ARG TIMESCALE=2.4.2
+ARG TIMESCALE=2.5.1
 ARG ZOMBODB=3000.0.6
 ARG PGAUDIT=1.5.1
 ARG REPMGR=5.3.0
 ARG GOSU=1.14
+
+# set timezone to prc
+ENV TZ PRC
 
 COPY _curl.sh /usr/local/bin/
 
