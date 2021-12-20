@@ -25,8 +25,16 @@ cd $1
 
 imgList=()
 
-sed -i "s#\$BUILD_VER#$DTAG#g" Dockerfile
-docker build -t "$DNAME:$DTAG" --build-arg VERSION=$DTAG .
+dockerFile="Dockerfile"
+
+# check if file exist
+if [ -f "Dockerfile-$DTAG" ]; then
+    dockerFile="Dockerfile-$DTAG"
+fi
+
+# echo "using dockerfile: $dockerFile"
+
+docker build -f $dockerFile -t "$DNAME:$DTAG" --build-arg VERSION=$DTAG .
 imgList+=("$DNAME:$DTAG")
 
 # latest
