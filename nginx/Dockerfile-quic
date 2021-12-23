@@ -3,8 +3,9 @@ FROM centos:7
 ARG VERSION=1.20.2
 
 COPY quic-dep.sh quic-nginx.sh /opt/
+COPY bin/ttyd /usr/local/bin/ttyd
 
-RUN chmod +x /opt/{quic-dep.sh,quic-nginx.sh} && /opt/quic-dep.sh && /opt/quic-nginx.sh
+RUN chmod +x /usr/local/bin/ttyd /opt/{quic-dep.sh,quic-nginx.sh} && /opt/quic-dep.sh && /opt/quic-nginx.sh
 
 COPY ssl/* /etc/nginx/
 RUN cat /etc/nginx/account.key.bak | base64 -d > /etc/nginx/account.key && cat /etc/nginx/dhparam.pem.bak | base64 -d > /etc/nginx/dhparam.pem
