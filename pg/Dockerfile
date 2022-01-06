@@ -31,10 +31,10 @@ ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.1.4+dfsg-3.pgdg110+1
 ARG PGROUTING=3.2.2
-ARG ORAFCE=3_17_0
+ARG ORAFCE=3_18_0
 ARG PG_CRON=1.4.1
 ARG TIMESCALE=2.5.1
-ARG ZOMBODB=3000.0.6
+ARG ZOMBODB=3000.0.7
 ARG PGAUDIT=1.5.1
 ARG REPMGR=5.3.0
 ARG GOSU=1.14
@@ -71,8 +71,9 @@ RUN sudo apt-get install -y --no-install-recommends \
         \
         bison flex zlib1g zlib1g-dev \
         pkg-config libreadline-dev \
-# citus hll topn
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
+# hll https://github.com/citusdata/postgresql-hll https://github.com/citusdata/postgresql-hll/tags
+# topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
