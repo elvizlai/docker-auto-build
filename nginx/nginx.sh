@@ -416,6 +416,9 @@ http {
 
     # MIME
     include      mime.types;
+    types {
+        application/wasm wasm;
+    }
     default_type application/octet-stream;
 
     # logging
