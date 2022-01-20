@@ -12,7 +12,7 @@ source scl_source enable devtoolset-9 || true
 PCRE=pcre-8.45
 ZLIB=zlib-1.2.11
 JEMALLOC=5.2.1
-LUAJIT=v2.1-20211210
+LUAJIT=v2.1-20220111
 LUAROCKS=3.8.0
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
