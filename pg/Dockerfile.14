@@ -29,12 +29,12 @@ FROM postgres:${VERSION}
 ARG CITUS=10.2.4
 ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
-ARG POSTGIS=3.2.0+dfsg-1.pgdg110+1
-ARG PGROUTING=3.3.2
+ARG POSTGIS=3.2.1+dfsg-1.pgdg110+1
+ARG PGROUTING=3.3.0
 ARG ORAFCE=3_18_1
 ARG PG_CRON=1.4.1
 ARG TIMESCALE=2.5.2
-ARG ZOMBODB=3000.0.8
+ARG ZOMBODB=3000.0.9
 ARG PGAUDIT=1.6.1
 ARG REPMGR=5.3.0
 ARG GOSU=1.14
@@ -106,7 +106,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # zombodb https://github.com/zombodb/zombodb
     && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
-        && cargo install --version 0.2.6 cargo-pgx \
+        && cargo install cargo-pgx \
         && cargo pgx init --pg13=`which pg_config` \
         && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
         && cd /tmp/zombodb \

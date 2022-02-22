@@ -29,12 +29,13 @@ FROM postgres:${VERSION}
 ARG CITUS=10.2.4
 ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
-ARG POSTGIS=3.2.0+dfsg-1.pgdg110+1
+ARG POSTGIS=3.2.1+dfsg-1.pgdg110+1
 ARG PGROUTING=3.3.0
 ARG ORAFCE=3_18_1
 ARG PG_CRON=1.4.1
 ARG TIMESCALE=2.5.2
-ARG ZOMBODB=3000.0.8
+ARG ZOMBODB=3000.0.9
+ARG PGSQL_HTTP=1.3.1
 ARG PGAUDIT=1.5.1
 ARG REPMGR=5.3.0
 ARG GOSU=1.14
@@ -71,6 +72,8 @@ RUN sudo apt-get install -y --no-install-recommends \
         \
         bison flex zlib1g zlib1g-dev \
         pkg-config libreadline-dev \
+        \
+        libcurl4-openssl-dev \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
 # hll https://github.com/citusdata/postgresql-hll https://github.com/citusdata/postgresql-hll/tags
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
@@ -107,12 +110,18 @@ RUN sudo apt-get install -y --no-install-recommends \
 # zombodb https://github.com/zombodb/zombodb
     && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
-        && cargo install --version 0.2.6 cargo-pgx \
+        && cargo install cargo-pgx \
         && cargo pgx init --pg13=`which pg_config` \
         && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
         && cd /tmp/zombodb \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
         && rm -rf /var/lib/postgresql/.pgx \
+# pgsql-http
+    && wget -O /tmp/pgsql-http.tar.gz "https://github.com/pramsey/pgsql-http/archive/v${PGSQL_HTTP}.tar.gz" \
+        && mkdir -p /tmp/pgsql-http \
+        && tar --extract --file /tmp/pgsql-http.tar.gz --directory /tmp/pgsql-http --strip-components 1 \
+        && cd /tmp/pgsql-http \
+        && make && sudo make install \
 # pgaudit https://github.com/pgaudit/pgaudit
     && wget -O /tmp/pgaudit.tar.gz "https://github.com/pgaudit/pgaudit/archive/${PGAUDIT}.tar.gz" \
         && mkdir -p /tmp/pgaudit \
@@ -155,6 +164,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         libboost-graph-dev \
         bison flex zlib1g-dev \
         pkg-config libreadline-dev \
+        libcurl4-openssl-dev \
     && sudo apt-get clean -y \
     && sudo rm -rf \
         "${HOME}/.cache" \
