@@ -201,7 +201,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.4
+LUA_RESTY_OPENSSL=0.8.5
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
@@ -225,13 +225,13 @@ curl -sSL https://github.com/bungle/lua-resty-template/archive/v$LUA_RESTY_TPL.t
 rm -rf lua-resty-template-$LUA_RESTY_TPL
 
 # https://github.com/leafo/pgmoon/tags
-LUA_PGMOON=1.13.0
+LUA_PGMOON=1.14.0
 curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf -
 /bin/cp -rf pgmoon-$LUA_PGMOON/pgmoon .
 rm -rf pgmoon-$LUA_PGMOON
 
 # https://github.com/starwing/lua-protobuf/tags
-LUA_PROTOBUF=0.3.3
+LUA_PROTOBUF=0.3.4
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
 cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && /bin/cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
