@@ -5,7 +5,7 @@ ARG VERSION=6.2
 # https://hub.docker.com/r/redislabs/redisearch/tags
 FROM redislabs/redisearch:2.0.12 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph/tags
-FROM redislabs/redisgraph:2.4.12 as redisgraph
+FROM redislabs/redisgraph:2.8.8 as redisgraph
 # https://hub.docker.com/r/redislabs/rejson/tags
 FROM redislabs/rejson:1.0.8 as rejson
 # https://hub.docker.com/r/redislabs/rebloom/tags
