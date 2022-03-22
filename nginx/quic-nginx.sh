@@ -351,7 +351,7 @@ http {
     # MIME
     include      mime.types;
     types {
-        application/wasm wasm;
+        #application/wasm wasm;
     }
     default_type application/octet-stream;
 
