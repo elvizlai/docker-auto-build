@@ -26,16 +26,17 @@ RUN apk update && apk add --no-cache git \
 # postgres
 FROM postgres:${VERSION}
 
-ARG CITUS=10.2.4
+ARG CITUS=10.2.5
 ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.2.1+dfsg-1.pgdg110+1
 ARG PGROUTING=3.3.0
 ARG ORAFCE=3_18_1
 ARG PG_CRON=1.4.1
-ARG TIMESCALE=2.5.2
-ARG ZOMBODB=3000.0.9
-ARG PGAUDIT=1.6.1
+ARG TIMESCALE=2.6.0
+ARG ZOMBODB=3000.0.10
+ARG PGSQL_HTTP=1.4.1
+ARG PGAUDIT=1.6.2
 ARG REPMGR=5.3.0
 ARG GOSU=1.14
 
@@ -78,7 +79,7 @@ RUN sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
                         postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
                         postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
-# postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/13-3.1/Dockerfile
+# postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/13-3.2/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
 # pgcron https://github.com/citusdata/pg_cron
@@ -112,6 +113,12 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cd /tmp/zombodb \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
         && rm -rf /var/lib/postgresql/.pgx \
+# pgsql-http https://github.com/pramsey/pgsql-http
+    && wget -O /tmp/pgsql-http.tar.gz "https://github.com/pramsey/pgsql-http/archive/v${PGSQL_HTTP}.tar.gz" \
+        && mkdir -p /tmp/pgsql-http \
+        && tar --extract --file /tmp/pgsql-http.tar.gz --directory /tmp/pgsql-http --strip-components 1 \
+        && cd /tmp/pgsql-http \
+        && make && sudo make install \
 # pgaudit https://github.com/pgaudit/pgaudit
     && wget -O /tmp/pgaudit.tar.gz "https://github.com/pgaudit/pgaudit/archive/${PGAUDIT}.tar.gz" \
         && mkdir -p /tmp/pgaudit \

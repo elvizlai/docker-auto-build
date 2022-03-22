@@ -11,9 +11,9 @@ source scl_source enable devtoolset-9 || true
 
 PCRE=pcre-8.45
 ZLIB=zlib-1.2.11
-OPENSSL=openssl-1.1.1m
+OPENSSL=openssl-1.1.1n
 JEMALLOC=5.2.1
-LUAJIT=v2.1-20220111
+LUAJIT=v2.1-20220310 
 LUAROCKS=3.8.0
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
@@ -45,7 +45,7 @@ cd jemalloc-$JEMALLOC
 ./configure --prefix=/usr/local --libdir=/usr/local/lib
 make -j4 && make install && cd ..
 
-# lua-jit https://github.com/openresty/luajit2
+# lua-jit https://github.com/openresty/luajit2/tags
 mkdir -p luajit2.1
 curl -sSL https://github.com/openresty/luajit2/archive/$LUAJIT.tar.gz | tar zxf - -C luajit2.1 --strip-components 1
 cd luajit2.1

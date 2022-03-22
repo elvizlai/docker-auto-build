@@ -8,7 +8,7 @@ apk add --virtual build_deps curl make gcc libc-dev readline-dev ncurses-dev
 
 apk add unzip outils-md5
 
-LUAJIT=v2.1-20220111
+LUAJIT=v2.1-20220310 
 LUAROCKS=3.8.0
 
 # lua-jit https://github.com/openresty/luajit2
@@ -26,7 +26,7 @@ make && make install && cd .. && rm -rf luarocks-$LUAROCKS
 # luasocket
 luarocks install luasocket
 
-# cjson
+# cjson https://github.com/openresty/lua-cjson/tags
 LUA_CJSON=2.1.0.8
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 cd lua-cjson-$LUA_CJSON && luarocks make && rm -rf lua-cjson-*

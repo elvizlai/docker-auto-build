@@ -147,7 +147,7 @@ yum autoremove -y
 DIR=/tmp/openssl && \
 mkdir -p ${DIR} && \
 cd ${DIR} && \
-curl -sL https://www.openssl.org/source/openssl-1.1.1m.tar.gz | \
+curl -sL https://www.openssl.org/source/openssl-1.1.1n.tar.gz | \
 tar -zx --strip-components=1 && \
 # ./config --prefix="${PREFIX}" --openssldir="${PREFIX}" --with-zlib-include="${PREFIX}"/include/ --with-zlib-lib="${PREFIX}"/lib no-shared zlib && \
 ./config --prefix="${PREFIX}" --openssldir="${PREFIX}" no-shared zlib && \
