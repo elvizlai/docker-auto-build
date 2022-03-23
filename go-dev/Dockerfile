@@ -22,7 +22,7 @@ RUN cd /tmp \
     && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && chmod +x kubectl && mv kubectl $GOPATH/bin/ \
     && curl -sSL https://github.com/bufbuild/buf/releases/download/v1.1.0/buf-Linux-x86_64 > buf && chmod +x buf && mv buf $GOPATH/bin/ \
     && curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v3.19.4/protoc-3.19.4-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/ \
-    && curl -sSL https://github.com/protocolbuffers/protobuf-go/releases/download/v1.27.1/protoc-gen-go.v1.27.1.linux.amd64.tar.gz | tar zxf - && chmod +x protoc-gen-go && mv protoc-gen-go $GOPATH/bin/ \
+    && curl -sSL https://github.com/protocolbuffers/protobuf-go/releases/download/v1.28.0/protoc-gen-go.v1.28.0.linux.amd64.tar.gz | tar zxf - && chmod +x protoc-gen-go && mv protoc-gen-go $GOPATH/bin/ \
     && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.10.0/protoc-gen-grpc-gateway-v2.10.0-linux-x86_64 > protoc-gen-grpc-gateway && chmod +x protoc-gen-grpc-gateway && mv protoc-gen-grpc-gateway $GOPATH/bin/ \
     && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.10.0/protoc-gen-openapiv2-v2.10.0-linux-x86_64 > protoc-gen-openapiv2 && chmod +x protoc-gen-openapiv2 && mv protoc-gen-openapiv2 $GOPATH/bin/ \
     && go install github.com/mgechev/revive@v1.1.4 \
