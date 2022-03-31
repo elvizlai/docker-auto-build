@@ -136,7 +136,7 @@ yum autoremove -y
 # DIR=/tmp/zlib && \
 # mkdir -p ${DIR} && \
 # cd ${DIR} && \
-# curl -sL https://www.zlib.net/zlib-1.2.11.tar.gz | \
+# curl -sL https://www.zlib.net/zlib-1.2.12.tar.gz | \
 # tar -zx --strip-components=1 && \
 # ./configure --prefix="${PREFIX}" --static -fPIC && \
 # make && \

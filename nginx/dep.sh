@@ -10,7 +10,7 @@ yum install -y devtoolset-9-gcc devtoolset-9-gcc-c++
 source scl_source enable devtoolset-9 || true
 
 PCRE=pcre-8.45
-ZLIB=zlib-1.2.11
+ZLIB=zlib-1.2.12
 OPENSSL=openssl-1.1.1n
 JEMALLOC=5.2.1
 LUAJIT=v2.1-20220310 
@@ -30,7 +30,7 @@ make -j4 && make install && cd ..
 # zlib
 curl -sSL http://zlib.net/$ZLIB.tar.gz | tar zxf -
 cd $ZLIB
-./configure --static 
+./configure --static
 make -j4 && make install && cd ..
 
 # openssl https://www.openssl.org/source
