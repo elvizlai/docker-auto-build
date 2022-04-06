@@ -31,16 +31,16 @@ ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.2.1+dfsg-1.pgdg110+1
 ARG PGROUTING=3.3.0
-ARG ORAFCE=3_18_1
+ARG ORAFCE=3_20_0
 ARG PG_CRON=1.4.1
 ARG TIMESCALE=2.6.0
-ARG ZOMBODB=3000.0.10
+ARG ZOMBODB=3000.0.11
 ARG PGSQL_HTTP=1.4.1
 ARG PGAUDIT=1.5.2
-ARG REPMGR=5.3.0
+ARG REPMGR=5.3.1
 ARG GOSU=1.14
 
-# set timezone to prc
+# set timezone
 ENV TZ PRC
 
 COPY _curl.sh /usr/local/bin/
@@ -110,12 +110,12 @@ RUN sudo apt-get install -y --no-install-recommends \
 # zombodb https://github.com/zombodb/zombodb
     && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
-        && cargo install --version 0.3.3 cargo-pgx \
+        && cargo install cargo-pgx --version 0.4.2 \
         && cargo pgx init --pg13=`which pg_config` \
         && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
         && cd /tmp/zombodb \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
-        && rm -rf /var/lib/postgresql/.pgx \
+        && sudo rm -rf /var/lib/postgresql/.pgx || true \
 # pgsql-http https://github.com/pramsey/pgsql-http
     && wget -O /tmp/pgsql-http.tar.gz "https://github.com/pramsey/pgsql-http/archive/v${PGSQL_HTTP}.tar.gz" \
         && mkdir -p /tmp/pgsql-http \
@@ -201,7 +201,7 @@ RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
 
 # config tuning
 # replace last docker_temp_server_stop with sed to change max_connections
-RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 25/max_connections = 1000/" /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
+RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 100/max_connections = 1000/" /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
 
 ENV TIMESCALEDB_TELEMETRY off
 
