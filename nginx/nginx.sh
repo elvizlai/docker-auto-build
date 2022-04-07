@@ -155,42 +155,17 @@ curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.t
 /bin/cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
 
-# https://github.com/openresty/lua-resty-lrucache/tags
-LUA_RESTY_LRUCACHE=0.11
-curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
-rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
-
-# https://github.com/openresty/lua-resty-string/tags
-LUA_RESTY_STRING=0.15
-curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
-rm -rf lua-resty-string-$LUA_RESTY_STRING
-
 # https://github.com/openresty/lua-resty-lock/tags
 LUA_RESTY_LOCK=0.08
 curl -sSL https://github.com/openresty/lua-resty-lock/archive/v$LUA_RESTY_LOCK.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-lock-$LUA_RESTY_LOCK/lib/* .
 rm -rf lua-resty-lock-$LUA_RESTY_LOCK
 
-# https://github.com/openresty/lua-cjson/tags
-LUA_CJSON=2.1.0.8
-curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
-LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
-mv -f lua-cjson-$LUA_CJSON/cjson.so .
-rm -rf lua-cjson-$LUA_CJSON
-
-# https://github.com/openresty/lua-resty-websocket/tags
-LUA_RESTY_WEBSOCKET=0.08
-curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
-rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
-
-# https://github.com/openresty/lua-resty-redis/tags
-LUA_RESTY_REDIS=0.29
-curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-redis-$LUA_RESTY_REDIS/lib/* .
-rm -rf lua-resty-redis-$LUA_RESTY_REDIS
+# https://github.com/openresty/lua-resty-lrucache/tags
+LUA_RESTY_LRUCACHE=0.11
+curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
+rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-mysql/tags
 LUA_RESTY_MYSQL=0.24
@@ -198,11 +173,42 @@ curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL
 /bin/cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
 
+# https://github.com/openresty/lua-resty-redis/tags
+LUA_RESTY_REDIS=0.29
+curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-redis-$LUA_RESTY_REDIS/lib/* .
+rm -rf lua-resty-redis-$LUA_RESTY_REDIS
+
+# https://github.com/openresty/lua-resty-string/tags
+LUA_RESTY_STRING=0.15
+curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
+rm -rf lua-resty-string-$LUA_RESTY_STRING
+
 # https://github.com/openresty/lua-resty-upload/tags
 LUA_RESTY_UPLOAD=0.10
 curl -sSL https://github.com/openresty/lua-resty-upload/archive/v$LUA_RESTY_UPLOAD.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-upload-$LUA_RESTY_UPLOAD/lib/* .
 rm -rf lua-resty-upload-$LUA_RESTY_UPLOAD
+
+# https://github.com/openresty/lua-resty-upstream-healthcheck/tags
+LUA_RESTY_UPSTREAM_HEALTHCHECK=0.06
+curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$LUA_RESTY_UPSTREAM_HEALTHCHECK.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK/lib/* .
+rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
+
+# https://github.com/openresty/lua-resty-websocket/tags
+LUA_RESTY_WEBSOCKET=0.08
+curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
+/bin/cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
+rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
+
+# https://github.com/openresty/lua-cjson/tags
+LUA_CJSON=2.1.0.8
+curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
+LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
+mv -f lua-cjson-$LUA_CJSON/cjson.so .
+rm -rf lua-cjson-$LUA_CJSON
 
 # https://github.com/ledgetech/lua-resty-http/tags
 LUA_RESTY_HTTP=0.16.1

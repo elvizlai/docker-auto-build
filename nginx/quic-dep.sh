@@ -19,7 +19,7 @@ mkdir -p /opt/lib-src && cd /opt/lib-src
 
 # https://www.pcre.org/
 # for ftp download is closed nowm, use morn mirror instead.
-# pcre `pcre-config --version`
+# check version `pcre-config --version`
 curl -sSL https://x.morn.io/dl/$PCRE.tar.gz | tar zxf -
 cd $PCRE
 ./configure --enable-utf8 --enable-jit
