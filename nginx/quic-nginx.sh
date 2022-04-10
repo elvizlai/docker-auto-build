@@ -249,6 +249,21 @@ curl -sSL https://github.com/ysugimoto/lua-resty-grpc-gateway/archive/v$LUA_REST
 /bin/cp -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW/grpc-gateway .
 rm -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW
 
+# kong https://github.com/Kong/kong
+## kong.lua_pack
+LUA_PACK=2.0.0
+curl -sSL https://github.com/Kong/lua-pack/archive/$LUA_PACK.tar.gz | tar zxf -
+gcc -O2 -shared -fPIC  -I/usr/local/include/luajit-2.1 lua-pack-$LUA_PACK/lua_pack.c -o lua_pack.so
+rm -rf lua-pack-$LUA_PACK
+
+## kong.plugins.grpc-gateway
+mkdir -p kong/{plugins,tools}
+KONG=2.8.1
+curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
+/bin/cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
+/bin/cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
+rm -rf kong-$KONG
+
 # https://pyyaml.org
 LIB_YAML=0.2.5
 curl -sSL http://pyyaml.org/download/libyaml/yaml-$LIB_YAML.tar.gz | tar zxf -

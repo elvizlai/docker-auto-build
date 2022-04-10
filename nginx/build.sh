@@ -9,9 +9,9 @@ if [ "$VERSION" = "ffmpeg" ];then
     FFMPEG=1
 fi
 
-/opt/dep.sh
-/opt/nginx.sh $VERSION
+/opt/org-dep.sh
+/opt/org-nginx.sh $VERSION
 
 if [ "$FFMPEG" = "1" ];then
-    /opt/ffmpeg.sh
+    /opt/org-ffmpeg.sh
 fi

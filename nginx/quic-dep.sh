@@ -72,8 +72,12 @@ cd luarocks-$LUAROCKS
 ./configure
 make && make install && cd ..
 
-# lfs
-luarocks install luafilesystem
+# pl https://github.com/lunarmodules/Penlight
+# it deps on luafilesystem https://github.com/keplerproject/luafilesystem
+luarocks install penlight
+
+# date https://github.com/Tieske/date
+luarocks install date
 
 # TODO optimize
 if [ ! -f "/etc/ld.so.conf.d/usr_local_lib.conf" ];then
