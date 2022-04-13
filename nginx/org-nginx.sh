@@ -8,7 +8,7 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel flex bison
 
 NGINXVER=${1:-1.20.2}
-NGINXNJS=0.7.2
+NGINXNJS=0.7.3
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.20
@@ -25,6 +25,7 @@ cd ..
 # https://github.com/nginx/njs/tags
 git clone -b $NGINXNJS https://github.com/nginx/njs
 
+# https://github.com/vision5/ngx_devel_kit/tags
 curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz | tar zxf -
 
 # https://github.com/openresty/lua-nginx-module/tags
@@ -223,7 +224,7 @@ curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENS
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
-LUA_RESTY_ACME=0.7.2
+LUA_RESTY_ACME=0.8.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
@@ -258,14 +259,13 @@ curl -sSL https://github.com/ysugimoto/lua-resty-grpc-gateway/archive/v$LUA_REST
 /bin/cp -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW/grpc-gateway .
 rm -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW
 
-# kong https://github.com/Kong/kong
-## kong.lua_pack
+## lua_pack https://github.com/Kong/lua-pack/tags
 LUA_PACK=2.0.0
 curl -sSL https://github.com/Kong/lua-pack/archive/$LUA_PACK.tar.gz | tar zxf -
 gcc -O2 -shared -fPIC  -I/usr/local/include/luajit-2.1 lua-pack-$LUA_PACK/lua_pack.c -o lua_pack.so
 rm -rf lua-pack-$LUA_PACK
 
-## kong.plugins.grpc-gateway
+## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/{plugins,tools}
 KONG=2.8.1
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -

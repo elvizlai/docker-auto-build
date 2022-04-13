@@ -1,7 +1,8 @@
 FROM sdrzlyz/alpine-glibc
 
-ARG VERSION=3.2.0
+ARG VERSION=3.2.2
 
+# https://github.com/langhuihui/monibuca/tags
 RUN wget https://github.com/langhuihui/monibuca/releases/download/v${VERSION}/linux.tgz \
     && tar zxf linux.tgz \
     && rm -f linux.tgz

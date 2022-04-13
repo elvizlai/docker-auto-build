@@ -30,6 +30,7 @@ cd ..
 # https://github.com/nginx/njs/tags, 0.7.x has unsupported tls
 git clone -b $NGINXNJS https://github.com/nginx/njs
 
+# https://github.com/vision5/ngx_devel_kit/tags
 curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz | tar zxf -
 
 # https://github.com/openresty/lua-nginx-module/tags
@@ -214,7 +215,7 @@ curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENS
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
-LUA_RESTY_ACME=0.7.2
+LUA_RESTY_ACME=0.8.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
