@@ -248,16 +248,16 @@ curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf 
 rm -rf pgmoon-$LUA_PGMOON
 
 # https://github.com/starwing/lua-protobuf/tags
-LUA_PROTOBUF=0.3.4
+LUA_PROTOBUF=master
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
 cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && /bin/cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
 
 # https://github.com/ysugimoto/lua-resty-grpc-gateway/tags
-LUA_RESTY_GRPC_GW=1.2.4
-curl -sSL https://github.com/ysugimoto/lua-resty-grpc-gateway/archive/v$LUA_RESTY_GRPC_GW.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW/grpc-gateway .
-rm -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW
+# LUA_RESTY_GRPC_GW=1.2.4
+# curl -sSL https://github.com/ysugimoto/lua-resty-grpc-gateway/archive/v$LUA_RESTY_GRPC_GW.tar.gz | tar zxf -
+# /bin/cp -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW/grpc-gateway .
+# rm -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW
 
 ## lua_pack https://github.com/Kong/lua-pack/tags
 LUA_PACK=2.0.0
