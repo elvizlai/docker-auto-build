@@ -1,4 +1,4 @@
-FROM golang:1.18-bullseye
+FROM golang:1.18-stretch
 
 ENV GOPROXY "https://goproxy.cn|https://goproxy.io|https://goproxy.baidu.com/|https://mirrors.tencent.com/go/|direct"
 ENV PATH $PATH:$GOPATH/bin
