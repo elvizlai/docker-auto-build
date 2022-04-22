@@ -2,12 +2,18 @@
 
 set -e
 
-yum install -y make git bzip2 unzip systemd-devel \
-    centos-release-scl scl-utils-build scl-utils
+yum install -y \
+    make git \
+    centos-release-scl scl-utils-build \
+    bzip2 `# jemalloc` \
+    unzip `# luarocks`
+
+# systemd-devel scl-utils
 
 yum install -y devtoolset-9-gcc devtoolset-9-gcc-c++
 
 source scl_source enable devtoolset-9 || true
+# gcc -v
 
 PCRE=pcre-8.45
 ZLIB=zlib-1.2.12
@@ -69,7 +75,7 @@ make -j4 && make install && cd ..
 # luarocks https://luarocks.org
 curl -sSL http://luarocks.github.io/luarocks/releases/luarocks-$LUAROCKS.tar.gz | tar zxf -
 cd luarocks-$LUAROCKS
-./configure
+./configure --lua-suffix=jit
 make && make install && cd ..
 
 # pl https://github.com/lunarmodules/Penlight

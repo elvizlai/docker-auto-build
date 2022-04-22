@@ -5,7 +5,12 @@ set -e
 source scl_source enable devtoolset-9 || true
 
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install -y which patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel flex bison
+yum install -y \
+    which patch \
+    gd-devel `# http_image_filter_module` \
+    libxml2-devel libxslt-devel `# http_xslt_module` \
+    libmaxminddb-devel `# ngx_http_geoip2_module` \
+    uthash-devel flex bison `# ngx_waf`
 
 NGINXVER=${1:-1.20.2}
 NGINXNJS=0.7.3
@@ -126,7 +131,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-module=./module/nginx-client-module \
     --add-module=./module/nginx-multiport-module \
     --add-module=./module/nginx-toolkit-module \
-    --add-dynamic-module=./module/dynamic/ngx_waf \
     --add-dynamic-module=./module/dynamic/incubator-pagespeed-ngx \
     --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
@@ -564,7 +568,7 @@ ln -sf /dev/stdout /var/log/nginx/stream.log
 ln -sf /dev/stderr /var/log/nginx/error.log
 
 # remove cache
-yum remove -y devtoolset-9-* centos-release-scl scl-utils-build scl-utils make git \
-    patch libxml2-devel libxslt-devel gd-devel uthash-devel libmaxminddb-devel
+yum remove -y devtoolset-9-* centos-release-scl scl-utils-build make git \
+    patch gd-devel libxml2-devel libxslt-devel libmaxminddb-devel uthash-devel
 yum clean all
 rm -rf /opt/{lib-src,nginx-*} /tmp/*
