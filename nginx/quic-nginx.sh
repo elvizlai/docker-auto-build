@@ -9,6 +9,7 @@ source scl_source enable devtoolset-9 || true
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y \
     which patch \
+    automake libtool `# ModSecurity` \
     gd-devel `# http_image_filter_module` \
     libxml2-devel libxslt-devel `# http_xslt_module` \
     libmaxminddb-devel `# ngx_http_geoip2_module`
@@ -22,6 +23,10 @@ NGINXSTREAMLUA=0.0.10
 
 # nginx-quic
 git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
+cd $NGINXDIR
+curl -sSL https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch > Enable_BoringSSL_OCSP.patch
+patch -p1 < Enable_BoringSSL_OCSP.patch
+
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -53,14 +58,20 @@ rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
-# ngx_waf
-# TODO: not working with boringSSL
-# ngx_waf
+# waf
+# https://github.com/SpiderLabs/ModSecurity/tags
+git clone -b v3.0.6 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+cd ModSecurity
+./build.sh && ./configure --enable-examples=no --with-maxmind=no && make && make install
+cd ..
+
+# https://github.com/SpiderLabs/ModSecurity-nginx/tags
+git clone -b v1.0.2 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
+
 
 # pagespeed
-git clone --depth 1 --quiet -b v1.13.35.2-stable https://github.com/apache/incubator-pagespeed-ngx
+git clone -b v1.13.35.2-stable --depth 1 --quiet https://github.com/apache/incubator-pagespeed-ngx
 curl -sSL https://dl.google.com/dl/page-speed/psol/1.13.35.2-x64.tar.gz | tar -xzf - -C ./incubator-pagespeed-ngx/
-# pagespeed
 
 git clone --depth 1 --quiet -b 3.3 https://github.com/leev/ngx_http_geoip2_module
 git clone --depth 1 --quiet -b v0.62 https://github.com/openresty/echo-nginx-module
@@ -75,7 +86,7 @@ export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
 ./auto/configure \
     --build=nginx-quic \
-    --with-cc-opt="-DTCP_FASTOPEN=23" \
+    --with-cc-opt="-DTCP_FASTOPEN=23 -Wno-error" \
     --with-ld-opt="-ljemalloc -Wl,-rpath,$LUAJIT_LIB" \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
@@ -89,6 +100,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-file-aio \
     --with-http_addition_module \
     --with-http_auth_request_module \
+    --with-compat \
     --with-http_dav_module \
     --with-http_flv_module \
     --with-http_gunzip_module \
@@ -113,23 +125,24 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-stream \
     --with-stream_ssl_module \
     --with-threads \
-    --add-module=./module/ngx_brotli \
-    --add-module=./module/njs/nginx \
-    --add-module=./module/ngx_devel_kit-$NGINXNDK \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
-    --add-module=./module/stream-lua-nginx-module-$NGINXSTREAMLUA \
-    --add-module=./module/nginx-rtmp-module \
     --add-module=./module/nginx-client-module \
     --add-module=./module/nginx-multiport-module \
+    --add-module=./module/nginx-rtmp-module \
     --add-module=./module/nginx-toolkit-module \
-    --add-dynamic-module=./module/dynamic/incubator-pagespeed-ngx \
-    --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
+    --add-module=./module/ngx_brotli \
+    --add-module=./module/ngx_devel_kit-$NGINXNDK \
+    --add-module=./module/njs/nginx \
+    --add-module=./module/stream-lua-nginx-module-$NGINXSTREAMLUA \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
     --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
-    --add-dynamic-module=./module/dynamic/srcache-nginx-module \
-    --add-dynamic-module=./module/dynamic/ngx-fancyindex \
+    --add-dynamic-module=./module/dynamic/incubator-pagespeed-ngx \
+    --add-dynamic-module=./module/dynamic/ModSecurity-nginx \
     --add-dynamic-module=./module/dynamic/nginx-module-vts \
-    --add-dynamic-module=./module/dynamic/ngx_http_substitutions_filter_module
+    --add-dynamic-module=./module/dynamic/ngx-fancyindex \
+    --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
+    --add-dynamic-module=./module/dynamic/ngx_http_substitutions_filter_module \
+    --add-dynamic-module=./module/dynamic/srcache-nginx-module
 
 make -j$(nproc)
 # make -j$(nproc) -f objs/Makefile modules
@@ -213,7 +226,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.7
+LUA_RESTY_OPENSSL=0.8.8
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
@@ -498,6 +511,19 @@ EOF
 mkdir -p /etc/nginx/html/rtmp
 \cp $NGINXDIR/module/pingos/resource/stat.xsl /etc/nginx/html/rtmp/stat.xsl
 
+mkdir -p /etc/nginx/modsec
+cat > /etc/nginx/modsec/main.conf <<EOF
+Include "/etc/nginx/modsec/modsecurity.conf"
+Include "/etc/nginx/modsec/coreruleset/crs-setup.conf"
+Include "/etc/nginx/modsec/coreruleset/rules/*.conf"
+EOF
+\cp $NGINXDIR/module/dynamic/ModSecurity/modsecurity.conf-recommended /etc/nginx/modsec/modsecurity.conf
+\cp $NGINXDIR/module/dynamic/ModSecurity/unicode.mapping /etc/nginx/modsec/unicode.mapping
+git clone --depth=1 https://github.com/coreruleset/coreruleset /etc/nginx/modsec/coreruleset
+mv /etc/nginx/modsec/coreruleset/crs-setup.conf.example /etc/nginx/modsec/coreruleset/crs-setup.conf
+find /etc/nginx/modsec/coreruleset -mindepth 1 -maxdepth 1 -type f -not -path "*.conf" -delete
+find /etc/nginx/modsec/coreruleset -mindepth 1 -maxdepth 1 -type d -not -name 'rules' | xargs rm -rf
+
 touch /var/log/nginx/{access,stream,error}.log
 
 # log forward
@@ -506,7 +532,8 @@ ln -sf /dev/stdout /var/log/nginx/stream.log
 ln -sf /dev/stderr /var/log/nginx/error.log
 
 # remove cache
-yum remove -y devtoolset-9-* centos-release-scl scl-utils-build make git \
-    patch gd-devel libxml2-devel libxslt-devel libmaxminddb-devel
+yum remove -y devtoolset-9-* centos-release-scl scl-utils-build \
+    make git patch automake libtool \
+    pcre-devel gd-devel libxml2-devel libxslt-devel libmaxminddb-devel
 yum clean all
 rm -rf /opt/{lib-src,nginx-*} /tmp/*

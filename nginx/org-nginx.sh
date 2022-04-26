@@ -101,6 +101,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-file-aio \
     --with-http_addition_module \
     --with-http_auth_request_module \
+    --with-compat \
     --with-http_dav_module \
     --with-http_flv_module \
     --with-http_gunzip_module \
@@ -122,23 +123,23 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-stream \
     --with-stream_ssl_module \
     --with-threads \
-    --add-module=./module/ngx_brotli \
-    --add-module=./module/njs/nginx \
-    --add-module=./module/ngx_devel_kit-$NGINXNDK \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
-    --add-module=./module/stream-lua-nginx-module-$NGINXSTREAMLUA \
-    --add-module=./module/nginx-rtmp-module \
     --add-module=./module/nginx-client-module \
     --add-module=./module/nginx-multiport-module \
+    --add-module=./module/nginx-rtmp-module \
     --add-module=./module/nginx-toolkit-module \
-    --add-dynamic-module=./module/dynamic/incubator-pagespeed-ngx \
-    --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
+    --add-module=./module/ngx_brotli \
+    --add-module=./module/ngx_devel_kit-$NGINXNDK \
+    --add-module=./module/njs/nginx \
+    --add-module=./module/stream-lua-nginx-module-$NGINXSTREAMLUA \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
     --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
-    --add-dynamic-module=./module/dynamic/srcache-nginx-module \
-    --add-dynamic-module=./module/dynamic/ngx-fancyindex \
+    --add-dynamic-module=./module/dynamic/incubator-pagespeed-ngx \
     --add-dynamic-module=./module/dynamic/nginx-module-vts \
-    --add-dynamic-module=./module/dynamic/ngx_http_substitutions_filter_module
+    --add-dynamic-module=./module/dynamic/ngx-fancyindex \
+    --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
+    --add-dynamic-module=./module/dynamic/ngx_http_substitutions_filter_module \
+    --add-dynamic-module=./module/dynamic/srcache-nginx-module
 
 make -j$(nproc)
 # make -j$(nproc) -f objs/Makefile modules
@@ -222,7 +223,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.7
+LUA_RESTY_OPENSSL=0.8.8
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 /bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL

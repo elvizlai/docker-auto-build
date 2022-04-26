@@ -5,6 +5,7 @@ set -e
 yum install -y \
     make git \
     centos-release-scl scl-utils-build \
+    pcre pcre-devel \
     bzip2 `# jemalloc` \
     unzip `# luarocks`
 
@@ -15,7 +16,7 @@ yum install -y devtoolset-9-gcc devtoolset-9-gcc-c++
 source scl_source enable devtoolset-9 || true
 # gcc -v
 
-PCRE=pcre-8.45
+# PCRE=pcre-8.45
 ZLIB=zlib-1.2.12
 JEMALLOC=5.2.1
 LUAJIT=v2.1-20220411
@@ -26,10 +27,10 @@ mkdir -p /opt/lib-src && cd /opt/lib-src
 # https://www.pcre.org/
 # for ftp download is closed nowm, use morn mirror instead.
 # check version `pcre-config --version`
-curl -sSL https://x.morn.io/dl/$PCRE.tar.gz | tar zxf -
-cd $PCRE
-./configure --enable-utf8 --enable-jit
-make -j4 && make install && cd ..
+# curl -sSL https://x.morn.io/dl/$PCRE.tar.gz | tar zxf -
+# cd $PCRE
+# ./configure --enable-utf8 --enable-jit
+# make -j4 && make install && cd ..
 
 # http://zlib.net
 # zlib
@@ -42,7 +43,7 @@ make -j4 && make install && cd ..
 curl -sSL https://cmake.org/files/v3.22/cmake-3.22.0.tar.gz | tar zxf - -C /opt/lib-src
 cd /opt/lib-src/cmake-3.*
 ./bootstrap --prefix=/usr/local -- -DCMAKE_USE_OPENSSL=OFF
-make -j$(nproc) && make install
+make -j$(nproc) && make install && cd ..
 
 # golang
 curl -sSL https://golang.org/dl/go1.17.linux-amd64.tar.gz | tar zxf - -C /tmp
@@ -59,6 +60,7 @@ cmake -DFIPS=0 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 ..
 make
 cp */*.so /usr/local/lib/
 cp -r ../include/openssl /usr/local/include/
+cd /opt/lib-src
 
 # jemalloc https://github.com/jemalloc/jemalloc
 curl -sSL https://github.com/jemalloc/jemalloc/releases/download/$JEMALLOC/jemalloc-$JEMALLOC.tar.bz2 | tar xjf -
