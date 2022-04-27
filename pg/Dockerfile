@@ -25,7 +25,7 @@ ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.2.1+dfsg-1.pgdg110+1
 ARG PGROUTING=3.3.1
-ARG ORAFCE=3_21_0
+ARG ORAFCE=3_21_1
 ARG PG_CRON=1.4.1
 ARG TIMESCALE=2.6.1
 ARG ZOMBODB=3000.0.11
@@ -116,7 +116,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         && tar --extract --file /tmp/pgsql-http.tar.gz --directory /tmp/pgsql-http --strip-components 1 \
         && cd /tmp/pgsql-http \
         && make && sudo make install \
-# pgaudit https://github.com/pgaudit/pgaudit
+# pgaudit https://github.com/pgaudit/pgaudit/tags
     && wget -O /tmp/pgaudit.tar.gz "https://github.com/pgaudit/pgaudit/archive/${PGAUDIT}.tar.gz" \
         && mkdir -p /tmp/pgaudit \
         && tar --extract --file /tmp/pgaudit.tar.gz --directory /tmp/pgaudit --strip-components 1 \
@@ -128,6 +128,15 @@ RUN sudo apt-get install -y --no-install-recommends \
         && git submodule update --init --recursive \
         && mkdir build && cd build \
         && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/$PG_MAJOR -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$PG_MAJOR/server .. \
+        && make && sudo make install \
+# XLogMiner https://gitee.com/movead/XLogMiner
+    && git clone https://gitee.com/movead/XLogMiner /tmp/XLogMiner \
+        && cd /tmp/XLogMiner/walminer \
+        && USE_PGXS=1 MAJORVERSION=$PG_MAJOR make \
+        && sudo USE_PGXS=1 MAJORVERSION=$PG_MAJOR make install \
+# decoder_raw https://github.com/michaelpq/pg_plugins
+    && git clone https://github.com/michaelpq/pg_plugins /tmp/pg_plugins \
+        && cd /tmp/pg_plugins/decoder_raw \
         && make && sudo make install \
 # repmgr https://github.com/EnterpriseDB/repmgr
     && wget -O /tmp/repmgr.tar.gz "https://repmgr.org/download/repmgr-${REPMGR}.tar.gz" \
