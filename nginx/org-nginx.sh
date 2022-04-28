@@ -7,10 +7,9 @@ source scl_source enable devtoolset-9 || true
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y \
     which patch \
+    automake libtool libcurl libcurl-devel `# ngx_waf` \
     gd-devel `# http_image_filter_module` \
-    libxml2-devel libxslt-devel `# http_xslt_module` \
-    libmaxminddb-devel `# ngx_http_geoip2_module` \
-    uthash-devel flex bison `# ngx_waf`
+    libxml2-devel libxslt-devel `# http_xslt_module`
 
 NGINXVER=${1:-1.20.2}
 NGINXNJS=0.7.3
@@ -50,21 +49,28 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # ngx_waf
-git clone -b lts https://github.com/ADD-SP/ngx_waf
-cd ngx_waf
-git clone https://github.com/libinjection/libinjection.git inc/libinjection
-make
-cd $NGINXDIR/module/dynamic
+git clone -b current https://github.com/ADD-SP/ngx_waf
+git clone https://github.com/libinjection/libinjection.git ngx_waf/inc/libinjection
+git clone -b v1.7.15 https://github.com/DaveGamble/cJSON.git ngx_waf/lib/cjson
+git clone -b v2.3.0 https://github.com/troydhanson/uthash.git ngx_waf/lib/uthash
 
-git clone https://github.com/jedisct1/libsodium.git --branch stable libsodium-src
-cd libsodium-src
-./configure --prefix=/opt/nginx-${NGINXVER}/libsodium --with-pic
+curl -sSL https://github.com/maxmind/libmaxminddb/releases/download/1.6.0/libmaxminddb-1.6.0.tar.gz | tar zxf - 
+cd libmaxminddb-1.6.0
+./configure --prefix=/usr/local
 make -j$(nproc) && make install
-export LIB_SODIUM=/opt/nginx-${NGINXVER}/libsodium
-cd $NGINXDIR/module/dynamic
+cd ..
 
-git clone https://github.com/troydhanson/uthash.git /usr/local/src/uthash
-export LIB_UTHASH=/usr/local/src/uthash
+git clone -b v3.0.6 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+cd ModSecurity
+./build.sh && ./configure --prefix=/usr/local --enable-examples=no
+make -j$(nproc) && make install
+cd ..
+
+git clone -b stable https://github.com/jedisct1/libsodium libsodium
+cd libsodium
+./configure --prefix=/usr/local --with-pic
+make -j$(nproc) && make install
+cd ..
 # ngx_waf
 
 # pagespeed
@@ -139,6 +145,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-dynamic-module=./module/dynamic/ngx-fancyindex \
     --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
     --add-dynamic-module=./module/dynamic/ngx_http_substitutions_filter_module \
+    --add-dynamic-module=./module/dynamic/ngx_waf \
     --add-dynamic-module=./module/dynamic/srcache-nginx-module
 
 make -j$(nproc)
@@ -561,6 +568,19 @@ EOF
 mkdir -p /etc/nginx/html/rtmp
 \cp $NGINXDIR/module/pingos/resource/stat.xsl /etc/nginx/html/rtmp/stat.xsl
 
+mkdir -p /etc/nginx/modsec
+cat > /etc/nginx/modsec/main.conf <<EOF
+Include "/etc/nginx/modsec/modsecurity.conf"
+Include "/etc/nginx/modsec/coreruleset/crs-setup.conf"
+Include "/etc/nginx/modsec/coreruleset/rules/*.conf"
+EOF
+\cp $NGINXDIR/module/dynamic/ModSecurity/modsecurity.conf-recommended /etc/nginx/modsec/modsecurity.conf
+\cp $NGINXDIR/module/dynamic/ModSecurity/unicode.mapping /etc/nginx/modsec/unicode.mapping
+git clone --depth=1 https://github.com/coreruleset/coreruleset /etc/nginx/modsec/coreruleset
+mv /etc/nginx/modsec/coreruleset/crs-setup.conf.example /etc/nginx/modsec/coreruleset/crs-setup.conf
+find /etc/nginx/modsec/coreruleset -mindepth 1 -maxdepth 1 -type f -not -path "*.conf" -delete
+find /etc/nginx/modsec/coreruleset -mindepth 1 -maxdepth 1 -type d -not -name 'rules' | xargs rm -rf
+
 touch /var/log/nginx/{access,stream,error}.log
 
 # log forward
@@ -569,7 +589,8 @@ ln -sf /dev/stdout /var/log/nginx/stream.log
 ln -sf /dev/stderr /var/log/nginx/error.log
 
 # remove cache
-yum remove -y devtoolset-9-* centos-release-scl scl-utils-build make git \
-    patch gd-devel libxml2-devel libxslt-devel libmaxminddb-devel uthash-devel
+yum remove -y devtoolset-9-* centos-release-scl scl-utils-build \
+    make git patch \
+    pcre-devel zlib-devel libcurl-devel gd-devel libxml2-devel libxslt-devel
 yum clean all
 rm -rf /opt/{lib-src,nginx-*} /tmp/*

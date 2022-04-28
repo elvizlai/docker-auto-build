@@ -11,8 +11,7 @@ yum install -y \
     which patch \
     automake libtool `# ModSecurity` \
     gd-devel `# http_image_filter_module` \
-    libxml2-devel libxslt-devel `# http_xslt_module` \
-    libmaxminddb-devel `# ngx_http_geoip2_module`
+    libxml2-devel libxslt-devel `# http_xslt_module`
 
 NGINXVER=${1:-1.20.2}
 NGINXNJS=0.6.2
@@ -59,15 +58,22 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # waf
+curl -sSL https://github.com/maxmind/libmaxminddb/releases/download/1.6.0/libmaxminddb-1.6.0.tar.gz | tar zxf - 
+cd libmaxminddb-1.6.0
+./configure --prefix=/usr/local
+make -j$(nproc) && make install
+cd ..
+
 # https://github.com/SpiderLabs/ModSecurity/tags
 git clone -b v3.0.6 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
-./build.sh && ./configure --enable-examples=no --with-maxmind=no && make && make install
+./build.sh && ./configure --prefix=/usr/local --enable-examples=no
+make -j$(nproc) && make install
 cd ..
 
 # https://github.com/SpiderLabs/ModSecurity-nginx/tags
 git clone -b v1.0.2 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
-
+# waf
 
 # pagespeed
 git clone -b v1.13.35.2-stable --depth 1 --quiet https://github.com/apache/incubator-pagespeed-ngx
@@ -534,6 +540,6 @@ ln -sf /dev/stderr /var/log/nginx/error.log
 # remove cache
 yum remove -y devtoolset-9-* centos-release-scl scl-utils-build \
     make git patch automake libtool \
-    pcre-devel gd-devel libxml2-devel libxslt-devel libmaxminddb-devel
+    pcre-devel zlib-devel gd-devel libxml2-devel libxslt-devel libmaxminddb-devel
 yum clean all
 rm -rf /opt/{lib-src,nginx-*} /tmp/*

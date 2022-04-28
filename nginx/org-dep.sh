@@ -4,6 +4,7 @@ set -e
 
 yum install -y \
     make git \
+    pcre pcre-devel zlib zlib-devel \
     centos-release-scl scl-utils-build \
     bzip2 `# jemalloc` \
     unzip `# luarocks`
@@ -15,8 +16,8 @@ yum install -y devtoolset-9-gcc devtoolset-9-gcc-c++
 source scl_source enable devtoolset-9 || true
 # gcc -v
 
-PCRE=pcre-8.45
-ZLIB=zlib-1.2.12
+# ZLIB=zlib-1.2.12
+# PCRE=pcre-8.45
 OPENSSL=openssl-1.1.1n
 JEMALLOC=5.2.1
 LUAJIT=v2.1-20220411
@@ -24,20 +25,19 @@ LUAROCKS=3.8.0
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
+# zlib http://zlib.net
+# curl -sSL http://zlib.net/$ZLIB.tar.gz | tar zxf -
+# cd $ZLIB
+# ./configure --static
+# make -j4 && make install && cd ..
+
 # https://www.pcre.org/
 # for ftp download is closed nowm, use morn mirror instead.
 # check version `pcre-config --version`
-curl -sSL https://x.morn.io/dl/$PCRE.tar.gz | tar zxf -
-cd $PCRE
-./configure --enable-utf8 --enable-jit
-make -j4 && make install && cd ..
-
-# http://zlib.net
-# zlib
-curl -sSL http://zlib.net/$ZLIB.tar.gz | tar zxf -
-cd $ZLIB
-./configure --static
-make -j4 && make install && cd ..
+# curl -sSL http://ftp.cs.stanford.edu/pub/exim/pcre/$PCRE.tar.gz | tar zxf -
+# cd $PCRE
+# ./configure --enable-utf8 --enable-jit
+# make -j4 && make install && cd ..
 
 # openssl https://www.openssl.org/source
 curl -sSL https://www.openssl.org/source/$OPENSSL.tar.gz | tar zxf -
