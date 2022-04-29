@@ -134,6 +134,8 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cd /tmp/XLogMiner/walminer \
         && USE_PGXS=1 MAJORVERSION=$PG_MAJOR make \
         && sudo USE_PGXS=1 MAJORVERSION=$PG_MAJOR make install \
+# wal2json https://github.com/eulerto/wal2json
+    && sudo apt-get install -y --no-install-recommends postgresql-$PG_MAJOR-wal2json \
 # decoder_raw https://github.com/michaelpq/pg_plugins
     && git clone https://github.com/michaelpq/pg_plugins /tmp/pg_plugins \
         && cd /tmp/pg_plugins/decoder_raw \
