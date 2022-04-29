@@ -1,0 +1,10 @@
+FROM collelog/ffmpeg:4.4-alpine-amd64 as builder
+
+FROM sdrzlyz/nginx:1.20.2
+
+COPY --from=builder /build /
+COPY bin/ttyd /usr/local/bin/ttyd
+
+ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib:/lib
+
+RUN chmod +x /usr/local/bin/ttyd

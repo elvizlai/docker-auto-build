@@ -1,32 +1,86 @@
-#!/usr/bin/env bash
-
-# https://www.nginx.com/blog/our-roadmap-quic-http-3-support-nginx/
+#!/usr/bin/env sh
 
 set -e
 
-source scl_source enable devtoolset-9 || true
+apk update && apk upgrade \
+  && apk add --no-cache ca-certificates openssl \
+  && update-ca-certificates \
+  && apk add --no-cache --virtual .build-deps \
+  gcc \
+  libc-dev \
+  make \
+  pcre-dev \
+  zlib-dev \
+  linux-headers \
+  gnupg \
+  libxslt-dev \
+  gd-dev \
+  geoip-dev \
+  perl-dev \
+  && apk add --no-cache --virtual .brotli-build-deps \
+  autoconf \
+  libtool \
+  automake \
+  git \
+  g++ \
+  cmake \
+  go \
+  perl \
+  rust \
+  cargo \
+  patch \
+  && apk add --no-cache --virtual .modsec-build-deps \
+  libxml2-dev \
+  byacc \
+  flex \
+  libstdc++ \
+  libmaxminddb-dev \
+  lmdb-dev \
+  file \
+  unzip \
+  && apk add --no-cache --virtual .gettext gettext
 
-rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install -y \
-    which patch \
-    automake libtool `# ModSecurity` \
-    gd-devel `# http_image_filter_module` \
-    libxml2-devel libxslt-devel `# http_xslt_module`
 
-NGINXVER=${1:-1.20.2}
+JEMALLOC=5.2.1
+LUAJIT=v2.1-20220411
+
+mkdir -p /opt/lib-src && cd /opt/lib-src
+
+# jemalloc https://github.com/jemalloc/jemalloc
+curl -sSL https://github.com/jemalloc/jemalloc/releases/download/$JEMALLOC/jemalloc-$JEMALLOC.tar.bz2 | tar xjf -
+cd jemalloc-$JEMALLOC
+./configure --prefix=/usr/local --libdir=/usr/local/lib
+make -j$(nproc) && make install && cd ..
+
+# lua-jit https://github.com/openresty/luajit2/tags
+mkdir -p luajit2.1
+curl -sSL https://github.com/openresty/luajit2/archive/$LUAJIT.tar.gz | tar zxf - -C luajit2.1 --strip-components 1
+cd luajit2.1
+make -j$(nproc) && make install && cd ..
+
+# boringssl
+git clone -b fips-20210429 https://boringssl.googlesource.com/boringssl /opt/lib-src/boringssl
+mkdir -p /opt/lib-src/boringssl/build && cd /opt/lib-src/boringssl/build
+cmake -DFIPS=0 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 ..
+make -j$(nproc)
+cp */*.so /usr/local/lib/
+cp -r ../include/openssl /usr/local/include/
+cd /opt/lib-src
+
+
+NGINXVER=quic
 NGINXNJS=0.6.2
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.20
 NGINXSTREAMLUA=0.0.10
 
-# nginx-quic
 git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
 cd $NGINXDIR
 curl -sSL https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch > Enable_BoringSSL_OCSP.patch
 patch -p1 < Enable_BoringSSL_OCSP.patch
 
-
+# static modules
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
 rm -rf ngx_brotli
@@ -58,13 +112,6 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # waf
-curl -sSL https://github.com/maxmind/libmaxminddb/releases/download/1.6.0/libmaxminddb-1.6.0.tar.gz | tar zxf - 
-cd libmaxminddb-1.6.0
-./configure --prefix=/usr/local
-make -j$(nproc) && make install
-cd ..
-
-# https://github.com/SpiderLabs/ModSecurity/tags
 git clone -b v3.0.6 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
@@ -75,17 +122,14 @@ cd ..
 git clone -b v1.0.2 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
 # waf
 
-# pagespeed
-git clone -b v1.13.35.2-stable --depth 1 --quiet https://github.com/apache/incubator-pagespeed-ngx
-curl -sSL https://dl.google.com/dl/page-speed/psol/1.13.35.2-x64.tar.gz | tar -xzf - -C ./incubator-pagespeed-ngx/
-
-git clone --depth 1 --quiet -b 3.3 https://github.com/leev/ngx_http_geoip2_module
-git clone --depth 1 --quiet -b v0.62 https://github.com/openresty/echo-nginx-module
-git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/headers-more-nginx-module
-git clone --depth 1 --quiet -b v0.32 https://github.com/openresty/srcache-nginx-module
-git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
+git clone -b v0.62 --depth 1 --quiet https://github.com/openresty/echo-nginx-module
+git clone -b v0.33 --depth 1 --quiet https://github.com/openresty/headers-more-nginx-module
+git clone -b v0.5.2 --depth 1 --quiet https://github.com/aperezdc/ngx-fancyindex
+git clone -b 3.3 --depth 1 --quiet https://github.com/leev/ngx_http_geoip2_module
+git clone -b v0.32 --depth 1 --quiet https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
+
 
 cd $NGINXDIR
 export LUAJIT_LIB=/usr/local/lib
@@ -142,7 +186,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-module=./module/stream-lua-nginx-module-$NGINXSTREAMLUA \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
     --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
-    --add-dynamic-module=./module/dynamic/incubator-pagespeed-ngx \
     --add-dynamic-module=./module/dynamic/ModSecurity-nginx \
     --add-dynamic-module=./module/dynamic/nginx-module-vts \
     --add-dynamic-module=./module/dynamic/ngx-fancyindex \
@@ -155,8 +198,12 @@ make -j$(nproc)
 
 make install
 
-# delete old modules
-# rm -f /etc/nginx/modules/*.so.old || true
+# size
+strip /usr/sbin/nginx* || true
+strip /etc/nginx/modules/*.so || true
+strip /usr/local/bin/* || true
+strip /usr/local/lib/*.so* || true
+strip /usr/local/lib/*.a || true
 
 mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/nginx/lualib
 
@@ -167,55 +214,55 @@ cd /etc/nginx/lualib
 # https://github.com/openresty/lua-resty-core/tags
 LUA_RESTY_CORE=0.1.22
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
+\cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
 
 # https://github.com/openresty/lua-resty-lock/tags
 LUA_RESTY_LOCK=0.08
 curl -sSL https://github.com/openresty/lua-resty-lock/archive/v$LUA_RESTY_LOCK.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-lock-$LUA_RESTY_LOCK/lib/* .
+\cp -rf lua-resty-lock-$LUA_RESTY_LOCK/lib/* .
 rm -rf lua-resty-lock-$LUA_RESTY_LOCK
 
 # https://github.com/openresty/lua-resty-lrucache/tags
 LUA_RESTY_LRUCACHE=0.11
 curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
+\cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-mysql/tags
 LUA_RESTY_MYSQL=0.24
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
+\cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
 
 # https://github.com/openresty/lua-resty-redis/tags
 LUA_RESTY_REDIS=0.29
 curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-redis-$LUA_RESTY_REDIS/lib/* .
+\cp -rf lua-resty-redis-$LUA_RESTY_REDIS/lib/* .
 rm -rf lua-resty-redis-$LUA_RESTY_REDIS
 
 # https://github.com/openresty/lua-resty-string/tags
 LUA_RESTY_STRING=0.15
 curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
+\cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
 rm -rf lua-resty-string-$LUA_RESTY_STRING
 
 # https://github.com/openresty/lua-resty-upload/tags
 LUA_RESTY_UPLOAD=0.10
 curl -sSL https://github.com/openresty/lua-resty-upload/archive/v$LUA_RESTY_UPLOAD.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-upload-$LUA_RESTY_UPLOAD/lib/* .
+\cp -rf lua-resty-upload-$LUA_RESTY_UPLOAD/lib/* .
 rm -rf lua-resty-upload-$LUA_RESTY_UPLOAD
 
 # https://github.com/openresty/lua-resty-upstream-healthcheck/tags
 LUA_RESTY_UPSTREAM_HEALTHCHECK=0.06
 curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$LUA_RESTY_UPSTREAM_HEALTHCHECK.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK/lib/* .
+\cp -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK/lib/* .
 rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
 
 # https://github.com/openresty/lua-resty-websocket/tags
 LUA_RESTY_WEBSOCKET=0.08
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
+\cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
 
 # https://github.com/openresty/lua-cjson/tags
@@ -228,64 +275,63 @@ rm -rf lua-cjson-$LUA_CJSON
 # https://github.com/ledgetech/lua-resty-http/tags
 LUA_RESTY_HTTP=0.16.1
 curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
+\cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
 LUA_RESTY_OPENSSL=0.8.8
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
+\cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
 LUA_RESTY_ACME=0.8.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
+\cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
 
 # https://github.com/thibaultcha/lua-resty-mlcache/tags
 LUA_RESTY_MLCACHE=2.5.0
 curl -sSL https://github.com/thibaultcha/lua-resty-mlcache/archive/$LUA_RESTY_MLCACHE.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE/lib/* .
+\cp -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE/lib/* .
 rm -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE
 
 # https://github.com/bungle/lua-resty-template/tags
 LUA_RESTY_TPL=2.0
 curl -sSL https://github.com/bungle/lua-resty-template/archive/v$LUA_RESTY_TPL.tar.gz | tar zxf -
-/bin/cp -rf lua-resty-template-$LUA_RESTY_TPL/lib/* .
+\cp -rf lua-resty-template-$LUA_RESTY_TPL/lib/* .
 rm -rf lua-resty-template-$LUA_RESTY_TPL
 
 # https://github.com/leafo/pgmoon/tags
 LUA_PGMOON=1.14.0
 curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf -
-/bin/cp -rf pgmoon-$LUA_PGMOON/pgmoon .
+\cp -rf pgmoon-$LUA_PGMOON/pgmoon .
 rm -rf pgmoon-$LUA_PGMOON
 
 # https://github.com/starwing/lua-protobuf/tags
 LUA_PROTOBUF=master
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
-cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && /bin/cp -rf protoc.lua ../ && cd ..
+cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && \cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
 
 # https://github.com/ysugimoto/lua-resty-grpc-gateway/tags
 # LUA_RESTY_GRPC_GW=1.2.4
 # curl -sSL https://github.com/ysugimoto/lua-resty-grpc-gateway/archive/v$LUA_RESTY_GRPC_GW.tar.gz | tar zxf -
-# /bin/cp -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW/grpc-gateway .
+# \cp -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW/grpc-gateway .
 # rm -rf lua-resty-grpc-gateway-$LUA_RESTY_GRPC_GW
 
-# kong https://github.com/Kong/kong
-## kong.lua_pack
+## lua_pack https://github.com/Kong/lua-pack/tags
 LUA_PACK=2.0.0
 curl -sSL https://github.com/Kong/lua-pack/archive/$LUA_PACK.tar.gz | tar zxf -
 gcc -O2 -shared -fPIC  -I/usr/local/include/luajit-2.1 lua-pack-$LUA_PACK/lua_pack.c -o lua_pack.so
 rm -rf lua-pack-$LUA_PACK
 
-## kong.plugins.grpc-gateway
-mkdir -p kong/{plugins,tools}
+## kong.plugins.grpc-gateway https://github.com/Kong/kong
+mkdir -p kong/plugins kong/tools
 KONG=2.8.1
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
-/bin/cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
-/bin/cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
+\cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
+\cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
 rm -rf kong-$KONG
 
 # https://pyyaml.org
@@ -295,37 +341,73 @@ cd yaml-$LIB_YAML && ./configure && make && make install && cd ..
 rm -rf yaml-$LIB_YAML
 
 # https://github.com/gvvaughan/lyaml/tags
-LYAML=6.2.7
-curl -sSL https://github.com/gvvaughan/lyaml/archive/v$LYAML.tar.gz | tar zxf -
-cd lyaml-$LYAML && build-aux/luke LYAML_DIR=./target LUA_INCDIR=/usr/local/include/luajit-2.1 && build-aux/luke PREFIX=./target install && cd ..
-mv lyaml-$LYAML/target/{lib/lua/5.1/yaml.so,share/lua/5.1/lyaml} .
-rm -rf lyaml-$LYAML
+# LYAML=6.2.7
+# curl -sSL https://github.com/gvvaughan/lyaml/archive/v$LYAML.tar.gz | tar zxf -
+# cd lyaml-$LYAML && build-aux/luke LYAML_DIR=./target LUA_INCDIR=/usr/local/include/luajit-2.1 && build-aux/luke PREFIX=./target install && cd ..
+# mv lyaml-$LYAML/target/{lib/lua/5.1/yaml.so,share/lua/5.1/lyaml} .
+# rm -rf lyaml-$LYAML
 
-
-# 开机自启动
-cat > /etc/systemd/system/nginx.service <<EOF
-[Unit]
-Description=nginx
-After=network.target
-  
-[Service]
-Type=forking
-LimitNOFILE=65535
-ExecStartPre=/usr/sbin/nginx -t
-ExecStart=/usr/sbin/nginx
-Restart=always
-RestartSec=5
-StartLimitInterval=0
-ExecReload=/usr/sbin/nginx -s reload
-ExecStop=/usr/sbin/nginx -s quit
-PrivateTmp=true
-
-[Install]
-WantedBy=multi-user.target
-EOF
 
 # cert gen
 mkdir -p /etc/nginx/cert /etc/nginx/acme
+openssl dhparam -out /etc/nginx/dhparam.pem 1024
+
+# rsa
+openssl req \
+-new \
+-x509 \
+-nodes \
+-days 36500 \
+-newkey rsa:2048 \
+-sha256 \
+-keyout /etc/nginx/default.key \
+-out /etc/nginx/default.crt \
+-extensions 'v3_req' \
+-config <( \
+  echo '[req]'; \
+  echo 'distinguished_name = req_distinguished_name'; \
+  echo 'x509_extensions = v3_req'; \
+  echo 'prompt = no'; \
+  echo '[req_distinguished_name]'; \
+  echo 'C = HJ'; \
+  echo 'OU = IT'; \
+  echo 'CN = hijack.local'; \
+  echo '[v3_req]'; \
+  echo 'keyUsage = digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment'; \
+  echo 'extendedKeyUsage = serverAuth,clientAuth'; \
+  echo 'subjectAltName = @alt_names'; \
+  echo '[alt_names]'; \
+  echo 'DNS.1 = hijack.local')
+
+# ecc
+openssl req \
+-new \
+-x509 \
+-nodes \
+-days 36500 \
+-newkey ec:<(openssl ecparam -name prime256v1) \
+-sha256 \
+-keyout /etc/nginx/default-ecc.key \
+-out /etc/nginx/default-ecc.crt \
+-extensions 'v3_req' \
+-config <( \
+  echo '[req]'; \
+  echo 'distinguished_name = req_distinguished_name'; \
+  echo 'x509_extensions = v3_req'; \
+  echo 'prompt = no'; \
+  echo '[req_distinguished_name]'; \
+  echo 'C = HJ'; \
+  echo 'OU = IT'; \
+  echo 'CN = hijack.local'; \
+  echo '[v3_req]'; \
+  echo 'keyUsage = digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment'; \
+  echo 'extendedKeyUsage = serverAuth,clientAuth'; \
+  echo 'subjectAltName = @alt_names'; \
+  echo '[alt_names]'; \
+  echo 'DNS.1 = hijack.local')
+
+# create account key
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/nginx/account.key
 
 # dynamic modules usage in nginx.conf
 # load_module "modules/xxxx.so"
@@ -437,18 +519,17 @@ http {
     ssl_prefer_server_ciphers off;
     ssl_stapling on;
     ssl_stapling_verify on;
-
-    # 0-RTT
     ssl_early_data on;
-    quic_retry on;
-    quic_gso on;
 
     resolver 8.8.8.8 223.5.5.5 119.29.29.29 valid=60s ipv6=off;
     resolver_timeout 15s;
 
+    #modsecurity on;
+    #modsecurity_rules_file /etc/nginx/modsec/main.conf;
+
     lua_shared_dict acme 16m;
     # required to verify Let's Encrypt API
-    lua_ssl_trusted_certificate /etc/ssl/certs/ca-bundle.crt;
+    lua_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
     lua_ssl_verify_depth 2;
 
     init_by_lua_block {
@@ -487,13 +568,13 @@ http {
     }
 
     server {
-        listen    443 http3 quic reuseport;
-        listen    443 default_server ssl http2 fastopen=512 backlog=4096 so_keepalive=120s:60s:10;
+        listen    443 default_server ssl http2 fastopen=512 backlog=4096 reuseport so_keepalive=120s:60s:10;
         server_name _;
         ssl_stapling off;
         ssl_certificate default.crt;
         ssl_certificate_key default.key;
-        add_header alt-svc 'h3=":443"; ma=86400';
+        ssl_certificate default-ecc.crt;
+        ssl_certificate_key default-ecc.key;
         return 444;
     }
 
@@ -509,7 +590,7 @@ http {
     }
 
     include /etc/nginx/conf.d/*.conf;
-    # proxy_cache_path /var/www/ngx_cache levels=1:2 keys_zone=ngx_cache:10m max_size=8g inactive=168h use_temp_path=off;
+    #proxy_cache_path /var/www/ngx_cache levels=1:2 keys_zone=ngx_cache:10m max_size=8g inactive=168h use_temp_path=off;
 }
 EOF
 
@@ -529,17 +610,3 @@ git clone --depth=1 https://github.com/coreruleset/coreruleset /etc/nginx/modsec
 mv /etc/nginx/modsec/coreruleset/crs-setup.conf.example /etc/nginx/modsec/coreruleset/crs-setup.conf
 find /etc/nginx/modsec/coreruleset -mindepth 1 -maxdepth 1 -type f -not -path "*.conf" -delete
 find /etc/nginx/modsec/coreruleset -mindepth 1 -maxdepth 1 -type d -not -name 'rules' | xargs rm -rf
-
-touch /var/log/nginx/{access,stream,error}.log
-
-# log forward
-ln -sf /dev/stdout /var/log/nginx/access.log
-ln -sf /dev/stdout /var/log/nginx/stream.log
-ln -sf /dev/stderr /var/log/nginx/error.log
-
-# remove cache
-yum remove -y devtoolset-9-* centos-release-scl scl-utils-build \
-    make git patch automake libtool \
-    pcre-devel zlib-devel gd-devel libxml2-devel libxslt-devel libmaxminddb-devel
-yum clean all
-rm -rf /opt/{lib-src,nginx-*} /tmp/*

@@ -1,13 +1,25 @@
-FROM centos:7
+FROM alpine AS builder
 
 ARG VERSION=1.20.2
 
-COPY org-build.sh org-dep.sh org-nginx.sh org-ffmpeg.sh /opt/
-COPY bin/ttyd /usr/local/bin/ttyd
+COPY org-build.sh /opt/org-build.sh
 
-RUN chmod +x /usr/local/bin/ttyd /opt/{org-build.sh,org-dep.sh,org-nginx.sh,org-ffmpeg.sh} && /opt/org-build.sh
+RUN sh /opt/org-build.sh $VERSION
+
+
+FROM alpine
+
+COPY --from=builder /usr/sbin/nginx /usr/sbin/
+COPY --from=builder /etc/nginx/ /etc/nginx/
+COPY --from=builder /usr/local/lib/ /usr/local/lib/
+COPY --from=builder /usr/bin/envsubst /usr/local/bin/
+COPY --from=builder /usr/lib/libgd.so* /usr/lib/libpng16.so* /usr/lib/libjpeg.so* /usr/lib/libwebp.so* /usr/lib/libfreetype.so* /usr/lib/libbz2.so* /usr/lib/
+COPY --from=builder /usr/lib/libxslt.so* /usr/lib/libexslt.so* /usr/lib/libgcrypt.so* /usr/lib/libgpg-error.so* /usr/lib/
 
 COPY cors.conf /etc/nginx
+COPY runtime.sh /opt/runtime.sh
+
+RUN sh /opt/runtime.sh
 
 EXPOSE 80 443
 

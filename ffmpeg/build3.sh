@@ -14,7 +14,7 @@ source scl_source enable devtoolset-9 || true
 yum install -y libgomp patch glibc-static libstdc++-static zlib-static expat-static
 
 
-export FFMPEG_VERSION=3.4.9 \
+export FFMPEG_VERSION=3.4.10 \
 AOM_VERSION=v1.0.0 \
 FDKAAC_VERSION=0.1.5 \
 FONTCONFIG_VERSION=2.12.4 \
@@ -571,7 +571,6 @@ curl -sSL https://gist.githubusercontent.com/elvizlai/2331ca7ac68d960c5d7b7f3dce
 patch -p1 < ffmpeg_flv_hevc.patch
 
 ## build
-DIR=/tmp/ffmpeg && mkdir -p ${DIR} && cd ${DIR} && \
 ./configure \
 --disable-debug \
 --disable-doc \
