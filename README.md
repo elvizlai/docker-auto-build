@@ -6,8 +6,8 @@
 - sdrzlyz/envoy:1.21.1
 - sdrzlyz/ffmpeg
 - sdrzlyz/go-dev
-- sdrzlyz/ikev2:5.9.5
-- sdrzlyz/m7s:3.2.2
+- sdrzlyz/ikev2:5.9.6
+- sdrzlyz/m7s:3.2.5
 - sdrzlyz/nginx:1.20.2
 - sdrzlyz/pg:13
 - sdrzlyz/redis:6.2
