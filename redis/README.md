@@ -27,8 +27,8 @@ docker run -it --rm \
     -p 6379:6379 \
     sdrzlyz/redis:6.2 \
     /run.sh --maxmemory 1G --maxmemory-policy allkeys-lru \
+    --loadmodule /opt/modules/rejson.so \
     --loadmodule /opt/modules/redisearch.so \
     --loadmodule /opt/modules/redisgraph.so \
-    --loadmodule /opt/modules/rejson.so \
     --loadmodule /opt/modules/redisbloom.so
 ```

@@ -2,15 +2,17 @@ ARG VERSION=6.2
 
 # https://redislabs.com/redis-enterprise-software/download-center/modules/
 
-# https://hub.docker.com/r/redislabs/redisearch/tags
-FROM redislabs/redisearch:2.0.12 as redisearch
-# https://hub.docker.com/r/redislabs/redisgraph/tags
-FROM redislabs/redisgraph:2.8.8 as redisgraph
 # https://hub.docker.com/r/redislabs/rejson/tags
-FROM redislabs/rejson:1.0.8 as rejson
+FROM redislabs/rejson:2.0.8 as rejson
+# https://hub.docker.com/r/redislabs/redisearch/tags
+FROM redislabs/redisearch:2.4.3 as redisearch
+# https://hub.docker.com/r/redislabs/redisgraph/tags
+FROM redislabs/redisgraph:2.8.11 as redisgraph
 # https://hub.docker.com/r/redislabs/rebloom/tags
 FROM redislabs/rebloom:2.2.9 as rebloom
 
+# provide GLIBC_2.29
+FROM redis:${VERSION} as redis
 
 # redis release
 FROM bitnami/redis:${VERSION}
@@ -26,9 +28,10 @@ RUN set -ex;\
 	apt-get install -y --no-install-recommends ${DEPS}; \
     mkdir -p ${LIBDIR};
 
+COPY --from=redis /lib/x86_64-linux-gnu/libm.so.6 /lib/x86_64-linux-gnu/libm-2.31.so /lib/x86_64-linux-gnu/
+COPY --from=rejson /usr/lib/redis/modules/rejson.so ${LIBDIR}
 COPY --from=redisearch /usr/lib/redis/modules/redisearch.so ${LIBDIR}
 COPY --from=redisgraph /usr/lib/redis/modules/redisgraph.so ${LIBDIR}
-COPY --from=rejson /usr/lib/redis/modules/rejson.so ${LIBDIR}
 COPY --from=rebloom /usr/lib/redis/modules/redisbloom.so ${LIBDIR}
 
 USER 1001
