@@ -76,6 +76,8 @@ RUN sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
                         postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
                         postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
+# pglogical https://github.com/2ndQuadrant/pglogical
+                        postgresql-$PG_MAJOR-pglogical \
 # postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/14-3.2/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
@@ -180,7 +182,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 USER root
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
-RUN echo "shared_preload_libraries='citus,timescaledb,pg_cron,pgaudit'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries='citus,pglogical,timescaledb,pg_cron,pgaudit'" >> /usr/share/postgresql/postgresql.conf.sample
 
 # select name,setting from pg_settings where name like 'pgaudit%';
 # all but except misc
