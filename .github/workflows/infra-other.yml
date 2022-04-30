@@ -27,5 +27,4 @@ jobs:
           bash ./build.sh go-dev
           bash ./build.sh ikev2
           bash ./build.sh m7s
-          bash ./build.sh redis
           bash ./build.sh tools

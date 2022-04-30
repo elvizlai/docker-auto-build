@@ -1,6 +1,6 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
-name: Infra PG
+name: Infra DB
 
 on: workflow_dispatch
 
@@ -24,3 +24,4 @@ jobs:
       - name: Build infra image
         run: |
           bash ./build.sh pg
+          bash ./build.sh redis
