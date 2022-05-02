@@ -48,6 +48,7 @@ LUAJIT=v2.1-20220411
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
+# openssl https://www.openssl.org/source/
 curl -sSL https://www.openssl.org/source/$OPENSSL.tar.gz | tar zxf -
 cd $OPENSSL
 ./config --prefix=/usr/local --libdir=/usr/local/lib shared
@@ -172,6 +173,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-pcre-jit \
     --with-stream \
     --with-stream_ssl_module \
+    --with-stream_ssl_preread_module \
     --with-threads \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
     --add-module=./module/nginx-client-module \

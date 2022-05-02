@@ -2,8 +2,7 @@
 
 apk add --no-cache \
   ca-certificates \
-  `# Bring in tzdata so users could set the timezones through the environment` \
-  `# variables` \
+  `# Bring in tzdata so users could set the timezones through the environment variables` \
   tzdata \
   `# Dependencies` \
   pcre \

@@ -174,6 +174,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-pcre-jit \
     --with-stream \
     --with-stream_ssl_module \
+    --with-stream_ssl_preread_module \
     --with-threads \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
     --add-module=./module/nginx-client-module \
