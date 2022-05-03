@@ -25,8 +25,8 @@ ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.2.1+dfsg-1.pgdg110+1
 ARG PGROUTING=3.3.1
-ARG ORAFCE=3_21_1
 ARG PG_CRON=1.4.1
+ARG ORAFCE=3_21_1
 ARG TIMESCALE=2.6.1
 ARG ZOMBODB=3000.0.11
 ARG PGSQL_HTTP=1.5.0
@@ -137,7 +137,9 @@ RUN sudo apt-get install -y --no-install-recommends \
         && USE_PGXS=1 MAJORVERSION=$PG_MAJOR make \
         && sudo USE_PGXS=1 MAJORVERSION=$PG_MAJOR make install \
 # wal2json https://github.com/eulerto/wal2json
-    && sudo apt-get install -y --no-install-recommends postgresql-$PG_MAJOR-wal2json \
+    && git clone https://github.com/eulerto/wal2json /tmp/wal2json \
+        && cd /tmp/wal2json \
+        && make && sudo make install \
 # decoder_raw https://github.com/michaelpq/pg_plugins
     && git clone https://github.com/michaelpq/pg_plugins /tmp/pg_plugins \
         && cd /tmp/pg_plugins/decoder_raw \
