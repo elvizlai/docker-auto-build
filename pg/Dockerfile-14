@@ -132,10 +132,10 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/$PG_MAJOR -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$PG_MAJOR/server .. \
         && make && sudo make install \
 # XLogMiner https://gitee.com/movead/XLogMiner
-    && git clone https://gitee.com/movead/XLogMiner /tmp/XLogMiner \
-        && cd /tmp/XLogMiner/walminer \
-        && USE_PGXS=1 MAJORVERSION=$PG_MAJOR make \
-        && sudo USE_PGXS=1 MAJORVERSION=$PG_MAJOR make install \
+    # && git clone https://gitee.com/movead/XLogMiner /tmp/XLogMiner \
+    #     && cd /tmp/XLogMiner/walminer \
+    #     && USE_PGXS=1 MAJORVERSION=$PG_MAJOR make \
+    #     && sudo USE_PGXS=1 MAJORVERSION=$PG_MAJOR make install \
 # wal2json https://github.com/eulerto/wal2json
     && git clone https://github.com/eulerto/wal2json /tmp/wal2json \
         && cd /tmp/wal2json \
