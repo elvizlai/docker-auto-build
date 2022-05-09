@@ -42,8 +42,8 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-1.1.1n
-JEMALLOC=5.2.1
+OPENSSL=openssl-1.1.1o
+JEMALLOC=5.3.0
 LUAJIT=v2.1-20220411
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
