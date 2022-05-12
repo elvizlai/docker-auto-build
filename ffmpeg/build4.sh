@@ -14,7 +14,7 @@ source scl_source enable devtoolset-9 || true
 yum install -y libgomp patch glibc-static libstdc++-static zlib-static expat-static
 
 
-export FFMPEG_VERSION=4.4.2 \
+export FFMPEG_VERSION=4.3.4 \
 AOM_VERSION=v1.0.0 \
 CHROMAPRINT_VERSION=1.5.0 \
 FDKAAC_VERSION=0.1.5 \
@@ -568,7 +568,7 @@ curl -sLO https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.bz2 && \
 tar -jx --strip-components=1 -f ffmpeg-${FFMPEG_VERSION}.tar.bz2
 
 ## !patch: h265 flv
-curl -sSL https://gist.githubusercontent.com/elvizlai/2331ca7ac68d960c5d7b7f3dce31b996/raw/ffmpeg_v3.3_flv_hevc.patch > ffmpeg_flv_hevc.patch
+curl -sSL https://raw.githubusercontent.com/kn007/patch/master/ffmpeg-let-rtmp-flv-support-hevc-h265-opus.patch > ffmpeg_flv_hevc.patch
 patch -p1 < ffmpeg_flv_hevc.patch
 
 ## build

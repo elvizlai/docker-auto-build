@@ -25,3 +25,5 @@ jobs:
         run: |
           bash ./build.sh ffmpeg
           bash ./build.sh ffmpeg 4
+          bash ./build.sh ffmpeg alpine
+          bash ./build.sh ffmpeg alpine-static
