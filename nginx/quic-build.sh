@@ -72,8 +72,8 @@ NGINXVER=quic
 NGINXNJS=0.6.2
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
-NGINXLUA=0.10.20
-NGINXSTREAMLUA=0.0.10
+NGINXLUA=0.10.21
+NGINXSTREAMLUA=0.0.11
 
 git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
 cd $NGINXDIR
@@ -213,7 +213,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.22
+LUA_RESTY_CORE=0.1.23
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 \cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -231,13 +231,13 @@ curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LR
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-mysql/tags
-LUA_RESTY_MYSQL=0.24
+LUA_RESTY_MYSQL=0.25
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 \cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
 
 # https://github.com/openresty/lua-resty-redis/tags
-LUA_RESTY_REDIS=0.29
+LUA_RESTY_REDIS=0.30
 curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS.tar.gz | tar zxf -
 \cp -rf lua-resty-redis-$LUA_RESTY_REDIS/lib/* .
 rm -rf lua-resty-redis-$LUA_RESTY_REDIS
@@ -261,13 +261,13 @@ curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$
 rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
 
 # https://github.com/openresty/lua-resty-websocket/tags
-LUA_RESTY_WEBSOCKET=0.08
+LUA_RESTY_WEBSOCKET=0.09
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
 \cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
 
 # https://github.com/openresty/lua-cjson/tags
-LUA_CJSON=2.1.0.8
+LUA_CJSON=2.1.0.10
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
 mv -f lua-cjson-$LUA_CJSON/cjson.so .
