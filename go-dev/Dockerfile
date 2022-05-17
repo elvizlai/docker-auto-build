@@ -18,7 +18,7 @@ RUN mkdir -p /tmp/jemalloc-temp && cd /tmp/jemalloc-temp \
 
 # docker kubectl buf protoc protoc-gen-go protoc-gen-grpc-gateway protoc-gen-openapiv2 revive protoc-gen-go-json protoc-gen-go-grpc protoc-gen-validate stringer
 RUN cd /tmp \
-    && curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.13.tgz | tar zxf - && mv docker/docker $GOPATH/bin/docker \
+    && curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.16.tgz | tar zxf - && mv docker/docker $GOPATH/bin/docker \
     && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && chmod +x kubectl && mv kubectl $GOPATH/bin/ \
     && curl -sSL https://github.com/bufbuild/buf/releases/download/v1.4.0/buf-Linux-x86_64 > buf && chmod +x buf && mv buf $GOPATH/bin/ \
     && curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v3.20.1/protoc-3.20.1-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/ \
