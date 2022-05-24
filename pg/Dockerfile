@@ -27,8 +27,8 @@ ARG POSTGIS=3.2.1+dfsg-1.pgdg110+1
 ARG PGROUTING=3.3.1
 ARG PG_CRON=1.4.1
 ARG ORAFCE=3_21_1
-ARG TIMESCALE=2.6.1
-ARG ZOMBODB=3000.0.11
+ARG TIMESCALE=2.7.0
+ARG ZOMBODB=3000.0.12
 ARG PGSQL_HTTP=1.5.0
 ARG PGAUDIT=1.5.2
 ARG REPMGR=5.3.1
@@ -106,7 +106,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # zombodb https://github.com/zombodb/zombodb
     && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
-        && cargo install cargo-pgx --version 0.4.2 \
+        && cargo install cargo-pgx --version 0.4.3 \
         && cargo pgx init --pg13=`which pg_config` \
         && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
         && cd /tmp/zombodb \
