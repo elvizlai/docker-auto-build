@@ -6,6 +6,7 @@ apk update && apk upgrade \
   && apk add --no-cache ca-certificates openssl \
   && update-ca-certificates \
   && apk add --no-cache --virtual .build-deps \
+  curl \
   gcc \
   libc-dev \
   make \
@@ -42,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-1.1.1o
+OPENSSL=openssl-3.0.3
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20220411
 
@@ -67,8 +68,8 @@ cd luajit2.1
 make -j4 && make install && cd ..
 
 
-NGINXVER=${1:-1.20.2}
-NGINXNJS=0.7.3
+NGINXVER=${1:-1.22.0}
+NGINXNJS=0.7.4
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.21
@@ -478,7 +479,7 @@ http {
     # MIME
     include      mime.types;
     types {
-        application/wasm wasm;
+        #application/wasm wasm;
     }
     default_type application/octet-stream;
 
@@ -569,7 +570,7 @@ http {
     }
 
     server {
-        listen    443 default_server ssl http2 fastopen=512 backlog=4096 reuseport so_keepalive=120s:60s:10;
+        listen      443 default_server ssl http2 reuseport fastopen=512 backlog=4096 so_keepalive=120s:60s:10;
         server_name _;
         ssl_stapling off;
         ssl_certificate default.crt;

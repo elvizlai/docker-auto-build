@@ -1,6 +1,6 @@
 FROM sdrzlyz/ffmpeg:alpine as builder
 
-FROM sdrzlyz/nginx:1.20.2
+FROM sdrzlyz/nginx:1.22.0
 
 COPY --from=builder /build /
 COPY bin/ttyd /usr/local/bin/ttyd
