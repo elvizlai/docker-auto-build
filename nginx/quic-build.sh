@@ -113,7 +113,7 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # waf
-git clone -b v3.0.6 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+git clone -b v3.0.7 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
 make -j$(nproc) && make install
@@ -123,14 +123,13 @@ cd ..
 git clone -b v1.0.2 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
 # waf
 
-git clone -b v0.62 --depth 1 --quiet https://github.com/openresty/echo-nginx-module
-git clone -b v0.33 --depth 1 --quiet https://github.com/openresty/headers-more-nginx-module
-git clone -b v0.5.2 --depth 1 --quiet https://github.com/aperezdc/ngx-fancyindex
-git clone -b 3.3 --depth 1 --quiet https://github.com/leev/ngx_http_geoip2_module
-git clone -b v0.32 --depth 1 --quiet https://github.com/openresty/srcache-nginx-module
+git clone --depth 1 --quiet -b 3.3 https://github.com/leev/ngx_http_geoip2_module
+git clone --depth 1 --quiet -b v0.62 https://github.com/openresty/echo-nginx-module
+git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/headers-more-nginx-module
+git clone --depth 1 --quiet -b v0.32 https://github.com/openresty/srcache-nginx-module
+git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
-
 
 cd $NGINXDIR
 export LUAJIT_LIB=/usr/local/lib

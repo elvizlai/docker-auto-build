@@ -111,7 +111,7 @@ git clone https://github.com/libinjection/libinjection.git ngx_waf/inc/libinject
 git clone -b v1.7.15 https://github.com/DaveGamble/cJSON.git ngx_waf/lib/cjson
 git clone -b v2.3.0 https://github.com/troydhanson/uthash.git ngx_waf/lib/uthash
 
-git clone -b v3.0.6 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+git clone -b v3.0.7 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
 make -j$(nproc) && make install
