@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 apk add --no-cache \
+  curl \
   ca-certificates \
   `# Bring in tzdata so users could set the timezones through the environment variables` \
   tzdata \
@@ -9,12 +10,12 @@ apk add --no-cache \
   libgcc \
   libintl \
   `# ModSecurity dependencies` \
-  libxml2-dev \
-  yajl-dev \
-  geoip-dev \
   libstdc++ \
   libmaxminddb-dev \
+  geoip-dev \
+  libxml2-dev \
   lmdb-dev \
+  yaml-dev \
   `# luarocks` \
   unzip \
   outils-md5
@@ -53,7 +54,7 @@ luarocks install lyaml
 
 mkdir -p /var/log/nginx /var/cache/nginx/client_temp  
 
-touch /var/log/nginx/access.log /var/log/nginx/stream.log var/log/nginx/error.log
+touch /var/log/nginx/access.log /var/log/nginx/stream.log /var/log/nginx/error.log
 
 ln -sf /dev/stdout /var/log/nginx/access.log
 ln -sf /dev/stdout /var/log/nginx/stream.log

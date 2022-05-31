@@ -3,7 +3,7 @@
 set -e
 
 apk update && apk upgrade \
-  && apk add --no-cache ca-certificates openssl \
+  && apk add --no-cache ca-certificates \
   && update-ca-certificates \
   && apk add --no-cache --virtual .build-deps \
   curl \
@@ -41,11 +41,26 @@ apk update && apk upgrade \
   unzip \
   && apk add --no-cache --virtual .gettext gettext
 
-
+OPENSSL=openssl-3.0.3
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20220411
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
+
+# boringssl
+# git clone -b fips-20210429 https://boringssl.googlesource.com/boringssl boringssl
+# mkdir -p boringssl/build && cd boringssl/build
+# cmake -DFIPS=0 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 ..
+# make -j$(nproc)
+# cp */*.so /usr/local/lib/
+# cp -r ../include/openssl /usr/local/include/
+# cd ../../
+
+# openssl quic
+git clone -b $OPENSSL+quic https://github.com/quictls/openssl $OPENSSL
+cd $OPENSSL
+./config --prefix=/usr/local --libdir=/usr/local/lib shared
+make -j4 && make install_sw && cd ..
 
 # jemalloc https://github.com/jemalloc/jemalloc
 curl -sSL https://github.com/jemalloc/jemalloc/releases/download/$JEMALLOC/jemalloc-$JEMALLOC.tar.bz2 | tar xjf -
@@ -58,15 +73,6 @@ mkdir -p luajit2.1
 curl -sSL https://github.com/openresty/luajit2/archive/$LUAJIT.tar.gz | tar zxf - -C luajit2.1 --strip-components 1
 cd luajit2.1
 make -j$(nproc) && make install && cd ..
-
-# boringssl
-git clone -b fips-20210429 https://boringssl.googlesource.com/boringssl /opt/lib-src/boringssl
-mkdir -p /opt/lib-src/boringssl/build && cd /opt/lib-src/boringssl/build
-cmake -DFIPS=0 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 ..
-make -j$(nproc)
-cp */*.so /usr/local/lib/
-cp -r ../include/openssl /usr/local/include/
-cd /opt/lib-src
 
 
 NGINXVER=quic
@@ -485,7 +491,7 @@ http {
 
     # logging
     log_format main '\$request_id \$remote_addr [\$time_local] \$ssl_protocol/\$ssl_cipher "\$request" \$status \$body_bytes_sent "\$http_referer" "\$http_host" '
-                         '\$http_user_agent \$http_x_forwarded_for \$request_time \$upstream_response_time \$upstream_addr \$upstream_status';
+                         '\$http_user_agent \$http_x_forwarded_for \$request_time \$upstream_response_time \$upstream_addr \$upstream_status \$quic';
 
     access_log /var/log/nginx/access.log main;
 

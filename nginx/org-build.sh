@@ -3,7 +3,7 @@
 set -e
 
 apk update && apk upgrade \
-  && apk add --no-cache ca-certificates openssl \
+  && apk add --no-cache ca-certificates \
   && update-ca-certificates \
   && apk add --no-cache --virtual .build-deps \
   curl \
@@ -351,10 +351,10 @@ rm -rf yaml-$LIB_YAML
 
 # cert gen
 mkdir -p /etc/nginx/cert /etc/nginx/acme
-/usr/bin/openssl dhparam -out /etc/nginx/dhparam.pem 1024
+openssl dhparam -out /etc/nginx/dhparam.pem 1024
 
 # rsa
-/usr/bin/openssl req \
+openssl req \
 -new \
 -x509 \
 -nodes \
@@ -381,12 +381,12 @@ mkdir -p /etc/nginx/cert /etc/nginx/acme
   echo 'DNS.1 = hijack.local')
 
 # ecc
-/usr/bin/openssl req \
+openssl req \
 -new \
 -x509 \
 -nodes \
 -days 36500 \
--newkey ec:<(/usr/bin/openssl ecparam -name prime256v1) \
+-newkey ec:<(openssl ecparam -name prime256v1) \
 -sha256 \
 -keyout /etc/nginx/default-ecc.key \
 -out /etc/nginx/default-ecc.crt \
@@ -408,7 +408,7 @@ mkdir -p /etc/nginx/cert /etc/nginx/acme
   echo 'DNS.1 = hijack.local')
 
 # create account key
-/usr/bin/openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/nginx/account.key
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/nginx/account.key
 
 # dynamic modules usage in nginx.conf
 # load_module "modules/xxxx.so"
