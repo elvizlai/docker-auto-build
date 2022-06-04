@@ -7,6 +7,7 @@ apk update && apk upgrade \
   && update-ca-certificates \
   && apk add --no-cache --virtual .build-deps \
   curl \
+  mercurial \
   gcc \
   libc-dev \
   make \
@@ -82,8 +83,10 @@ NGINXNDK=0.3.1
 NGINXLUA=0.10.21
 NGINXSTREAMLUA=0.0.11
 
-git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
+#git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
+hg clone https://hg.nginx.org/nginx-quic $NGINXDIR
 cd $NGINXDIR
+hg update quic
 curl -sSL https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch > Enable_BoringSSL_OCSP.patch
 patch -p1 < Enable_BoringSSL_OCSP.patch
 
@@ -172,7 +175,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-http_sub_module \
     --with-http_v2_module \
     --with-http_v3_module \
-    --with-http_quic_module \
     --with-stream_quic_module \
     --with-http_xslt_module=dynamic \
     --with-mail \
@@ -491,7 +493,7 @@ http {
 
     # logging
     log_format main '\$request_id \$remote_addr [\$time_local] \$ssl_protocol/\$ssl_cipher "\$request" \$status \$body_bytes_sent "\$http_referer" "\$http_host" '
-                         '\$http_user_agent \$http_x_forwarded_for \$request_time \$upstream_response_time \$upstream_addr \$upstream_status \$quic';
+                         '\$http_user_agent \$http_x_forwarded_for \$request_time \$upstream_response_time \$upstream_addr \$upstream_status';
 
     access_log /var/log/nginx/access.log main;
 
