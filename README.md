@@ -10,7 +10,7 @@
 - sdrzlyz/m7s:3.2.5
 - sdrzlyz/nginx:1.22.0
 - sdrzlyz/pg:13
-- sdrzlyz/redis:6.2
+- sdrzlyz/redis:7.0
 - sdrzlyz/tools netcat tcpdump psql mycli
 - sdrzlyz/ubuntu
 

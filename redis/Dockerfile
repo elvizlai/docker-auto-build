@@ -1,13 +1,13 @@
-ARG VERSION=6.2
+ARG VERSION=7.0
 
 # https://redislabs.com/redis-enterprise-software/download-center/modules/
 
 # https://hub.docker.com/r/redislabs/rejson/tags
-FROM redislabs/rejson:2.0.8 as rejson
+FROM redislabs/rejson:2.0.11 as rejson
 # https://hub.docker.com/r/redislabs/redisearch/tags
-FROM redislabs/redisearch:2.4.3 as redisearch
+FROM redislabs/redisearch:2.4.8 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph/tags
-FROM redislabs/redisgraph:2.8.11 as redisgraph
+FROM redislabs/redisgraph:2.8.13 as redisgraph
 # https://hub.docker.com/r/redislabs/rebloom/tags
 FROM redislabs/rebloom:2.2.9 as rebloom
 
