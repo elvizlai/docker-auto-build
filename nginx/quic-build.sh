@@ -77,7 +77,7 @@ make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=quic
-NGINXNJS=0.6.2
+NGINXNJS=0.7.4
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.21
@@ -129,7 +129,7 @@ make -j$(nproc) && make install
 cd ..
 
 # https://github.com/SpiderLabs/ModSecurity-nginx/tags
-git clone -b v1.0.2 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
+git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
 # waf
 
 git clone --depth 1 --quiet -b 3.3 https://github.com/leev/ngx_http_geoip2_module
@@ -312,7 +312,7 @@ curl -sSL https://github.com/bungle/lua-resty-template/archive/v$LUA_RESTY_TPL.t
 rm -rf lua-resty-template-$LUA_RESTY_TPL
 
 # https://github.com/leafo/pgmoon/tags
-LUA_PGMOON=1.14.0
+LUA_PGMOON=1.15.0
 curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf -
 \cp -rf pgmoon-$LUA_PGMOON/pgmoon .
 rm -rf pgmoon-$LUA_PGMOON

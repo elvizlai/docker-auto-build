@@ -105,24 +105,16 @@ rm -rf $NGINXDIR/module/dynamic
 mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
-# ngx_waf
-git clone -b current https://github.com/ADD-SP/ngx_waf
-git clone https://github.com/libinjection/libinjection.git ngx_waf/inc/libinjection
-git clone -b v1.7.15 https://github.com/DaveGamble/cJSON.git ngx_waf/lib/cjson
-git clone -b v2.3.0 https://github.com/troydhanson/uthash.git ngx_waf/lib/uthash
-
+# waf
 git clone -b v3.0.7 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
 make -j$(nproc) && make install
 cd ..
 
-git clone -b stable https://github.com/jedisct1/libsodium libsodium
-cd libsodium
-./configure --prefix=/usr/local --with-pic
-make -j$(nproc) && make install
-cd ..
-# ngx_waf
+# https://github.com/SpiderLabs/ModSecurity-nginx/tags
+git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
+# waf
 
 git clone --depth 1 --quiet -b 3.3 https://github.com/leev/ngx_http_geoip2_module
 git clone --depth 1 --quiet -b v0.62 https://github.com/openresty/echo-nginx-module
@@ -139,7 +131,7 @@ curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --s
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
 ./configure \
-    --with-cc-opt="-DTCP_FASTOPEN=23" \
+    --with-cc-opt="-DTCP_FASTOPEN=23 -Wno-error" \
     --with-ld-opt="-ljemalloc -Wl,-rpath,$LUAJIT_LIB" \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
@@ -187,11 +179,11 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --add-module=./module/stream-lua-nginx-module-$NGINXSTREAMLUA \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
     --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
+    --add-dynamic-module=./module/dynamic/ModSecurity-nginx \
     --add-dynamic-module=./module/dynamic/nginx-module-vts \
     --add-dynamic-module=./module/dynamic/ngx-fancyindex \
     --add-dynamic-module=./module/dynamic/ngx_http_geoip2_module \
     --add-dynamic-module=./module/dynamic/ngx_http_substitutions_filter_module \
-    --add-dynamic-module=./module/dynamic/ngx_waf \
     --add-dynamic-module=./module/dynamic/srcache-nginx-module
 
 make -j$(nproc)
@@ -304,7 +296,7 @@ curl -sSL https://github.com/bungle/lua-resty-template/archive/v$LUA_RESTY_TPL.t
 rm -rf lua-resty-template-$LUA_RESTY_TPL
 
 # https://github.com/leafo/pgmoon/tags
-LUA_PGMOON=1.14.0
+LUA_PGMOON=1.15.0
 curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf -
 \cp -rf pgmoon-$LUA_PGMOON/pgmoon .
 rm -rf pgmoon-$LUA_PGMOON
@@ -525,9 +517,8 @@ http {
     resolver 8.8.8.8 223.5.5.5 119.29.29.29 valid=60s ipv6=off;
     resolver_timeout 15s;
 
-    #waf on;
-    #waf_rule_path /etc/nginx/modsec/rules/;
-    #waf_mode STD;
+    #modsecurity on;
+    #modsecurity_rules_file /etc/nginx/modsec/main.conf;
 
     lua_shared_dict acme 16m;
     # required to verify Let's Encrypt API
@@ -612,4 +603,3 @@ git clone --depth=1 https://github.com/coreruleset/coreruleset /etc/nginx/modsec
 mv /etc/nginx/modsec/coreruleset/crs-setup.conf.example /etc/nginx/modsec/coreruleset/crs-setup.conf
 find /etc/nginx/modsec/coreruleset -mindepth 1 -maxdepth 1 -type f -not -path "*.conf" -delete
 find /etc/nginx/modsec/coreruleset -mindepth 1 -maxdepth 1 -type d -not -name 'rules' | xargs rm -rf
-\cp -r $NGINXDIR/module/dynamic/ngx_waf/assets/rules /etc/nginx/modsec/
