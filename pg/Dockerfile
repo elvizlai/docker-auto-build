@@ -20,7 +20,7 @@ RUN apk update && apk add --no-cache git \
 # postgres
 FROM postgres:${VERSION}
 
-ARG CITUS=10.2.5
+ARG CITUS=11.0.2
 ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.2.1+dfsg-1.pgdg110+1
@@ -28,7 +28,7 @@ ARG PGROUTING=3.3.1
 ARG PG_CRON=1.4.1
 ARG ORAFCE=3_21_1
 ARG TIMESCALE=2.7.0
-ARG ZOMBODB=3000.0.12
+ARG ZOMBODB=3000.1.0
 ARG PGSQL_HTTP=1.5.0
 ARG PGAUDIT=1.5.2
 ARG REPMGR=5.3.2
@@ -73,12 +73,12 @@ RUN sudo apt-get install -y --no-install-recommends \
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
-                        postgresql-$PG_MAJOR-citus-10.2=$CITUS.citus-1 \
+                        postgresql-$PG_MAJOR-citus-11.0=$CITUS.citus-1 \
                         postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
                         postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
 # pglogical https://github.com/2ndQuadrant/pglogical
                         postgresql-$PG_MAJOR-pglogical \
-# postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/13-3.2/Dockerfile
+# postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/13-3.2/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
 # pgcron https://github.com/citusdata/pg_cron
@@ -106,10 +106,10 @@ RUN sudo apt-get install -y --no-install-recommends \
 # zombodb https://github.com/zombodb/zombodb
     && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
-        && cargo install cargo-pgx --version 0.4.3 \
-        && cargo pgx init --pg13=`which pg_config` \
         && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
         && cd /tmp/zombodb \
+        && cargo install cargo-pgx --version `cat Cargo.toml | grep "pgx = " | sed 's/pgx = //g'` \
+        && cargo pgx init --pg13=`which pg_config` \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
         && sudo rm -rf /var/lib/postgresql/.pgx || true \
 # pgsql-http https://github.com/pramsey/pgsql-http
