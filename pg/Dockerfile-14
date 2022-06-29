@@ -26,6 +26,7 @@ ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.2.1+dfsg-1.pgdg110+1
 ARG PGROUTING=3.3.1
 ARG PG_CRON=1.4.1
+ARG PG_IVM=1.1
 ARG ORAFCE=3_21_1
 ARG TIMESCALE=2.7.0
 ARG ZOMBODB=3000.1.0
@@ -85,6 +86,12 @@ RUN sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-cron \
 # pgroonga https://github.com/pgroonga/pgroonga
                         postgresql-$PG_MAJOR-pgdg-pgroonga \
+# pg_ivm https://github.com/sraoss/pg_ivm
+    && wget -O /tmp/pg_ivm.tar.gz "https://github.com/sraoss/pg_ivm/archive/v${PG_IVM}.tar.gz" \
+        && mkdir -p /tmp/pg_ivm \
+        && tar -zxf /tmp/pg_ivm.tar.gz -C /tmp/pg_ivm --strip-components 1 \
+        && cd /tmp/pg_ivm \
+        && make && sudo make install \
 # pgrouting https://github.com/pgRouting/pgrouting https://github.com/pgRouting/docker-pgrouting
     && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING}.tar.gz" \
         && mkdir -p /tmp/pgrouting/build \
