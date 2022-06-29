@@ -43,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.0.3
+OPENSSL=openssl-3.0.4
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20220411
 
@@ -69,7 +69,7 @@ make -j4 && make install && cd ..
 
 
 NGINXVER=${1:-1.22.0}
-NGINXNJS=0.7.4
+NGINXNJS=0.7.5
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.21
@@ -116,7 +116,7 @@ cd ..
 git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
 # waf
 
-git clone --depth 1 --quiet -b 3.3 https://github.com/leev/ngx_http_geoip2_module
+git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
 git clone --depth 1 --quiet -b v0.62 https://github.com/openresty/echo-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.32 https://github.com/openresty/srcache-nginx-module
@@ -211,13 +211,13 @@ curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.t
 rm -rf lua-resty-core-$LUA_RESTY_CORE
 
 # https://github.com/openresty/lua-resty-lock/tags
-LUA_RESTY_LOCK=0.08
+LUA_RESTY_LOCK=0.09
 curl -sSL https://github.com/openresty/lua-resty-lock/archive/v$LUA_RESTY_LOCK.tar.gz | tar zxf -
 \cp -rf lua-resty-lock-$LUA_RESTY_LOCK/lib/* .
 rm -rf lua-resty-lock-$LUA_RESTY_LOCK
 
 # https://github.com/openresty/lua-resty-lrucache/tags
-LUA_RESTY_LRUCACHE=0.11
+LUA_RESTY_LRUCACHE=0.13
 curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
 \cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
@@ -272,7 +272,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.8
+LUA_RESTY_OPENSSL=0.8.10
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
