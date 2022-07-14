@@ -83,10 +83,10 @@ NGINXNDK=0.3.1
 NGINXLUA=0.10.21
 NGINXSTREAMLUA=0.0.11
 
-#git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
-hg clone https://hg.nginx.org/nginx-quic $NGINXDIR
+git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
+# hg clone https://hg.nginx.org/nginx-quic $NGINXDIR
 cd $NGINXDIR
-hg update quic
+# hg update quic
 curl -sSL https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch > Enable_BoringSSL_OCSP.patch
 patch -p1 < Enable_BoringSSL_OCSP.patch
 
