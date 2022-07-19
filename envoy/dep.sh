@@ -9,7 +9,7 @@ apk add --virtual build_deps curl make gcc libc-dev readline-dev ncurses-dev
 apk add unzip outils-md5
 
 LUAJIT=v2.1-20220411
-LUAROCKS=3.9.0
+LUAROCKS=3.9.1
 
 # lua-jit https://github.com/openresty/luajit2
 mkdir -p luajit2.1
@@ -23,11 +23,15 @@ cd luarocks-$LUAROCKS
 ./configure
 make && make install && cd .. && rm -rf luarocks-$LUAROCKS
 
+# remove lua downloader wget for alpine
+# https://github.com/luarocks/luarocks/issues/952#issuecomment-1184445229
+sed -i '/WGET/d' /usr/local/share/lua/5.1/luarocks/fs/tools.lua
+
 # luasocket
 luarocks install luasocket
 
 # cjson https://github.com/openresty/lua-cjson/tags
-LUA_CJSON=2.1.0.8
+LUA_CJSON=2.1.0.10
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 cd lua-cjson-$LUA_CJSON && luarocks make && rm -rf lua-cjson-*
 
