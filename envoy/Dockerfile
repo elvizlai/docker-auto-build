@@ -1,10 +1,9 @@
 ARG VERSION=1.23.0
 
-FROM envoyproxy/envoy-alpine:v${VERSION}
+FROM envoyproxy/envoy-alpine:v1.21.4
 
 COPY dep.sh /opt/
-RUN ln -sf /usr/glibc-compat/lib/ld-2.33.so /usr/glibc-compat/lib/ld-linux-x86-64.so.2 \
-    && chmod +x /opt/dep.sh && /opt/dep.sh
+RUN chmod +x /opt/dep.sh && /opt/dep.sh
 
 ADD https://x.morn.io/dl/envoy/envoy-1.23.0 /usr/local/bin/envoy
 RUN chmod +x /usr/local/bin/envoy
