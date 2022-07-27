@@ -42,6 +42,10 @@ cd luarocks-$LUAROCKS
 ./configure --lua-suffix=jit
 make -j$(nproc) && make install && cd ..
 
+# remove lua downloader wget
+# https://github.com/luarocks/luarocks/issues/952#issuecomment-1184445229
+sed -i '/WGET/d' /usr/local/share/lua/5.1/luarocks/fs/tools.lua
+
 # pl https://github.com/lunarmodules/Penlight
 # it deps on luafilesystem https://github.com/keplerproject/luafilesystem
 luarocks install penlight

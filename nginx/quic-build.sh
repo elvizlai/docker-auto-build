@@ -77,7 +77,7 @@ make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=quic
-NGINXNJS=0.7.5
+NGINXNJS=0.7.6
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.21
@@ -134,7 +134,7 @@ git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/Spi
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
 git clone --depth 1 --quiet -b v0.62 https://github.com/openresty/echo-nginx-module
-git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/headers-more-nginx-module
+git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.32 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet https://github.com/vozlt/nginx-module-vts
