@@ -11,6 +11,7 @@
 - sdrzlyz/nginx:1.22.0
 - sdrzlyz/pg:13
 - sdrzlyz/redis:7.0
+- sdrzlyz/strapi:4.3.4
 - sdrzlyz/tools netcat tcpdump psql mycli
 - sdrzlyz/ubuntu
 
