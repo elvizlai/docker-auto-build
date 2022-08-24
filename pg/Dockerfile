@@ -20,16 +20,16 @@ RUN apk update && apk add --no-cache git \
 # postgres
 FROM postgres:${VERSION}
 
-ARG CITUS=11.0.5
+ARG CITUS=11.0.6
 ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
 ARG POSTGIS=3.2.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.3.1
-ARG PG_CRON=1.4.2
-ARG PG_IVM=1.2
-ARG ORAFCE=3_24_0
 ARG TIMESCALE=2.7.2
 ARG ZOMBODB=3000.1.3
+ARG PG_CRON=1.4.2
+ARG PG_IVM=1.2
+ARG ORAFCE=3_24_4
 ARG PGSQL_HTTP=1.5.0
 ARG PGAUDIT=1.5.2
 ARG REPMGR=5.3.2
@@ -84,30 +84,12 @@ RUN sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
 # pgroonga https://github.com/pgroonga/pgroonga
                         postgresql-$PG_MAJOR-pgdg-pgroonga \
-# pgcron https://github.com/citusdata/pg_cron
-    && wget -O /tmp/pg_cron.tar.gz "https://github.com/citusdata/pg_cron/archive/v${PG_CRON}.tar.gz" \
-        && mkdir -p /tmp/pg_cron \
-        && tar -zxf /tmp/pg_cron.tar.gz -C /tmp/pg_cron --strip-components 1 \
-        && cd /tmp/pg_cron \
-        && make && sudo make install \
 # pgrouting https://github.com/pgRouting/pgrouting https://github.com/pgRouting/docker-pgrouting
     && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING}.tar.gz" \
         && mkdir -p /tmp/pgrouting/build \
         && tar --extract --file /tmp/pgrouting.tar.gz --directory /tmp/pgrouting --strip-components 1 \
         && cd /tmp/pgrouting/build \
         && cmake .. \
-        && make && sudo make install \
-# pg_ivm https://github.com/sraoss/pg_ivm
-    && wget -O /tmp/pg_ivm.tar.gz "https://github.com/sraoss/pg_ivm/archive/v${PG_IVM}.tar.gz" \
-        && mkdir -p /tmp/pg_ivm \
-        && tar -zxf /tmp/pg_ivm.tar.gz -C /tmp/pg_ivm --strip-components 1 \
-        && cd /tmp/pg_ivm \
-        && make && sudo make install \
-# orafce https://github.com/orafce/orafce
-    && wget -O /tmp/orafce.tar.gz "https://github.com/orafce/orafce/archive/VERSION_${ORAFCE}.tar.gz" \
-        && mkdir -p /tmp/orafce \
-        && tar --extract --file /tmp/orafce.tar.gz --directory /tmp/orafce --strip-components 1 \
-        && cd /tmp/orafce \
         && make && sudo make install \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
     && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \
@@ -123,6 +105,24 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cargo pgx init --pg13=`which pg_config` \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
         && sudo rm -rf /var/lib/postgresql/.pgx || true \
+# pgcron https://github.com/citusdata/pg_cron
+    && wget -O /tmp/pg_cron.tar.gz "https://github.com/citusdata/pg_cron/archive/v${PG_CRON}.tar.gz" \
+        && mkdir -p /tmp/pg_cron \
+        && tar -zxf /tmp/pg_cron.tar.gz -C /tmp/pg_cron --strip-components 1 \
+        && cd /tmp/pg_cron \
+        && make && sudo make install \
+# pg_ivm https://github.com/sraoss/pg_ivm
+    && wget -O /tmp/pg_ivm.tar.gz "https://github.com/sraoss/pg_ivm/archive/v${PG_IVM}.tar.gz" \
+        && mkdir -p /tmp/pg_ivm \
+        && tar -zxf /tmp/pg_ivm.tar.gz -C /tmp/pg_ivm --strip-components 1 \
+        && cd /tmp/pg_ivm \
+        && make && sudo make install \
+# orafce https://github.com/orafce/orafce
+    && wget -O /tmp/orafce.tar.gz "https://github.com/orafce/orafce/archive/VERSION_${ORAFCE}.tar.gz" \
+        && mkdir -p /tmp/orafce \
+        && tar --extract --file /tmp/orafce.tar.gz --directory /tmp/orafce --strip-components 1 \
+        && cd /tmp/orafce \
+        && make && sudo make install \
 # pgsql-http https://github.com/pramsey/pgsql-http
     && wget -O /tmp/pgsql-http.tar.gz "https://github.com/pramsey/pgsql-http/archive/v${PGSQL_HTTP}.tar.gz" \
         && mkdir -p /tmp/pgsql-http \
