@@ -288,7 +288,7 @@ curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
 
 # https://github.com/thibaultcha/lua-resty-mlcache/tags
-LUA_RESTY_MLCACHE=2.5.0
+LUA_RESTY_MLCACHE=2.6.0
 curl -sSL https://github.com/thibaultcha/lua-resty-mlcache/archive/$LUA_RESTY_MLCACHE.tar.gz | tar zxf -
 \cp -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE/lib/* .
 rm -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE
