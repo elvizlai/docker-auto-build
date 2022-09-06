@@ -23,10 +23,11 @@ FROM postgres:${VERSION}
 ARG CITUS=11.0.6
 ARG POSTGRESQL_HLL=2.16
 ARG POSTGRESQL_TOPN=2.4.0
-ARG POSTGIS=3.2.2+dfsg-1.pgdg110+1
-ARG PGROUTING=3.3.1
-ARG TIMESCALE=2.7.2
+ARG POSTGIS=3.2.3+dfsg-1.pgdg110+1
+ARG PGROUTING=3.3.2
+ARG TIMESCALE=2.8.0
 ARG ZOMBODB=3000.1.3
+ARG PG_AGENT=4_2_2
 ARG PG_CRON=1.4.2
 ARG PG_IVM=1.2
 ARG ORAFCE=3_24_4
@@ -69,6 +70,8 @@ RUN sudo apt-get install -y --no-install-recommends \
         pkg-config libreadline-dev \
         \
         libcurl4-openssl-dev \
+        \
+        libboost-filesystem-dev libboost-date-time-dev libboost-thread-dev \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
 # hll https://github.com/citusdata/postgresql-hll https://github.com/citusdata/postgresql-hll/tags
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
@@ -105,6 +108,14 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cargo pgx init --pg14=`which pg_config` \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
         && sudo rm -rf /var/lib/postgresql/.pgx || true \
+# pgagent https://github.com/postgres/pgagent/tags
+    && wget -O /tmp/pgagent.tar.gz "https://github.com/postgres/pgagent/archive/REL-${PG_AGENT}.tar.gz" \
+        && mkdir -p /tmp/pgagent \
+        && tar -zxf /tmp/pgagent.tar.gz -C /tmp/pgagent --strip-components 1 \
+        && cd /tmp/pgagent \
+        && mkdir build && cd build \
+        && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/$PG_MAJOR -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$PG_MAJOR/server .. \
+        && make && sudo make install \
 # pgcron https://github.com/citusdata/pg_cron
     && wget -O /tmp/pg_cron.tar.gz "https://github.com/citusdata/pg_cron/archive/v${PG_CRON}.tar.gz" \
         && mkdir -p /tmp/pg_cron \
@@ -185,6 +196,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         bison flex zlib1g-dev \
         pkg-config libreadline-dev \
         libcurl4-openssl-dev \
+        libboost-filesystem-dev libboost-date-time-dev libboost-thread-dev \
     && sudo apt-get clean -y \
     && sudo rm -rf \
         "${HOME}/.cache" \
