@@ -29,6 +29,7 @@ RUN cd /tmp \
     && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0 \
     && go install github.com/envoyproxy/protoc-gen-validate@v0.6.2 \
     && go install golang.org/x/tools/cmd/stringer@v0.1.12 \
+    && go install golang.org/x/vuln/cmd/govulncheck@latest \
     && upx -f -q /usr/local/go/bin/* $GOPATH/bin/* || true
 
 # clean
