@@ -2,14 +2,47 @@ ARG VERSION=7.0
 
 # https://redislabs.com/redis-enterprise-software/download-center/modules/
 
-# https://hub.docker.com/r/redislabs/rejson/tags
-FROM redislabs/rejson:2.0.11 as rejson
-# https://hub.docker.com/r/redislabs/redisearch/tags
-FROM redislabs/redisearch:2.4.8 as redisearch
-# https://hub.docker.com/r/redislabs/redisgraph/tags
-FROM redislabs/redisgraph:2.8.13 as redisgraph
-# https://hub.docker.com/r/redislabs/rebloom/tags
-FROM redislabs/rebloom:2.2.9 as rebloom
+# https://hub.docker.com/r/redislabs/rejson/tags https://redis.io/docs/stack/json/
+FROM redislabs/rejson:2.2.0 as rejson
+# https://hub.docker.com/r/redislabs/rebloom/tags https://redis.io/docs/stack/bloom/
+FROM redislabs/rebloom:2.2.17 as rebloom
+# https://hub.docker.com/r/redislabs/redisearch/tags https://redis.io/docs/stack/search/
+FROM redislabs/redisearch:2.6.0 as redisearch
+# https://hub.docker.com/r/redislabs/redisgraph/tags https://redis.io/docs/stack/graph/
+FROM redislabs/redisgraph:2.8.19 as redisgraph
+
+# Tair https://github.com/alibaba/TairHash
+FROM tairmodule/tairstring:latest as tairstring
+FROM tairmodule/tairzset:latest as tairzset
+
+# Tairhash compile + ReDe
+# https://github.com/alibaba/TairHash
+# https://github.com/TamarLabs/ReDe
+FROM redis:${VERSION} as tairhash
+RUN set -ex; \
+    \
+    BUILD_DEPS=' \
+        ca-certificates \
+        cmake \
+        gcc \
+        git \
+        g++ \
+        make \
+        curl \
+    '; \
+    apt-get update; \
+    apt-get install -y $BUILD_DEPS --no-install-recommends; \
+    rm -rf /var/lib/apt/lists/*; \
+    git clone "https://github.com/alibaba/TairHash.git"; \
+    cd TairHash; \
+    mkdir -p build; \
+    cd build; \
+    cmake -DSORT_MODE=yes ..; \
+    make -j; \
+    cd ..; \
+    cp lib/tairhash_module.so /usr/local/lib/; \
+    curl -sSL -o /usr/local/lib/rede.so https://github.com/TamarLabs/ReDe/releases/download/v0.5.0/module.so; \
+    chmod +x /usr/local/lib/*.so
 
 # provide GLIBC_2.29
 FROM redis:${VERSION} as redis
@@ -33,5 +66,9 @@ COPY --from=rejson /usr/lib/redis/modules/rejson.so ${LIBDIR}
 COPY --from=redisearch /usr/lib/redis/modules/redisearch.so ${LIBDIR}
 COPY --from=redisgraph /usr/lib/redis/modules/redisgraph.so ${LIBDIR}
 COPY --from=rebloom /usr/lib/redis/modules/redisbloom.so ${LIBDIR}
+COPY --from=tairhash /usr/local/lib/rede.so ${LIBDIR}/rede.so
+COPY --from=tairhash /usr/local/lib/tairhash_module.so ${LIBDIR}/tairhash.so
+COPY --from=tairstring /usr/local/lib/tairstring_module.so ${LIBDIR}/tairstring.so
+COPY --from=tairzset /usr/local/lib/tairzset_module.so ${LIBDIR}/tairzset.so
 
 USER 1001

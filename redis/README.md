@@ -28,7 +28,11 @@ docker run -it --rm \
     sdrzlyz/redis:7.0 \
     /run.sh --maxmemory 1G --maxmemory-policy allkeys-lru \
     --loadmodule /opt/modules/rejson.so \
+    --loadmodule /opt/modules/redisbloom.so \
     --loadmodule /opt/modules/redisearch.so \
     --loadmodule /opt/modules/redisgraph.so \
-    --loadmodule /opt/modules/redisbloom.so
+    --loadmodule /opt/modules/tairhash.so \
+    --loadmodule /opt/modules/tairstring.so \
+    --loadmodule /opt/modules/tairzset.so \
+    --loadmodule /opt/modules/rede.so
 ```
