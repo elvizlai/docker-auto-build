@@ -5,17 +5,15 @@ ARG GO_VERSION=1.14.0
 FROM golang:${GO_VERSION}-alpine AS tools
 
 ENV TOOLS_VERSION 0.8.1
+ENV GO111MODULE on
 
-# https://github.com/timescale/timescaledb-docker/blob/master/Dockerfile
-RUN apk update && apk add --no-cache git \
+# https://github.com/timescale/timescaledb-docker/blob/main/Dockerfile
+RUN cd /tmp \
+    && apk update && apk add --no-cache git \
     && go get github.com/timescale/timescaledb-tune/cmd/timescaledb-tune \
     && go get github.com/timescale/timescaledb-parallel-copy/cmd/timescaledb-parallel-copy \
     && go get github.com/timescale/timescaledb-backup/cmd/ts-dump \
-    && go get github.com/timescale/timescaledb-backup/cmd/ts-restore \
-    && go build -o /go/bin/timescaledb-tune -v github.com/timescale/timescaledb-tune/cmd/timescaledb-tune \
-    && go build -o /go/bin/timescaledb-parallel-copy -v github.com/timescale/timescaledb-parallel-copy/cmd/timescaledb-parallel-copy \
-    && go build -o /go/bin/ts-dump -v github.com/timescale/timescaledb-backup/cmd/ts-dump \
-    && go build -o /go/bin/ts-restore -v github.com/timescale/timescaledb-backup/cmd/ts-restore
+    && go get github.com/timescale/timescaledb-backup/cmd/ts-restore
 
 # postgres
 FROM postgres:${VERSION}
