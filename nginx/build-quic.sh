@@ -7,6 +7,7 @@ apk update && apk upgrade \
   && update-ca-certificates \
   && apk add --no-cache --virtual .build-deps \
   curl \
+  mercurial \
   gcc \
   libc-dev \
   make \
@@ -39,18 +40,25 @@ apk update && apk upgrade \
   lmdb-dev \
   file \
   unzip \
-  curl-dev \
   && apk add --no-cache --virtual .gettext gettext
 
-
-OPENSSL=openssl-3.0.5
+OPENSSL=openssl-3.0.3
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20220411
+LUAJIT=v2.1-20220915
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
-# openssl https://www.openssl.org/source/
-curl -sSL https://www.openssl.org/source/$OPENSSL.tar.gz | tar zxf -
+# boringssl
+# git clone -b fips-20210429 https://boringssl.googlesource.com/boringssl boringssl
+# mkdir -p boringssl/build && cd boringssl/build
+# cmake -DFIPS=0 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 ..
+# make -j$(nproc)
+# cp */*.so /usr/local/lib/
+# cp -r ../include/openssl /usr/local/include/
+# cd ../../
+
+# openssl quic
+git clone -b $OPENSSL+quic https://github.com/quictls/openssl $OPENSSL
 cd $OPENSSL
 ./config --prefix=/usr/local --libdir=/usr/local/lib shared
 make -j4 && make install_sw && cd ..
@@ -59,22 +67,30 @@ make -j4 && make install_sw && cd ..
 curl -sSL https://github.com/jemalloc/jemalloc/releases/download/$JEMALLOC/jemalloc-$JEMALLOC.tar.bz2 | tar xjf -
 cd jemalloc-$JEMALLOC
 ./configure --prefix=/usr/local --libdir=/usr/local/lib
-make -j4 && make install && cd ..
+make -j$(nproc) && make install && cd ..
 
 # lua-jit https://github.com/openresty/luajit2/tags
 mkdir -p luajit2.1
 curl -sSL https://github.com/openresty/luajit2/archive/$LUAJIT.tar.gz | tar zxf - -C luajit2.1 --strip-components 1
 cd luajit2.1
-make -j4 && make install && cd ..
+make -j$(nproc) && make install && cd ..
 
 
-NGINXVER=${1:-1.22.0}
+NGINXVER=quic
 NGINXNJS=0.7.7
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
-NGINXLUA=0.10.21
+NGINXLUA=0.10.22
 NGINXSTREAMLUA=0.0.11
 
+git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
+# hg clone https://hg.nginx.org/nginx-quic $NGINXDIR
+cd $NGINXDIR
+# hg update quic
+curl -sSL https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch > Enable_BoringSSL_OCSP.patch
+patch -p1 < Enable_BoringSSL_OCSP.patch
+
+# static modules
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
 rm -rf ngx_brotli
@@ -83,7 +99,7 @@ cd ngx_brotli
 git submodule update --init
 cd ..
 
-# https://github.com/nginx/njs/tags
+# https://github.com/nginx/njs/tags, 0.7.x has unsupported tls
 git clone -b $NGINXNJS https://github.com/nginx/njs
 
 # https://github.com/vision5/ngx_devel_kit/tags
@@ -124,16 +140,11 @@ git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
-# https://nginx.org/en/download.html
 cd $NGINXDIR
-curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1
-
-curl -sSL https://raw.githubusercontent.com/kn007/patch/master/nginx.patch > nginx.patch
-patch -p1 < nginx.patch
-
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
-./configure \
+./auto/configure \
+    --build=nginx-quic \
     --with-cc-opt="-DTCP_FASTOPEN=23 -Wno-error" \
     --with-ld-opt="-ljemalloc -Wl,-rpath,$LUAJIT_LIB" \
     --prefix=/etc/nginx \
@@ -162,8 +173,9 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-http_ssl_module \
     --with-http_stub_status_module \
     --with-http_sub_module \
-    --with-http_v2_hpack_enc \
     --with-http_v2_module \
+    --with-http_v3_module \
+    --with-stream_quic_module \
     --with-http_xslt_module=dynamic \
     --with-mail \
     --with-mail_ssl_module \
@@ -209,7 +221,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.23
+LUA_RESTY_CORE=0.1.24
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 \cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -325,7 +337,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=2.8.1
+KONG=3.0.0
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/

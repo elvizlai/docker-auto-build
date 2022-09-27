@@ -1,8 +1,8 @@
 FROM alpine:3.15 AS builder
 
-COPY quic-build.sh /opt/quic-build.sh
+COPY build-quic.sh /opt/build.sh
 
-RUN sh /opt/quic-build.sh
+RUN sh /opt/build.sh
 
 
 FROM alpine
