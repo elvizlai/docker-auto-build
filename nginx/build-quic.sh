@@ -42,7 +42,7 @@ apk update && apk upgrade \
   unzip \
   && apk add --no-cache --virtual .gettext gettext
 
-OPENSSL=openssl-3.0.6
+OPENSSL=openssl-3.0.5
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20220915
 
