@@ -68,7 +68,7 @@ cd luajit2.1
 make -j4 && make install && cd ..
 
 
-NGINXVER=${1:-1.22.0}
+NGINXVER=${1:-1.22.1}
 NGINXNJS=0.7.7
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
@@ -276,7 +276,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.10
+LUA_RESTY_OPENSSL=0.8.14
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL

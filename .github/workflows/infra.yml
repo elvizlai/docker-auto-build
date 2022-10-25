@@ -30,7 +30,6 @@ jobs:
           bash ./build.sh ffmpeg alpine-static
           bash ./build.sh go-dev
           bash ./build.sh ikev2
-          bash ./build.sh m7s
           bash ./build.sh nginx
           bash ./build.sh nginx ffmpeg
           bash ./build.sh nginx quic
