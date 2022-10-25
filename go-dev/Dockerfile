@@ -23,8 +23,8 @@ RUN cd /tmp \
     && curl -sSL https://github.com/bufbuild/buf/releases/download/v1.8.0/buf-Linux-x86_64 > buf && chmod +x buf && mv buf $GOPATH/bin/ \
     && curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protoc-21.7-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/ \
     && curl -sSL https://github.com/protocolbuffers/protobuf-go/releases/download/v1.28.1/protoc-gen-go.v1.28.1.linux.amd64.tar.gz | tar zxf - && chmod +x protoc-gen-go && mv protoc-gen-go $GOPATH/bin/ \
-    && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.11.3/protoc-gen-grpc-gateway-v2.11.3-linux-x86_64 > protoc-gen-grpc-gateway && chmod +x protoc-gen-grpc-gateway && mv protoc-gen-grpc-gateway $GOPATH/bin/ \
-    && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.11.3/protoc-gen-openapiv2-v2.11.3-linux-x86_64 > protoc-gen-openapiv2 && chmod +x protoc-gen-openapiv2 && mv protoc-gen-openapiv2 $GOPATH/bin/ \
+    && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.12.0/protoc-gen-grpc-gateway-v2.12.0-linux-x86_64 > protoc-gen-grpc-gateway && chmod +x protoc-gen-grpc-gateway && mv protoc-gen-grpc-gateway $GOPATH/bin/ \
+    && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.12.0/protoc-gen-openapiv2-v2.12.0-linux-x86_64 > protoc-gen-openapiv2 && chmod +x protoc-gen-openapiv2 && mv protoc-gen-openapiv2 $GOPATH/bin/ \
     && go install github.com/mgechev/revive@v1.2.4 \
     && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0 \
     && go install github.com/envoyproxy/protoc-gen-validate@v0.6.13 \
