@@ -69,7 +69,7 @@ make -j4 && make install && cd ..
 
 
 NGINXVER=${1:-1.22.1}
-NGINXNJS=0.7.7
+NGINXNJS=0.7.8
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.1
 NGINXLUA=0.10.22
@@ -117,7 +117,7 @@ git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/Spi
 # waf
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
-git clone --depth 1 --quiet -b v0.62 https://github.com/openresty/echo-nginx-module
+git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-module
 git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.32 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
@@ -276,13 +276,13 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.14
+LUA_RESTY_OPENSSL=0.8.15
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
-LUA_RESTY_ACME=0.8.1
+LUA_RESTY_ACME=0.9.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 \cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
