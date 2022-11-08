@@ -42,7 +42,7 @@ apk update && apk upgrade \
   unzip \
   && apk add --no-cache --virtual .gettext gettext
 
-OPENSSL=openssl-3.0.5
+OPENSSL=openssl-3.0.7
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20220915
 
@@ -139,7 +139,7 @@ git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-mod
 git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.32 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
-git clone --depth 1 --quiet https://github.com/vozlt/nginx-module-vts
+git clone --depth 1 --quiet -b v0.2.1 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 cd $NGINXDIR
@@ -573,7 +573,7 @@ http {
     }
 
     server {
-        listen      80 default;
+        listen      80 default_server;
         server_name _;
         return 444;
     }
@@ -581,11 +581,7 @@ http {
     server {
         listen      443 default_server ssl http2 reuseport fastopen=512 backlog=4096 so_keepalive=120s:60s:10;
         server_name _;
-        ssl_stapling off;
-        ssl_certificate default.crt;
-        ssl_certificate_key default.key;
-        ssl_certificate default-ecc.crt;
-        ssl_certificate_key default-ecc.key;
+        ssl_reject_handshake on;
         return 444;
     }
 
