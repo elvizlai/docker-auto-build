@@ -69,7 +69,7 @@ make -j4 && make install && cd ..
 
 
 NGINXVER=${1:-1.22.1}
-NGINXNJS=0.7.8
+NGINXNJS=0.7.9
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.2
 NGINXLUA=0.10.22
@@ -282,7 +282,7 @@ curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENS
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
-LUA_RESTY_ACME=0.9.0
+LUA_RESTY_ACME=0.10.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 \cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
@@ -325,7 +325,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.0.0
+KONG=3.0.1
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
