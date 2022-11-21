@@ -12,9 +12,10 @@ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
     "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
     "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
     "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" \
-    && apk add --no-cache "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
+    && apk add --no-cache --force-overwrite "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
     && apk add --no-cache "$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" \
     && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 \
+    && apk fix --force-overwrite alpine-baselayout-data \
     && apk del glibc-bin glibc-i18n \
     && rm -rf "/etc/apk/keys/sgerrand.rsa.pub" \
     "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
@@ -25,3 +26,4 @@ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
     /tmp/*
 
 # trick to suppress warning for line 19: https://github.com/sgerrand/alpine-pkg-glibc/issues/119
+# adding --force-overwrite https://github.com/sgerrand/alpine-pkg-glibc/issues/185
