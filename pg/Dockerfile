@@ -1,18 +1,15 @@
 ARG VERSION=13
 
 # Build tools for timescaledb
-ARG GO_VERSION=1.14.0
+ARG GO_VERSION=1.19.1
 FROM golang:${GO_VERSION}-alpine AS tools
 
 ENV TOOLS_VERSION 0.8.1
-ENV GO111MODULE on
 
 # https://github.com/timescale/timescaledb-docker/blob/main/Dockerfile
-RUN apk update && apk add --no-cache git \
-    && go get github.com/timescale/timescaledb-tune/cmd/timescaledb-tune \
-    && go get github.com/timescale/timescaledb-parallel-copy/cmd/timescaledb-parallel-copy \
-    && go get github.com/timescale/timescaledb-backup/cmd/ts-dump \
-    && go get github.com/timescale/timescaledb-backup/cmd/ts-restore
+RUN apk update && apk add --no-cache git gcc \
+    && go install github.com/timescale/timescaledb-tune/cmd/timescaledb-tune@latest \
+    && go install github.com/timescale/timescaledb-parallel-copy/cmd/timescaledb-parallel-copy@latest
 
 # postgres
 FROM postgres:${VERSION}
@@ -23,7 +20,8 @@ ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.4.1
 ARG TIMESCALE=2.8.1
-ARG ZOMBODB=3000.1.6
+ARG ZOMBODB=3000.1.7
+ARG PG_HINT_PLAN=13_1_3_7
 ARG PG_AGENT=4_2_2
 ARG PG_CRON=1.4.2
 ARG PG_IVM=1.3
@@ -69,6 +67,8 @@ RUN sudo apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
         \
         libboost-filesystem-dev libboost-date-time-dev libboost-thread-dev \
+        \
+        libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
 # hll https://github.com/citusdata/postgresql-hll https://github.com/citusdata/postgresql-hll/tags
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
@@ -76,7 +76,7 @@ RUN sudo apt-get install -y --no-install-recommends \
     && sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-citus-11.1=$CITUS.citus-1 \
                         postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
-                        postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN \
+                        postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN.citus-1 \
 # pglogical https://github.com/2ndQuadrant/pglogical
                         postgresql-$PG_MAJOR-pglogical \
 # postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/13-3.3/Dockerfile
@@ -94,17 +94,22 @@ RUN sudo apt-get install -y --no-install-recommends \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
     && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \
         && cd /tmp/timescale \
-        && ./bootstrap -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
+        && ./bootstrap -DCMAKE_BUILD_TYPE=RelWithDebInfo -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && sudo make install \
 # zombodb https://github.com/zombodb/zombodb
     && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
         && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
         && cd /tmp/zombodb \
-        && cargo install cargo-pgx --version `cat Cargo.toml | grep "pgx = " | sed 's/pgx = //g'` \
-        && cargo pgx init --pg13=`which pg_config` \
+        && cargo install cargo-pgx --version $(cat Cargo.toml | grep "pgx = " | sed 's/pgx = //g' | sed 's/"//g') \
+        && cargo pgx init --pg13=$(which pg_config) \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
-        && sudo rm -rf /var/lib/postgresql/.pgx || true \
+# pg_hint_plan https://github.com/ossc-db/pg_hint_plan
+    && wget -O /tmp/pg_hint_plan.tar.gz "https://github.com/ossc-db/pg_hint_plan/archive/REL${PG_HINT_PLAN}.tar.gz" \
+        && mkdir -p /tmp/pg_hint_plan \
+        && tar --extract --file /tmp/pg_hint_plan.tar.gz --directory /tmp/pg_hint_plan --strip-components 1 \
+        && cd /tmp/pg_hint_plan \
+        && make && sudo make install \
 # pgagent https://github.com/postgres/pgagent/tags
     && wget -O /tmp/pgagent.tar.gz "https://github.com/postgres/pgagent/archive/REL-${PG_AGENT}.tar.gz" \
         && mkdir -p /tmp/pgagent \
@@ -194,12 +199,14 @@ RUN sudo apt-get install -y --no-install-recommends \
         pkg-config libreadline-dev \
         libcurl4-openssl-dev \
         libboost-filesystem-dev libboost-date-time-dev libboost-thread-dev \
+        libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev \
     && sudo apt-get clean -y \
     && sudo rm -rf \
         "${HOME}/.cache" \
         /var/lib/apt/lists/* \
         /tmp/* \
-        /var/tmp/*
+        /var/tmp/* \
+        /var/lib/postgresql/.pgx
 
 USER root
 
