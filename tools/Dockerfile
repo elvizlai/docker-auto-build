@@ -1,4 +1,4 @@
-FROM sdrzlyz/alpine
+FROM alpine
 
 RUN apk add --update --no-cache netcat-openbsd tcpdump py3-pip \
     && apk add --no-cache --virtual .build-deps musl-dev gcc python3-dev \
