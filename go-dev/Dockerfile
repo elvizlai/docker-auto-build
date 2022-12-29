@@ -1,6 +1,6 @@
 FROM golang:1.19-bullseye
 
-ENV GOPROXY "https://goproxy.cn|https://goproxy.io|https://goproxy.baidu.com/|https://mirrors.tencent.com/go/|direct"
+ENV GOPROXY "https://goproxy.cn|https://goproxy.io|https://goproxy.bj.bcebos.com|https://mirrors.tencent.com/go/|direct"
 ENV PATH $PATH:$GOPATH/bin
 
 # runtime essential

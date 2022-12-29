@@ -25,4 +25,5 @@ jobs:
         run: |
           bash ./build.sh pg
           bash ./build.sh pg 14
+          bash ./build.sh prest
           bash ./build.sh redis
