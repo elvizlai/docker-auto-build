@@ -44,7 +44,7 @@ apk update && apk upgrade \
 
 OPENSSL=openssl-3.0.7
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20220915
+LUAJIT=v2.1-20230119
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -265,7 +265,7 @@ curl -sSL https://github.com/openresty/lua-resty-upload/archive/v$LUA_RESTY_UPLO
 rm -rf lua-resty-upload-$LUA_RESTY_UPLOAD
 
 # https://github.com/openresty/lua-resty-upstream-healthcheck/tags
-LUA_RESTY_UPSTREAM_HEALTHCHECK=0.06
+LUA_RESTY_UPSTREAM_HEALTHCHECK=0.07
 curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$LUA_RESTY_UPSTREAM_HEALTHCHECK.tar.gz | tar zxf -
 \cp -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK/lib/* .
 rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
