@@ -6,10 +6,10 @@
 - sdrzlyz/envoy:1.23.0
 - sdrzlyz/ffmpeg
 - sdrzlyz/go-dev
-- sdrzlyz/ikev2:5.9.8
+- sdrzlyz/ikev2:5.9.9
 - sdrzlyz/nginx:1.22.1
 - sdrzlyz/pg:13
-- sdrzlyz/prest:1.1.5
+- sdrzlyz/prest:1.2.0
 - sdrzlyz/redis:7.0
 - sdrzlyz/strapi:4.3.4
 - sdrzlyz/tools netcat tcpdump psql mycli

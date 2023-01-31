@@ -28,8 +28,6 @@ jobs:
         run: |
           bash ./build.sh alpine
           bash ./build.sh alpine-glibc
-          bash ./build.sh centos-sshd
-          bash ./build.sh ubuntu
 
       - name: Build infra image
         run: |
@@ -47,3 +45,5 @@ jobs:
           bash ./build.sh pg 14
           bash ./build.sh redis
           bash ./build.sh tools
+          bash ./build.sh centos-sshd
+          bash ./build.sh ubuntu
