@@ -25,5 +25,3 @@ jobs:
         run: |
           bash ./build.sh alpine
           bash ./build.sh alpine-glibc
-          bash ./build.sh centos-sshd
-          bash ./build.sh ubuntu
