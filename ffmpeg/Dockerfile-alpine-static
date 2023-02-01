@@ -2,28 +2,31 @@
 
 # bump: alpine /FROM alpine:([\d.]+)/ docker:alpine|^3
 # bump: alpine link "Release notes" https://alpinelinux.org/posts/Alpine-$LATEST-released.html
-FROM alpine:3.17.1 AS builder
+FROM alpine:3.15 AS builder
 
 RUN apk add --no-cache \
   coreutils \
-  wget \
-  rust cargo cargo-c \
+  rust cargo \
   openssl-dev openssl-libs-static \
   ca-certificates \
   bash \
   tar \
   build-base \
-  autoconf automake \
+  autoconf \
+  automake \
   libtool \
   diffutils \
-  cmake meson ninja \
+  cmake \
+  meson \
+  ninja \
   git \
-  yasm nasm \
+  yasm \
+  nasm \
   texinfo \
   jq \
   zlib-dev zlib-static \
   bzip2-dev bzip2-static \
-  libxml2-dev libxml2-static \
+  libxml2-dev \
   expat-dev expat-static \
   fontconfig-dev fontconfig-static \
   freetype freetype-dev freetype-static \
@@ -41,11 +44,8 @@ RUN apk add --no-cache \
   numactl-dev \
   cunit cunit-dev \
   fftw-dev \
-  libsamplerate-dev libsamplerate-static \
-  vo-amrwbenc-dev vo-amrwbenc-static \
-  snappy snappy-dev snappy-static \
-  xxd \
-  xz-dev xz-static
+  libsamplerate-dev \
+  xxd
 
 # -O3 makes sure we compile with optimization. setting CFLAGS/CXXFLAGS seems to override
 # default automake cflags.
@@ -60,7 +60,7 @@ ARG LDFLAGS="-Wl,-z,relro,-z,now"
 ARG WGET_OPTS="--retry-on-host-error --retry-on-http-error=429,500,502,503"
 
 # debug builds a bit faster and we don't care about runtime speed
-# RUN cargo install --debug --version 0.9.5 cargo-c
+RUN cargo install --debug --version 0.9.5 cargo-c
 
 # before aom as libvmaf uses it
 # bump: vmaf /VMAF_VERSION=([\d.]+)/ https://github.com/Netflix/vmaf.git|*
@@ -331,11 +331,11 @@ ARG RUBBERBAND_VERSION=2.0.2
 ARG RUBBERBAND_URL="https://breakfastquay.com/files/releases/rubberband-$RUBBERBAND_VERSION.tar.bz2"
 ARG RUBBERBAND_SHA256=b9eac027e797789ae99611c9eaeaf1c3a44cc804f9c8a0441a0d1d26f3d6bdf9
 RUN \
-  wget $WGET_OPTS -O rubberband.tar.bz2 "$RUBBERBAND_URL" && \
+  wget -O rubberband.tar.bz2 "$RUBBERBAND_URL" && \
   echo "$RUBBERBAND_SHA256  rubberband.tar.bz2" | sha256sum --status -c - && \
   tar xf rubberband.tar.bz2 && \
   cd rubberband-* && \
-  meson -Ddefault_library=static -Dfft=fftw -Dresampler=libsamplerate build && \
+  meson -Dno_shared=true -Dfft=fftw build && \
   ninja -j$(nproc) -vC build install && \
   echo "Requires.private: fftw3 samplerate" >> /usr/local/lib/pkgconfig/rubberband.pc
 
