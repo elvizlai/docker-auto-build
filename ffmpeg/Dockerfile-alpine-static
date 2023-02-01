@@ -2,31 +2,28 @@
 
 # bump: alpine /FROM alpine:([\d.]+)/ docker:alpine|^3
 # bump: alpine link "Release notes" https://alpinelinux.org/posts/Alpine-$LATEST-released.html
-FROM alpine:3.15.4 AS builder
+FROM alpine:3.17.1 AS builder
 
 RUN apk add --no-cache \
   coreutils \
-  rust cargo \
+  wget \
+  rust cargo cargo-c \
   openssl-dev openssl-libs-static \
   ca-certificates \
   bash \
   tar \
   build-base \
-  autoconf \
-  automake \
+  autoconf automake \
   libtool \
   diffutils \
-  cmake \
-  meson \
-  ninja \
+  cmake meson ninja \
   git \
-  yasm \
-  nasm \
+  yasm nasm \
   texinfo \
   jq \
   zlib-dev zlib-static \
   bzip2-dev bzip2-static \
-  libxml2-dev \
+  libxml2-dev libxml2-static \
   expat-dev expat-static \
   fontconfig-dev fontconfig-static \
   freetype freetype-dev freetype-static \
@@ -44,20 +41,26 @@ RUN apk add --no-cache \
   numactl-dev \
   cunit cunit-dev \
   fftw-dev \
-  libsamplerate-dev \
-  xxd
+  libsamplerate-dev libsamplerate-static \
+  vo-amrwbenc-dev vo-amrwbenc-static \
+  snappy snappy-dev snappy-static \
+  xxd \
+  xz-dev xz-static
 
 # -O3 makes sure we compile with optimization. setting CFLAGS/CXXFLAGS seems to override
 # default automake cflags.
 # -static-libgcc is needed to make gcc not include gcc_s as "as-needed" shared library which
 # cmake will include as a implicit library.
 # other options to get hardened build (same as ffmpeg hardened)
-ARG CFLAGS="-O3 -static-libgcc -fno-strict-overflow -fstack-protector-all -fPIC"
-ARG CXXFLAGS="-O3 -static-libgcc -fno-strict-overflow -fstack-protector-all -fPIC"
+ARG CFLAGS="-O3 -s -static-libgcc -fno-strict-overflow -fstack-protector-all -fPIC"
+ARG CXXFLAGS="-O3 -s -static-libgcc -fno-strict-overflow -fstack-protector-all -fPIC"
 ARG LDFLAGS="-Wl,-z,relro,-z,now"
 
+# retry dns and some http codes that might be transient errors
+ARG WGET_OPTS="--retry-on-host-error --retry-on-http-error=429,500,502,503"
+
 # debug builds a bit faster and we don't care about runtime speed
-RUN cargo install --debug --version 0.9.5 cargo-c
+# RUN cargo install --debug --version 0.9.5 cargo-c
 
 # before aom as libvmaf uses it
 # bump: vmaf /VMAF_VERSION=([\d.]+)/ https://github.com/Netflix/vmaf.git|*
@@ -74,7 +77,7 @@ RUN \
   cd vmaf-*/libvmaf && meson build --buildtype=release -Ddefault_library=static -Dbuilt_in_models=true -Denable_tests=false -Denable_docs=false -Denable_avx512=true -Denable_float=true && \
   ninja -j$(nproc) -vC build install
 # extra libs stdc++ is for vmaf https://github.com/Netflix/vmaf/issues/788
-RUN  sed -i 's/-lvmaf /-lvmaf -lstdc++ /' /usr/local/lib/pkgconfig/libvmaf.pc
+RUN sed -i 's/-lvmaf /-lvmaf -lstdc++ /' /usr/local/lib/pkgconfig/libvmaf.pc
 
 # build after libvmaf
 # bump: aom /AOM_VERSION=([\d.]+)/ git:https://aomedia.googlesource.com/aom|*
@@ -328,11 +331,11 @@ ARG RUBBERBAND_VERSION=2.0.2
 ARG RUBBERBAND_URL="https://breakfastquay.com/files/releases/rubberband-$RUBBERBAND_VERSION.tar.bz2"
 ARG RUBBERBAND_SHA256=b9eac027e797789ae99611c9eaeaf1c3a44cc804f9c8a0441a0d1d26f3d6bdf9
 RUN \
-  wget -O rubberband.tar.bz2 "$RUBBERBAND_URL" && \
+  wget $WGET_OPTS -O rubberband.tar.bz2 "$RUBBERBAND_URL" && \
   echo "$RUBBERBAND_SHA256  rubberband.tar.bz2" | sha256sum --status -c - && \
   tar xf rubberband.tar.bz2 && \
   cd rubberband-* && \
-  meson -Dno_shared=true -Dfft=fftw build && \
+  meson -Ddefault_library=static -Dfft=fftw -Dresampler=libsamplerate build && \
   ninja -j$(nproc) -vC build install && \
   echo "Requires.private: fftw3 samplerate" >> /usr/local/lib/pkgconfig/rubberband.pc
 

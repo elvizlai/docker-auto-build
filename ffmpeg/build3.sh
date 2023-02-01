@@ -14,7 +14,7 @@ source scl_source enable devtoolset-9 || true
 yum install -y libgomp patch glibc-static libstdc++-static zlib-static expat-static
 
 
-export FFMPEG_VERSION=3.4.10 \
+export FFMPEG_VERSION=3.4.12 \
 AOM_VERSION=v1.0.0 \
 FDKAAC_VERSION=0.1.5 \
 FONTCONFIG_VERSION=2.12.4 \
@@ -147,7 +147,7 @@ yum autoremove -y
 DIR=/tmp/openssl && \
 mkdir -p ${DIR} && \
 cd ${DIR} && \
-curl -sL https://www.openssl.org/source/openssl-1.1.1o.tar.gz | \
+curl -sL https://www.openssl.org/source/openssl-1.1.1s.tar.gz | \
 tar -zx --strip-components=1 && \
 # ./config --prefix="${PREFIX}" --openssldir="${PREFIX}" --with-zlib-include="${PREFIX}"/include/ --with-zlib-lib="${PREFIX}"/lib no-shared zlib && \
 ./config --prefix="${PREFIX}" --openssldir="${PREFIX}" no-shared zlib && \
