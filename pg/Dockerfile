@@ -14,16 +14,16 @@ RUN apk update && apk add --no-cache git gcc \
 # postgres
 FROM postgres:${VERSION}
 
-ARG CITUS=11.1.5
+ARG CITUS=11.2.0
 ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.4.2
-ARG TIMESCALE=2.9.2
-ARG ZOMBODB=3000.1.8
+ARG TIMESCALE=2.9.3
+ARG ZOMBODB=3000.1.9
 ARG PG_HINT_PLAN=13_1_3_8
 ARG PG_AGENT=4_2_2
-ARG PG_CRON=1.4.2
+ARG PG_CRON=1.5.0
 ARG PG_IVM=1.5
 ARG ORAFCE=4_1_1
 ARG PGSQL_HTTP=1.5.0
@@ -74,7 +74,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
-                        postgresql-$PG_MAJOR-citus-11.1=$CITUS.citus-1 \
+                        postgresql-$PG_MAJOR-citus-11.2=$CITUS.citus-1 \
                         postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
                         postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN.citus-1 \
 # pglogical https://github.com/2ndQuadrant/pglogical
