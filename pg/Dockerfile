@@ -1,7 +1,7 @@
 ARG VERSION=13
 
 # Build tools for timescaledb
-ARG GO_VERSION=1.19.5
+ARG GO_VERSION=1.19.6
 FROM golang:${GO_VERSION}-alpine AS tools
 
 ENV TOOLS_VERSION 0.8.1
@@ -19,7 +19,7 @@ ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.4.2
-ARG TIMESCALE=2.9.3
+ARG TIMESCALE=2.10.0
 ARG ZOMBODB=3000.1.9
 ARG PG_HINT_PLAN=13_1_3_8
 ARG PG_AGENT=4_2_2
@@ -90,6 +90,10 @@ RUN sudo apt-get install -y --no-install-recommends \
         && tar --extract --file /tmp/pgrouting.tar.gz --directory /tmp/pgrouting --strip-components 1 \
         && cd /tmp/pgrouting/build \
         && cmake .. \
+        && make && sudo make install \
+# age https://github.com/apache/age https://age.apache.org/age-manual/master/intro/setup.html
+    && git clone -b alpha/PG13 https://github.com/apache/age /tmp/age \
+        && cd /tmp/age \
         && make && sudo make install \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
     && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \

@@ -80,8 +80,8 @@ NGINXVER=quic
 NGINXNJS=0.7.10
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.2
-NGINXLUA=0.10.22
-NGINXSTREAMLUA=0.0.11
+NGINXLUA=0.10.23
+NGINXSTREAMLUA=0.0.12
 
 git clone https://github.com/VKCOM/nginx-quic.git $NGINXDIR
 # hg clone https://hg.nginx.org/nginx-quic $NGINXDIR
@@ -137,7 +137,7 @@ git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/Spi
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
 git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-module
 git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/headers-more-nginx-module
-git clone --depth 1 --quiet -b v0.32 https://github.com/openresty/srcache-nginx-module
+git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet -b v0.2.1 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
@@ -223,7 +223,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.24
+LUA_RESTY_CORE=0.1.25
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 \cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -241,7 +241,7 @@ curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LR
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-mysql/tags
-LUA_RESTY_MYSQL=0.25
+LUA_RESTY_MYSQL=0.26
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 \cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
@@ -259,7 +259,7 @@ curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRI
 rm -rf lua-resty-string-$LUA_RESTY_STRING
 
 # https://github.com/openresty/lua-resty-upload/tags
-LUA_RESTY_UPLOAD=0.10
+LUA_RESTY_UPLOAD=0.11
 curl -sSL https://github.com/openresty/lua-resty-upload/archive/v$LUA_RESTY_UPLOAD.tar.gz | tar zxf -
 \cp -rf lua-resty-upload-$LUA_RESTY_UPLOAD/lib/* .
 rm -rf lua-resty-upload-$LUA_RESTY_UPLOAD
@@ -271,7 +271,7 @@ curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$
 rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
 
 # https://github.com/openresty/lua-resty-websocket/tags
-LUA_RESTY_WEBSOCKET=0.09
+LUA_RESTY_WEBSOCKET=0.10
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
 \cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
@@ -339,7 +339,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.1.0
+KONG=3.2.0
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
