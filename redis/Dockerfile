@@ -3,15 +3,14 @@ ARG VERSION=7.0
 # https://redislabs.com/redis-enterprise-software/download-center/modules/
 
 # https://hub.docker.com/r/redislabs/rejson/tags https://redis.io/docs/stack/json/
-FROM redislabs/rejson:2.4.2 as rejson
+FROM redislabs/rejson:2.4.5 as rejson
 # https://hub.docker.com/r/redislabs/rebloom/tags https://redis.io/docs/stack/bloom/
-FROM redislabs/rebloom:2.4.3 as rebloom
+FROM redislabs/rebloom:2.4.4 as rebloom
 # https://hub.docker.com/r/redislabs/redisearch/tags https://redis.io/docs/stack/search/
-FROM redislabs/redisearch:2.6.3 as redisearch
+FROM redislabs/redisearch:2.6.5 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph/tags https://redis.io/docs/stack/graph/
-FROM redislabs/redisgraph:2.10.5 as redisgraph
+FROM redislabs/redisgraph:2.10.8 as redisgraph
 
-# Tair https://github.com/alibaba/TairHash
 FROM tairmodule/tairstring:latest as tairstring
 FROM tairmodule/tairzset:latest as tairzset
 
@@ -67,8 +66,8 @@ COPY --from=redisearch /usr/lib/redis/modules/redisearch.so ${LIBDIR}
 COPY --from=redisgraph /usr/lib/redis/modules/redisgraph.so ${LIBDIR}
 COPY --from=rebloom /usr/lib/redis/modules/redisbloom.so ${LIBDIR}
 COPY --from=tairhash /usr/local/lib/rede.so ${LIBDIR}/rede.so
-COPY --from=tairhash /usr/local/lib/tairhash_module.so ${LIBDIR}/tairhash.so
 COPY --from=tairstring /usr/local/lib/tairstring_module.so ${LIBDIR}/tairstring.so
+COPY --from=tairhash /usr/local/lib/tairhash_module.so ${LIBDIR}/tairhash.so
 COPY --from=tairzset /usr/local/lib/tairzset_module.so ${LIBDIR}/tairzset.so
 
 USER 1001
