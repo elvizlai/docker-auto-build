@@ -729,7 +729,7 @@ RUN \
   cd zimg-* && ./autogen.sh && ./configure --disable-shared --enable-static && \
   make -j$(nproc) install
 
-COPY patch/* /tmp
+COPY patch/* /tmp/
 
 # bump: ffmpeg /FFMPEG_VERSION=([\d.]+)/ https://github.com/FFmpeg/FFmpeg.git|^6
 # bump: ffmpeg after ./hashupdate Dockerfile FFMPEG $LATEST
