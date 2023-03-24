@@ -43,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.0.8
+OPENSSL=openssl-3.1.0
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20230119
 
@@ -72,8 +72,8 @@ NGINXVER=${1:-1.22.1}
 NGINXNJS=0.7.11
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.2
-NGINXLUA=0.10.23
-NGINXSTREAMLUA=0.0.12
+NGINXLUA=0.10.24
+NGINXSTREAMLUA=0.0.13
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -209,7 +209,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.25
+LUA_RESTY_CORE=0.1.26
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 \cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -251,7 +251,7 @@ curl -sSL https://github.com/openresty/lua-resty-upload/archive/v$LUA_RESTY_UPLO
 rm -rf lua-resty-upload-$LUA_RESTY_UPLOAD
 
 # https://github.com/openresty/lua-resty-upstream-healthcheck/tags
-LUA_RESTY_UPSTREAM_HEALTHCHECK=0.07
+LUA_RESTY_UPSTREAM_HEALTHCHECK=0.08
 curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$LUA_RESTY_UPSTREAM_HEALTHCHECK.tar.gz | tar zxf -
 \cp -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK/lib/* .
 rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
@@ -270,19 +270,19 @@ mv -f lua-cjson-$LUA_CJSON/cjson.so .
 rm -rf lua-cjson-$LUA_CJSON
 
 # https://github.com/ledgetech/lua-resty-http/tags
-LUA_RESTY_HTTP=0.16.1
+LUA_RESTY_HTTP=0.17.1
 curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
 \cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.20
+LUA_RESTY_OPENSSL=0.8.21
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
-LUA_RESTY_ACME=0.10.1
+LUA_RESTY_ACME=0.11.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 \cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
@@ -325,7 +325,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.2.1
+KONG=3.2.2
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
