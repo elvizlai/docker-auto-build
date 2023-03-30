@@ -240,8 +240,9 @@ RUN chmod +x /wait-for-manager.sh
 RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
 
 # config tuning
-# replace last docker_temp_server_stop with sed to change max_connections
-RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 100/max_connections = 1000/" /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
+# replace last docker_temp_server_stop with sed to change pg.max_connections and cron.timezone 
+# \o047 for single quote
+RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 100/max_connections = 1000/" /var/lib/postgresql/data/postgresql.conf\n                        echo "cron.timezone = \o047PRC\o047" >> /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
 
 ENV TIMESCALEDB_TELEMETRY off
 
