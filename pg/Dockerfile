@@ -92,7 +92,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cmake .. \
         && make && sudo make install \
 # age https://github.com/apache/age https://age.apache.org/age-manual/master/intro/setup.html
-    && git clone -b alpha/PG13 https://github.com/apache/age /tmp/age \
+    && git clone -b PG13 https://github.com/apache/age /tmp/age \
         && cd /tmp/age \
         && make && sudo make install \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
