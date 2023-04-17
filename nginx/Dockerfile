@@ -1,6 +1,6 @@
 FROM alpine:3.16 AS builder
 
-ARG VERSION=1.22.1
+ARG VERSION=1.24.0
 
 COPY build-org.sh /opt/build.sh
 

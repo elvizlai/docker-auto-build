@@ -20,15 +20,15 @@ ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
 ARG TIMESCALE=2.10.1
-ARG ZOMBODB=3000.1.11
+ARG ZOMBODB=3000.1.14
 ARG PG_HINT_PLAN=13_1_3_8
 ARG PG_AGENT=4_2_2
-ARG PG_CRON=1.5.1
+ARG PG_CRON=1.5.2
 ARG PG_IVM=1.5.1
-ARG ORAFCE=4_2_2
+ARG ORAFCE=4_2_5
 ARG PGSQL_HTTP=1.5.0
 ARG PGAUDIT=1.5.2
-ARG REPMGR=5.3.3
+ARG REPMGR=5.4.0
 ARG GOSU=1.16
 
 # set timezone
@@ -69,6 +69,8 @@ RUN sudo apt-get install -y --no-install-recommends \
         libboost-filesystem-dev libboost-date-time-dev libboost-thread-dev \
         \
         libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev \
+        \
+        libjson-c-dev \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
 # hll https://github.com/citusdata/postgresql-hll https://github.com/citusdata/postgresql-hll/tags
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
@@ -173,7 +175,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cd /tmp/pg_plugins/decoder_raw \
         && make && sudo make install \
 # repmgr https://github.com/EnterpriseDB/repmgr
-    && wget -O /tmp/repmgr.tar.gz "https://repmgr.org/download/repmgr-${REPMGR}.tar.gz" \
+    && wget -O /tmp/repmgr.tar.gz "https://github.com/EnterpriseDB/repmgr/archive/v${REPMGR}.tar.gz" \
     && mkdir -p /tmp/repmgr \
     && tar --extract --file /tmp/repmgr.tar.gz --directory /tmp/repmgr --strip-components 1 \
         && cd /tmp/repmgr \

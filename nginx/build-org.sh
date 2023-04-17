@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 OPENSSL=openssl-3.1.0
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20230119
+LUAJIT=v2.1-20230410
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -68,8 +68,8 @@ cd luajit2.1
 make -j4 && make install && cd ..
 
 
-NGINXVER=${1:-1.22.1}
-NGINXNJS=0.7.11
+NGINXVER=${1:-1.24.0}
+NGINXNJS=0.7.12
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.2
 NGINXLUA=0.10.24
@@ -95,10 +95,13 @@ curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.g
 # https://github.com/openresty/stream-lua-nginx-module/tags
 curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXSTREAMLUA.tar.gz | tar zxf -
 
+# deprecated: using nginx-http-flv-module
 # https://github.com/pingostack/pingos
-# replacement of https://github.com/winshining/nginx-http-flv-module
-git clone https://github.com/pingostack/pingos.git
-mv pingos/modules/* .
+# git clone https://github.com/pingostack/pingos.git
+# mv pingos/modules/* .
+
+# https://github.com/winshining/nginx-http-flv-module
+git clone -b v1.2.11 https://github.com/winshining/nginx-http-flv-module.git
 
 # dynamic modules
 rm -rf $NGINXDIR/module/dynamic
@@ -106,7 +109,7 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # waf
-git clone -b v3.0.8 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+git clone -b v3.0.9 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
 make -j$(nproc) && make install
@@ -173,10 +176,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-stream_ssl_preread_module \
     --with-threads \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
-    --add-module=./module/nginx-client-module \
-    --add-module=./module/nginx-multiport-module \
-    --add-module=./module/nginx-rtmp-module \
-    --add-module=./module/nginx-toolkit-module \
+    --add-module=./module/nginx-http-flv-module \
     --add-module=./module/ngx_brotli \
     --add-module=./module/ngx_devel_kit-$NGINXNDK \
     --add-module=./module/njs/nginx \
@@ -435,18 +435,16 @@ events {
     use epoll;
     multi_accept on;
     worker_connections 65535;
-    #multi_listen unix:/tmp/rtmp 1935;
 }
 
+rtmp_auto_push on;
+rtmp_auto_push_reconnect 15s;
 rtmp {
     out_queue           4096;
     out_cork            8;
     max_streams         512;
     timeout             15s;
     drop_idle_publisher 15s;
-
-    rtmp_auto_pull on;
-    rtmp_auto_pull_port unix:/tmp/rtmp;
 
     include /etc/nginx/conf.d/*.rtmp;
 }
@@ -589,7 +587,7 @@ EOF
 
 # static file copy
 mkdir -p /etc/nginx/html/rtmp
-\cp $NGINXDIR/module/pingos/resource/stat.xsl /etc/nginx/html/rtmp/stat.xsl
+\cp $NGINXDIR/module/nginx-http-flv-module/stat.xsl /etc/nginx/html/rtmp/stat.xsl
 
 mkdir -p /etc/nginx/modsec
 cat > /etc/nginx/modsec/main.conf <<EOF
