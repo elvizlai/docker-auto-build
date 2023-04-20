@@ -19,8 +19,9 @@ ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
-ARG TIMESCALE=2.10.1
+ARG TIMESCALE=2.10.2
 ARG ZOMBODB=3000.1.14
+ARG PGVECTOR=0.4.1
 ARG PG_HINT_PLAN=13_1_3_8
 ARG PG_AGENT=4_2_2
 ARG PG_CRON=1.5.2
@@ -110,6 +111,10 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cargo install cargo-pgx --version $(cat Cargo.toml | grep "pgx = " | sed 's/pgx = //g' | sed 's/"//g') \
         && cargo pgx init --pg13=$(which pg_config) \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
+# vector https://github.com/pgvector/pgvector
+    && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector.git /tmp/pgvector \
+        && cd /tmp/pgvector \
+        && make && sudo make install \
 # pg_hint_plan https://github.com/ossc-db/pg_hint_plan
     && wget -O /tmp/pg_hint_plan.tar.gz "https://github.com/ossc-db/pg_hint_plan/archive/REL${PG_HINT_PLAN}.tar.gz" \
         && mkdir -p /tmp/pg_hint_plan \
