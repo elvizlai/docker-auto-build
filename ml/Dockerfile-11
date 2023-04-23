@@ -4,7 +4,7 @@ ENV LANG=C.UTF-8
 
 RUN sed -i "s/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g" /etc/apt/sources.list \
     && apt update \
-    && apt install -y curl wget vim git unzip \
+    && apt install -y curl wget vim git git-lfs unzip \
         python3 python3-pip python3-venv \
     && ln -s /usr/bin/python3 /usr/bin/python \
     && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
