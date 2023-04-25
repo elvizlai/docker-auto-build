@@ -1,12 +1,17 @@
 FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
 
-ENV LANG=C.UTF-8
+ENV LANG=C.UTF-8 \
+    TZ=Asia/Shanghai \
+    DEBIAN_FRONTEND=noninteractive
 
 RUN sed -i "s/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g" /etc/apt/sources.list \
     && apt update \
-    && apt install -y curl wget vim git git-lfs unzip \
+    && apt install -y tzdata curl wget vim git git-lfs unzip \
         python3 python3-pip python3-venv \
+    && ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
+    && echo ${TZ} > /etc/timezone \
     && ln -s /usr/bin/python3 /usr/bin/python \
+    && git lfs install \
     && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
     && pip config set install.trusted-host https://pypi.tuna.tsinghua.edu.cn \
     && pip install pipreqs pysocks httpx[socks] \
