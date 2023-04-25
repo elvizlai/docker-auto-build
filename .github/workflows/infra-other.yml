@@ -29,3 +29,5 @@ jobs:
           bash ./build.sh tools
           bash ./build.sh centos-sshd
           bash ./build.sh ubuntu
+          bash ./build.sh ml
+          bash ./build.sh ml 11
