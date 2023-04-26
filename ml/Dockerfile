@@ -6,7 +6,7 @@ ENV LANG=C.UTF-8 \
 
 RUN sed -i "s/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g" /etc/apt/sources.list \
     && apt update \
-    && apt install -y tzdata curl wget vim git git-lfs unzip \
+    && apt install -y tzdata curl wget vim git git-lfs unzip net-tools \
         python3 python3-pip python3-venv \
     && ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo ${TZ} > /etc/timezone \
