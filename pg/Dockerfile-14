@@ -14,7 +14,7 @@ RUN apk update && apk add --no-cache git gcc \
 # postgres
 FROM postgres:${VERSION}
 
-ARG CITUS=11.2.0
+ARG CITUS=11.2.1
 ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
