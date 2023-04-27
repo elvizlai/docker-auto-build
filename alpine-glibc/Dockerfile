@@ -3,7 +3,7 @@ FROM sdrzlyz/alpine
 # https://github.com/sgerrand/alpine-pkg-glibc
 # Here we install GNU libc (aka glibc) and set en_US.UTF-8 locale as default.
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
-    && ALPINE_GLIBC_PACKAGE_VERSION="2.35-r0" \
+    && ALPINE_GLIBC_PACKAGE_VERSION="2.35-r1" \
     && ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" \
     && ALPINE_GLIBC_BASE_PACKAGE_FILENAME="glibc-$ALPINE_GLIBC_PACKAGE_VERSION.apk" \
     && ALPINE_GLIBC_BIN_PACKAGE_FILENAME="glibc-bin-$ALPINE_GLIBC_PACKAGE_VERSION.apk" \
