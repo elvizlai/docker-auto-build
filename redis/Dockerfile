@@ -3,13 +3,13 @@ ARG VERSION=7.0
 # https://docs.redis.com/latest/modules/
 
 # https://hub.docker.com/r/redislabs/rejson/tags https://redis.io/docs/stack/json/
-FROM redislabs/rejson:2.4.7 as rejson
+FROM redislabs/rejson:2.6.0 as rejson
 # https://hub.docker.com/r/redislabs/rebloom/tags https://redis.io/docs/stack/bloom/
 FROM redislabs/rebloom:2.4.5 as rebloom
 # https://hub.docker.com/r/redislabs/redisearch/tags https://redis.io/docs/stack/search/
-FROM redislabs/redisearch:2.6.7 as redisearch
+FROM redislabs/redisearch:2.8.0 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph/tags https://redis.io/docs/stack/graph/
-FROM redislabs/redisgraph:2.10.10 as redisgraph
+FROM redislabs/redisgraph:2.12.1 as redisgraph
 
 # https://github.com/alibaba/TairString
 FROM tairmodule/tairstring:latest as tairstring

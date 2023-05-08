@@ -14,19 +14,19 @@ RUN apk update && apk add --no-cache git gcc \
 # postgres
 FROM postgres:${VERSION}
 
-ARG CITUS=11.2.1
+ARG CITUS=11.3.0
 ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
-ARG TIMESCALE=2.10.2
-ARG ZOMBODB=3000.1.14
+ARG TIMESCALE=2.10.3
+ARG ZOMBODB=3000.1.15
 ARG PGVECTOR=0.4.1
 ARG PG_HINT_PLAN=13_1_3_8
 ARG PG_AGENT=4_2_2
 ARG PG_CRON=1.5.2
 ARG PG_IVM=1.5.1
-ARG ORAFCE=4_2_5
+ARG ORAFCE=4_2_6
 ARG PGSQL_HTTP=1.5.0
 ARG PGAUDIT=1.5.2
 ARG REPMGR=5.4.0
@@ -77,7 +77,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
-                        postgresql-$PG_MAJOR-citus-11.2=$CITUS.citus-1 \
+                        postgresql-$PG_MAJOR-citus-11.3=$CITUS.citus-1 \
                         postgresql-$PG_MAJOR-hll=$POSTGRESQL_HLL.citus-1 \
                         postgresql-$PG_MAJOR-topn=$POSTGRESQL_TOPN.citus-1 \
 # pglogical https://github.com/2ndQuadrant/pglogical
@@ -108,9 +108,9 @@ RUN sudo apt-get install -y --no-install-recommends \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
         && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
         && cd /tmp/zombodb \
-        && cargo install cargo-pgx --version $(cat Cargo.toml | grep "pgx = " | sed 's/pgx = //g' | sed 's/"//g') \
-        && cargo pgx init --pg13=$(which pg_config) \
-        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGX_HOME=/var/lib/postgresql/.pgx cargo pgx install --release' \
+        && cargo install cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
+        && cargo pgrx init --pg13=$(which pg_config) \
+        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
 # vector https://github.com/pgvector/pgvector
     && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector.git /tmp/pgvector \
         && cd /tmp/pgvector \
@@ -217,7 +217,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         /var/lib/apt/lists/* \
         /tmp/* \
         /var/tmp/* \
-        /var/lib/postgresql/.pgx
+        /var/lib/postgresql/.pgrx
 
 USER root
 
