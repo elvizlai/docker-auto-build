@@ -30,6 +30,9 @@ sed -i '/WGET/d' /usr/local/share/lua/5.1/luarocks/fs/tools.lua
 # luasocket
 luarocks install luasocket
 
+# cjson
+luarocks install lua-cjson
+
 # cjson https://github.com/openresty/lua-cjson/tags
 LUA_CJSON=2.1.0.12
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
