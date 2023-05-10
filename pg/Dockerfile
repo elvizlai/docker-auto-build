@@ -217,6 +217,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         /var/lib/apt/lists/* \
         /tmp/* \
         /var/tmp/* \
+        /var/lib/postgresql/.profile \
         /var/lib/postgresql/.pgrx
 
 USER root
