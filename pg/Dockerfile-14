@@ -20,7 +20,7 @@ ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
 ARG TIMESCALE=2.10.3
-ARG ZOMBODB=3000.1.15
+ARG ZOMBODB=3000.1.17
 ARG PGVECTOR=0.4.1
 ARG PG_GRAPHQL=1.2.0
 ARG PG_HINT_PLAN=14_1_4_1
@@ -31,7 +31,6 @@ ARG ORAFCE=4_2_6
 ARG PGSQL_HTTP=1.5.0
 ARG PGAUDIT=1.6.2
 ARG REPMGR=5.4.0
-ARG GOSU=1.16
 
 # set timezone
 ENV TZ PRC
@@ -188,10 +187,6 @@ RUN sudo apt-get install -y --no-install-recommends \
     && tar --extract --file /tmp/repmgr.tar.gz --directory /tmp/repmgr --strip-components 1 \
         && cd /tmp/repmgr \
         && ./configure && make && sudo make install \
-# gosu https://github.com/tianon/gosu/blob/master/INSTALL.md
-    && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-        && sudo wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU/gosu-$dpkgArch" \
-        && sudo chmod +x /usr/local/bin/gosu \
 # locale
     && sudo bash -c 'echo -e "en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8" >> /etc/locale.gen' && sudo locale-gen \
 # clean
