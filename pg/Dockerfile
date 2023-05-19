@@ -21,7 +21,7 @@ ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
 ARG TIMESCALE=2.10.3
 ARG ZOMBODB=3000.1.17
-ARG PGVECTOR=0.4.1
+ARG PGVECTOR=0.4.2
 ARG PG_HINT_PLAN=13_1_3_8
 ARG PG_AGENT=4_2_2
 ARG PG_CRON=1.5.2
@@ -165,11 +165,6 @@ RUN sudo apt-get install -y --no-install-recommends \
         && mkdir build && cd build \
         && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/$PG_MAJOR -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$PG_MAJOR/server .. \
         && make && sudo make install \
-# XLogMiner https://gitee.com/movead/XLogMiner 4.0不开源
-    && git clone -b master https://gitee.com/movead/XLogMiner /tmp/XLogMiner \
-        && cd /tmp/XLogMiner/walminer \
-        && USE_PGXS=1 MAJORVERSION=$PG_MAJOR make \
-        && sudo USE_PGXS=1 MAJORVERSION=$PG_MAJOR make install \
 # wal2json https://github.com/eulerto/wal2json
     && git clone https://github.com/eulerto/wal2json /tmp/wal2json \
         && cd /tmp/wal2json \
