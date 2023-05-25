@@ -1,6 +1,6 @@
 FROM golang:1.19-bullseye as builder
 
-ARG VERSION=1.2.5
+ARG VERSION=1.3.1
 
 RUN cd /tmp \
     && curl -sSL https://github.com/prest/prest/archive/refs/tags/v${VERSION}.tar.gz | tar zxf - \

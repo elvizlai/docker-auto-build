@@ -1,3 +1,8 @@
+Source
+```
+https://github.com/docker-library/postgres
+```
+
 Single Node Example
 ```
 docker run -itd \
@@ -60,4 +65,11 @@ SELECT create_distributed_table('github_events', 'repo_id');
 INSERT INTO "github_events" ("event_id", "event_type", "event_public", "repo_id", "payload", "repo", "actor", "org", "created_at") VALUES
 ('1', '1', 't', '1', '1', '1', '1', '1', NULL),
 ('2', '2', 't', '2', '2', '2', '2', '2', NULL);
+```
+
+For pgml
+```
+apt install python3-pip
+pip3 install xgboost
+pip3 install lightgbm
 ```

@@ -21,6 +21,7 @@ ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
 ARG TIMESCALE=2.11.0
 ARG ZOMBODB=3000.1.17
+ARG PG_ML=2.4.8
 ARG PGVECTOR=0.4.2
 ARG PG_HINT_PLAN=13_1_3_8
 ARG PG_AGENT=4_2_2
@@ -71,6 +72,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev \
         \
         libjson-c-dev \
+        libgomp1 libopenblas-dev libpython3-dev \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
 # hll https://github.com/citusdata/postgresql-hll https://github.com/citusdata/postgresql-hll/tags
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
@@ -110,6 +112,19 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cargo install cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
         && cargo pgrx init --pg13=$(which pg_config) \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
+# pgml https://github.com/postgresml/postgresml
+    && git clone -b v${PG_ML} https://github.com/postgresml/postgresml /tmp/postgresml \
+    && cd /tmp/postgresml \
+    && git submodule update --init --recursive \
+    && cd pgml-extension \
+    && cargo install cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') --locked \
+    && cargo pgrx init --pg${PG_MAJOR} $(which pg_config) \
+    && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx package' \
+    && sudo cp target/release/pgml-pg${PG_MAJOR}/usr/lib/postgresql/${PG_MAJOR}/lib/* \
+        /usr/lib/postgresql/${PG_MAJOR}/lib \
+    && sudo cp target/release/pgml-pg${PG_MAJOR}/usr/share/postgresql/${PG_MAJOR}/extension/* \
+        /usr/share/postgresql/${PG_MAJOR}/extension \
+    && sudo cp requirements.txt /opt/pgml-requirements.txt \
 # vector https://github.com/pgvector/pgvector
     && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector.git /tmp/pgvector \
         && cd /tmp/pgvector \
@@ -201,6 +216,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
         libboost-filesystem-dev libboost-date-time-dev libboost-thread-dev \
         libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev \
+        libopenblas-dev \
     && sudo apt-get clean -y \
     && sudo rm -rf \
         "${HOME}/.cache" \
@@ -213,7 +229,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 USER root
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
-RUN echo "shared_preload_libraries='citus,pglogical,timescaledb,pg_cron,pgaudit'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries='citus,pg_stat_statements,pglogical,timescaledb,pg_cron,pgaudit'" >> /usr/share/postgresql/postgresql.conf.sample
 
 # select name,setting from pg_settings where name like 'pgaudit%';
 # all but except misc

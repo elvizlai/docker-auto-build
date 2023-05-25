@@ -10,7 +10,7 @@
 - sdrzlyz/ml
 - sdrzlyz/nginx:1.24.0
 - sdrzlyz/pg:13
-- sdrzlyz/prest:1.2.5
+- sdrzlyz/prest:1.3.1
 - sdrzlyz/redis:7.0
 - sdrzlyz/strapi:4.3.4
 - sdrzlyz/tools netcat tcpdump psql mycli
