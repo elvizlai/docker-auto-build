@@ -1,4 +1,4 @@
-ARG VERSION=14
+ARG VERSION=15
 
 # Build tools for timescaledb
 ARG GO_VERSION=1.19.6
@@ -22,12 +22,12 @@ ARG PGROUTING=3.5.0
 ARG TIMESCALE=2.11.0
 ARG ZOMBODB=3000.1.17
 ARG PGVECTOR=0.4.2
-ARG PG_HINT_PLAN=14_1_4_1
+ARG PG_HINT_PLAN=15_1_5_0
 ARG PG_CRON=1.5.2
 ARG PG_IVM=1.5.1
 ARG ORAFCE=4_2_6
 ARG PGSQL_HTTP=1.5.0
-ARG PGAUDIT=1.6.2
+ARG PGAUDIT=1.7.0
 ARG REPMGR=5.4.0
 
 # set timezone
@@ -49,7 +49,7 @@ USER postgres
 ## zombodb: bison flex zlib1g zlib1g-dev pkg-config make libssl-dev libreadline-dev
 ## pgsql-http: libcurl4-openssl-dev
 ## repmgr: flex libedit-dev libkrb5-dev libpam0g-dev libreadline-dev libselinux1-dev libssl-dev libxml2-dev libxslt1-dev
-## repmgr-pg14: liblz4-dev
+## repmgr-pg15: liblz4-dev libzstd-dev
 
 RUN sudo apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -76,7 +76,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         # pgsql-http
         libcurl4-openssl-dev \
         # repmgr
-        liblz4-dev libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
+        liblz4-dev libzstd-dev libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
 # hll https://github.com/citusdata/postgresql-hll https://github.com/citusdata/postgresql-hll/tags
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
@@ -196,7 +196,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         bison flex zlib1g-dev libreadline-dev \
         libssl-dev \
         libcurl4-openssl-dev \
-        liblz4-dev libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
+        liblz4-dev libzstd-dev libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
     && sudo apt-get clean -y \
     && sudo rm -rf \
         "${HOME}/.cache" \

@@ -21,10 +21,8 @@ ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
 ARG TIMESCALE=2.11.0
 ARG ZOMBODB=3000.1.17
-ARG PG_ML=2.4.8
 ARG PGVECTOR=0.4.2
 ARG PG_HINT_PLAN=13_1_3_8
-ARG PG_AGENT=4_2_2
 ARG PG_CRON=1.5.2
 ARG PG_IVM=1.5.1
 ARG ORAFCE=4_2_6
@@ -44,13 +42,19 @@ RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bulls
 
 USER postgres
 
+# dep:
+## pgrouting: libboost-graph-dev
+## timescale: libkrb5-dev
+## age: build-essential libreadline-dev zlib1g-dev flex bison
+## zombodb: bison flex zlib1g zlib1g-dev pkg-config make libssl-dev libreadline-dev
+## pgsql-http: libcurl4-openssl-dev
+## repmgr: flex libedit-dev libkrb5-dev libpam0g-dev libreadline-dev libselinux1-dev libssl-dev libxml2-dev libxslt1-dev
+
 RUN sudo apt-get install -y --no-install-recommends \
         ca-certificates \
         procps \
-        \
         curl \
         build-essential \
-        libssl-dev \
         git \
         dpkg-dev \
         gcc \
@@ -58,21 +62,20 @@ RUN sudo apt-get install -y --no-install-recommends \
         make \
         cmake \
         wget \
+        pkg-config \
         postgresql-server-dev-$PG_MAJOR \
-        libkrb5-dev \
+        # pgrouting
         libboost-graph-dev \
-        \
-        bison flex zlib1g zlib1g-dev \
-        pkg-config libreadline-dev \
-        \
+        # timescale, repmgr
+        libkrb5-dev \
+        # age, zombodb
+        bison flex zlib1g-dev libreadline-dev \
+        # zombodb
+        zlib1g libssl-dev \
+        # pgsql-http
         libcurl4-openssl-dev \
-        \
-        libboost-filesystem-dev libboost-date-time-dev libboost-thread-dev \
-        \
-        libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev \
-        \
-        libjson-c-dev \
-        libgomp1 libopenblas-dev libpython3-dev \
+        # repmgr
+        libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
 # hll https://github.com/citusdata/postgresql-hll https://github.com/citusdata/postgresql-hll/tags
 # topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
@@ -88,43 +91,33 @@ RUN sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
 # pgroonga https://github.com/pgroonga/pgroonga
                         postgresql-$PG_MAJOR-pgdg-pgroonga \
+# pg_auto_failover https://github.com/hapostgres/pg_auto_failover
+                        pg-auto-failover-cli \
+                        postgresql-$PG_MAJOR-auto-failover \
 # pgrouting https://github.com/pgRouting/pgrouting https://github.com/pgRouting/docker-pgrouting
     && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING}.tar.gz" \
         && mkdir -p /tmp/pgrouting/build \
         && tar --extract --file /tmp/pgrouting.tar.gz --directory /tmp/pgrouting --strip-components 1 \
         && cd /tmp/pgrouting/build \
         && cmake .. \
-        && make && sudo make install \
-# age https://github.com/apache/age https://age.apache.org/age-manual/master/intro/setup.html
-    && git clone -b PG13 https://github.com/apache/age /tmp/age \
-        && cd /tmp/age \
-        && make && sudo make install \
+        && make -j$(nproc) && sudo make install \
 # timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
     && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \
         && cd /tmp/timescale \
         && ./bootstrap -DCMAKE_BUILD_TYPE=RelWithDebInfo -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && sudo make install \
+# age https://github.com/apache/age https://age.apache.org/age-manual/master/intro/setup.html
+    && git clone -b PG${PG_MAJOR} https://github.com/apache/age /tmp/age \
+        && cd /tmp/age \
+        && make && sudo make install \
 # zombodb https://github.com/zombodb/zombodb
     && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
         && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
         && cd /tmp/zombodb \
-        && cargo install cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
-        && cargo pgrx init --pg13=$(which pg_config) \
+        && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
+        && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
-# pgml https://github.com/postgresml/postgresml
-    && git clone -b v${PG_ML} https://github.com/postgresml/postgresml /tmp/postgresml \
-    && cd /tmp/postgresml \
-    && git submodule update --init --recursive \
-    && cd pgml-extension \
-    && cargo install cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') --locked \
-    && cargo pgrx init --pg${PG_MAJOR} $(which pg_config) \
-    && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx package' \
-    && sudo cp target/release/pgml-pg${PG_MAJOR}/usr/lib/postgresql/${PG_MAJOR}/lib/* \
-        /usr/lib/postgresql/${PG_MAJOR}/lib \
-    && sudo cp target/release/pgml-pg${PG_MAJOR}/usr/share/postgresql/${PG_MAJOR}/extension/* \
-        /usr/share/postgresql/${PG_MAJOR}/extension \
-    && sudo cp requirements.txt /opt/pgml-requirements.txt \
 # vector https://github.com/pgvector/pgvector
     && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector.git /tmp/pgvector \
         && cd /tmp/pgvector \
@@ -135,15 +128,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         && tar --extract --file /tmp/pg_hint_plan.tar.gz --directory /tmp/pg_hint_plan --strip-components 1 \
         && cd /tmp/pg_hint_plan \
         && make && sudo make install \
-# pgagent https://github.com/postgres/pgagent/tags
-    && wget -O /tmp/pgagent.tar.gz "https://github.com/postgres/pgagent/archive/REL-${PG_AGENT}.tar.gz" \
-        && mkdir -p /tmp/pgagent \
-        && tar -zxf /tmp/pgagent.tar.gz -C /tmp/pgagent --strip-components 1 \
-        && cd /tmp/pgagent \
-        && mkdir build && cd build \
-        && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/$PG_MAJOR -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$PG_MAJOR/server .. \
-        && make && sudo make install \
-# pgcron https://github.com/citusdata/pg_cron
+# pg_cron https://github.com/citusdata/pg_cron
     && wget -O /tmp/pg_cron.tar.gz "https://github.com/citusdata/pg_cron/archive/v${PG_CRON}.tar.gz" \
         && mkdir -p /tmp/pg_cron \
         && tar -zxf /tmp/pg_cron.tar.gz -C /tmp/pg_cron --strip-components 1 \
@@ -161,7 +146,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         && tar --extract --file /tmp/orafce.tar.gz --directory /tmp/orafce --strip-components 1 \
         && cd /tmp/orafce \
         && make && sudo make install \
-# pgsql-http https://github.com/pramsey/pgsql-http
+# http https://github.com/pramsey/pgsql-http
     && wget -O /tmp/pgsql-http.tar.gz "https://github.com/pramsey/pgsql-http/archive/v${PGSQL_HTTP}.tar.gz" \
         && mkdir -p /tmp/pgsql-http \
         && tar --extract --file /tmp/pgsql-http.tar.gz --directory /tmp/pgsql-http --strip-components 1 \
@@ -180,11 +165,11 @@ RUN sudo apt-get install -y --no-install-recommends \
         && mkdir build && cd build \
         && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/$PG_MAJOR -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$PG_MAJOR/server .. \
         && make && sudo make install \
-# wal2json https://github.com/eulerto/wal2json
+# wal2json WAL https://github.com/eulerto/wal2json
     && git clone https://github.com/eulerto/wal2json /tmp/wal2json \
         && cd /tmp/wal2json \
         && make && sudo make install \
-# decoder_raw https://github.com/michaelpq/pg_plugins
+# decoder_raw WAL https://github.com/michaelpq/pg_plugins
     && git clone https://github.com/michaelpq/pg_plugins /tmp/pg_plugins \
         && cd /tmp/pg_plugins/decoder_raw \
         && make && sudo make install \
@@ -200,7 +185,6 @@ RUN sudo apt-get install -y --no-install-recommends \
     && sudo apt-get autoremove --purge -y --allow-remove-essential \
         curl \
         build-essential \
-        libssl-dev \
         git \
         dpkg-dev \
         gcc \
@@ -208,15 +192,14 @@ RUN sudo apt-get install -y --no-install-recommends \
         make \
         cmake \
         wget \
+        pkg-config \
         postgresql-server-dev-$PG_MAJOR \
-        libkrb5-dev \
         libboost-graph-dev \
-        bison flex zlib1g-dev \
-        pkg-config libreadline-dev \
+        libkrb5-dev \
+        bison flex zlib1g-dev libreadline-dev \
+        libssl-dev \
         libcurl4-openssl-dev \
-        libboost-filesystem-dev libboost-date-time-dev libboost-thread-dev \
-        libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev \
-        libopenblas-dev \
+        libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
     && sudo apt-get clean -y \
     && sudo rm -rf \
         "${HOME}/.cache" \
@@ -229,7 +212,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 USER root
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
-RUN echo "shared_preload_libraries='citus,pg_stat_statements,pglogical,timescaledb,pg_cron,pgaudit'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries='citus,pg_stat_statements,pgautofailover,pgaudit,timescaledb,pg_cron,pglogical'" >> /usr/share/postgresql/postgresql.conf.sample
 
 # select name,setting from pg_settings where name like 'pgaudit%';
 # all but except misc
