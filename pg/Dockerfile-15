@@ -17,7 +17,7 @@ FROM postgres:${VERSION}
 ARG CITUS=11.3.0
 ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0
-ARG POSTGIS=3.3.2+dfsg-1.pgdg110+1
+ARG POSTGIS=3.3.3+dfsg-1~exp1.pgdg110+1
 ARG PGROUTING=3.5.0
 ARG TIMESCALE=2.11.0
 ARG ZOMBODB=3000.1.17
@@ -25,7 +25,7 @@ ARG PGVECTOR=0.4.2
 ARG PG_HINT_PLAN=15_1_5_0
 ARG PG_CRON=1.5.2
 ARG PG_IVM=1.5.1
-ARG ORAFCE=4_3_0
+ARG ORAFCE=4.3.0
 ARG PGSQL_HTTP=1.5.0
 ARG PGAUDIT=1.7.0
 ARG REPMGR=5.4.0
@@ -36,7 +36,7 @@ ENV TZ PRC
 COPY _curl.sh /usr/local/bin/
 
 RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bullseye.deb > /tmp/groonga.deb \
-    && apt install -y /tmp/groonga.deb \
+    && apt-get install -y /tmp/groonga.deb \
     && apt-get update && apt-get install -y --no-install-recommends sudo \
     && echo "postgres ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
