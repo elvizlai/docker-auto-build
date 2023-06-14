@@ -43,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.0.8
+OPENSSL=openssl-3.0.9
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20230410
 
@@ -143,7 +143,7 @@ git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-mod
 git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
-git clone --depth 1 --quiet -b v0.2.1 https://github.com/vozlt/nginx-module-vts
+git clone --depth 1 --quiet -b v0.2.2 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 cd $NGINXDIR

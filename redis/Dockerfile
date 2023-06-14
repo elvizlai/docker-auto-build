@@ -3,11 +3,11 @@ ARG VERSION=7.0
 # https://docs.redis.com/latest/modules/
 
 # https://hub.docker.com/r/redislabs/rejson/tags https://redis.io/docs/stack/json/
-FROM redislabs/rejson:2.6.0 as rejson
+FROM redislabs/rejson:2.6.1 as rejson
 # https://hub.docker.com/r/redislabs/rebloom/tags https://redis.io/docs/stack/bloom/
 FROM redislabs/rebloom:2.6.0 as rebloom
 # https://hub.docker.com/r/redislabs/redisearch/tags https://redis.io/docs/stack/search/
-FROM redislabs/redisearch:2.8.1 as redisearch
+FROM redislabs/redisearch:2.8.2 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph/tags https://redis.io/docs/stack/graph/
 FROM redislabs/redisgraph:2.12.1 as redisgraph
 

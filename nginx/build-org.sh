@@ -43,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.1.0
+OPENSSL=openssl-3.1.1
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20230410
 
@@ -124,15 +124,16 @@ git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-mod
 git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
-git clone --depth 1 --quiet -b v0.2.1 https://github.com/vozlt/nginx-module-vts
+git clone --depth 1 --quiet -b v0.2.2 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 # https://nginx.org/en/download.html
 cd $NGINXDIR
 curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1
 
-curl -sSL https://raw.githubusercontent.com/kn007/patch/master/nginx.patch > nginx.patch
-patch -p1 < nginx.patch
+# this not work for nginx 1.24.0
+# curl -sSL https://raw.githubusercontent.com/kn007/patch/master/nginx.patch > nginx.patch
+# patch -p1 < nginx.patch
 
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
@@ -165,7 +166,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-http_ssl_module \
     --with-http_stub_status_module \
     --with-http_sub_module \
-    --with-http_v2_hpack_enc \
     --with-http_v2_module \
     --with-http_xslt_module=dynamic \
     --with-mail \
