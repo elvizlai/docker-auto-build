@@ -72,7 +72,7 @@ NGINXVER=${1:-1.24.0}
 NGINXNJS=0.7.12
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.2
-NGINXLUA=0.10.24
+NGINXLUA=0.10.25
 NGINXSTREAMLUA=0.0.13
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
@@ -209,7 +209,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.26
+LUA_RESTY_CORE=0.1.27
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 \cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -276,7 +276,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.22
+LUA_RESTY_OPENSSL=0.8.23
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL

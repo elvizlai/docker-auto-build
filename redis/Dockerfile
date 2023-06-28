@@ -3,13 +3,14 @@ ARG VERSION=7.0
 # https://docs.redis.com/latest/modules/
 
 # https://hub.docker.com/r/redislabs/rejson/tags https://redis.io/docs/stack/json/
-FROM redislabs/rejson:2.6.1 as rejson
+FROM redislabs/rejson:2.6.2 as rejson
 # https://hub.docker.com/r/redislabs/rebloom/tags https://redis.io/docs/stack/bloom/
-FROM redislabs/rebloom:2.6.0 as rebloom
+FROM redislabs/rebloom:2.6.1 as rebloom
 # https://hub.docker.com/r/redislabs/redisearch/tags https://redis.io/docs/stack/search/
-FROM redislabs/redisearch:2.8.2 as redisearch
+# !redissearch 2.8+ require redis 7.1+
+FROM redislabs/redisearch:2.6.11 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph/tags https://redis.io/docs/stack/graph/
-FROM redislabs/redisgraph:2.12.1 as redisgraph
+FROM redislabs/redisgraph:2.12.2 as redisgraph
 
 # https://github.com/alibaba/TairString
 FROM tairmodule/tairstring:latest as tairstring
@@ -45,9 +46,6 @@ RUN set -ex; \
     curl -sSL -o /usr/local/lib/rede.so https://github.com/TamarLabs/ReDe/releases/download/v0.5.0/module.so; \
     chmod +x /usr/local/lib/*.so
 
-# provide GLIBC_2.29
-FROM redis:${VERSION} as redis
-
 # redis release
 FROM bitnami/redis:${VERSION}
 
@@ -62,7 +60,6 @@ RUN set -ex; \
 	apt-get install -y --no-install-recommends ${DEPS}; \
     mkdir -p ${LIBDIR};
 
-COPY --from=redis /lib/x86_64-linux-gnu/libm.so.6 /lib/x86_64-linux-gnu/libm-2.31.so /lib/x86_64-linux-gnu/
 COPY --from=rejson /usr/lib/redis/modules/rejson.so ${LIBDIR}
 COPY --from=redisearch /usr/lib/redis/modules/redisearch.so ${LIBDIR}
 COPY --from=redisgraph /usr/lib/redis/modules/redisgraph.so ${LIBDIR}

@@ -20,15 +20,15 @@ RUN mkdir -p /tmp/jemalloc-temp && cd /tmp/jemalloc-temp \
 RUN cd /tmp \
     && curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.19.tgz | tar zxf - && mv docker/docker $GOPATH/bin/docker \
     && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && chmod +x kubectl && mv kubectl $GOPATH/bin/ \
-    && curl -sSL https://github.com/bufbuild/buf/releases/download/v1.21.0/buf-Linux-x86_64 > buf && chmod +x buf && mv buf $GOPATH/bin/ \
-    && curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v23.2/protoc-23.2-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/ \
-    && curl -sSL https://github.com/protocolbuffers/protobuf-go/releases/download/v1.30.0/protoc-gen-go.v1.30.0.linux.amd64.tar.gz | tar zxf - && chmod +x protoc-gen-go && mv protoc-gen-go $GOPATH/bin/ \
+    && curl -sSL https://github.com/bufbuild/buf/releases/download/v1.22.0/buf-Linux-x86_64 > buf && chmod +x buf && mv buf $GOPATH/bin/ \
+    && curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v23.3/protoc-23.3-linux-x86_64.zip > protoc.zip && unzip -q protoc.zip && mv bin/protoc $GOPATH/bin/ \
+    && curl -sSL https://github.com/protocolbuffers/protobuf-go/releases/download/v1.31.0/protoc-gen-go.v1.31.0.linux.amd64.tar.gz | tar zxf - && chmod +x protoc-gen-go && mv protoc-gen-go $GOPATH/bin/ \
     && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.16.0/protoc-gen-grpc-gateway-v2.16.0-linux-x86_64 > protoc-gen-grpc-gateway && chmod +x protoc-gen-grpc-gateway && mv protoc-gen-grpc-gateway $GOPATH/bin/ \
     && curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.16.0/protoc-gen-openapiv2-v2.16.0-linux-x86_64 > protoc-gen-openapiv2 && chmod +x protoc-gen-openapiv2 && mv protoc-gen-openapiv2 $GOPATH/bin/ \
     && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0 \
-    && go install github.com/envoyproxy/protoc-gen-validate@v1.0.1 \
+    && go install github.com/envoyproxy/protoc-gen-validate@v1.0.2 \
     && go install github.com/mgechev/revive@v1.3.2 \
-    && go install golang.org/x/tools/cmd/stringer@v0.9.3 \
+    && go install golang.org/x/tools/cmd/stringer@v0.10.0 \
     && go install golang.org/x/vuln/cmd/govulncheck@latest \
     && upx -f -q /usr/local/go/bin/* $GOPATH/bin/* || true
 
