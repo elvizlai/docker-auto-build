@@ -78,7 +78,7 @@ make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=quic
-NGINXNJS=0.7.12
+NGINXNJS=0.8.0
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.2
 NGINXLUA=0.10.25

@@ -19,16 +19,16 @@ ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.3+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
-ARG TIMESCALE=2.11.0
-ARG ZOMBODB=3000.1.20
+ARG TIMESCALE=2.11.1
+ARG ZOMBODB=3000.1.21
 ARG PGVECTOR=0.4.4
 ARG PG_HINT_PLAN=13_1_3_8
 ARG PG_CRON=1.5.2
 ARG PG_IVM=1.5.1
-ARG ORAFCE=4.3.0
+ARG ORAFCE=4_4_0
 ARG PGSQL_HTTP=1.5.0
 ARG PGAUDIT=1.5.2
-ARG REPMGR=5.4.0
+ARG REPMGR=5.4.1
 
 # set timezone
 ENV TZ PRC
@@ -126,7 +126,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
         && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
-# vector https://github.com/pgvector/pgvector
+# vector https://github.com/pgvector/pgvector/tags
     && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector.git /tmp/pgvector \
         && cd /tmp/pgvector \
         && make && sudo make install \
