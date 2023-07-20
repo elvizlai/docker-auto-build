@@ -14,6 +14,7 @@ RUN apk update && apk add --no-cache git gcc \
 # postgres
 FROM postgres:${VERSION}-bullseye
 
+# citus 12 drop support pg13
 ARG CITUS=11.3.0
 ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0

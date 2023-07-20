@@ -14,7 +14,7 @@ RUN apk update && apk add --no-cache git gcc \
 # postgres
 FROM postgres:${VERSION}-bullseye
 
-ARG CITUS=11.3.0
+ARG CITUS=12.0.0
 ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.3.3+dfsg-1.pgdg110+1
@@ -80,7 +80,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
-                        postgresql-$PG_MAJOR-citus-11.3=$CITUS.citus-1 \
+                        postgresql-$PG_MAJOR-citus-12.0=$CITUS.citus-1 \
 # pglogical https://github.com/2ndQuadrant/pglogical
                         postgresql-$PG_MAJOR-pglogical \
 # postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/14-3.3/Dockerfile
