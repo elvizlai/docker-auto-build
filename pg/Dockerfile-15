@@ -25,8 +25,8 @@ ARG PGVECTOR=0.4.4
 ARG PG_HINT_PLAN=15_1_5_0
 ARG PG_CRON=1.5.2
 ARG PG_IVM=1.5.1
-ARG ORAFCE=4_4_0
-ARG PGSQL_HTTP=1.5.0
+ARG ORAFCE=4_5_0
+ARG PGSQL_HTTP=1.6.0
 ARG PGAUDIT=1.7.0
 ARG REPMGR=5.4.1
 
@@ -115,6 +115,10 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cd /tmp/timescale \
         && ./bootstrap -DCMAKE_BUILD_TYPE=RelWithDebInfo -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && sudo make install \
+# age https://github.com/apache/age https://age.apache.org/age-manual/master/intro/setup.html
+    && git clone -b PG${PG_MAJOR} https://github.com/apache/age /tmp/age \
+        && cd /tmp/age \
+        && make && sudo make install \
 # zombodb https://github.com/zombodb/zombodb
     && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
