@@ -100,3 +100,4 @@ jobs:
       - name: Build infra image
         run: |
           bash ./build.sh redis
+          bash ./build.sh redis 7.2.0
