@@ -19,9 +19,9 @@ ARG POSTGRESQL_HLL=2.17
 ARG POSTGRESQL_TOPN=2.5.0
 ARG POSTGIS=3.4.0+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
-ARG TIMESCALE=2.11.1
+ARG TIMESCALE=2.11.2
 ARG ZOMBODB=3000.1.24
-ARG PGVECTOR=0.4.4
+ARG PGVECTOR=0.5.0
 ARG PG_HINT_PLAN=14_1_4_1
 ARG PG_CRON=1.5.2
 ARG PG_IVM=1.5.1
@@ -83,7 +83,7 @@ RUN sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-citus-12.0=$CITUS.citus-1 \
 # pglogical https://github.com/2ndQuadrant/pglogical
                         postgresql-$PG_MAJOR-pglogical \
-# postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/14-3.3/Dockerfile
+# postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/14-3.4/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
 # pgroonga https://github.com/pgroonga/pgroonga
