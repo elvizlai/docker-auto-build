@@ -1,0 +1,26 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+name: Infra Envoy
+
+on: workflow_dispatch
+
+jobs:
+  build-envoy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: "true"
+
+      # https://github.com/docker/login-action
+      - name: Log into docker hub
+        uses: docker/login-action@v2
+        with:
+          username: sdrzlyz
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build envoy bin
+        run: |
+          bash ./envoy/build_envoy.sh
