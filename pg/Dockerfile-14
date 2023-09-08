@@ -15,17 +15,17 @@ RUN apk update && apk add --no-cache git gcc \
 FROM postgres:${VERSION}-bullseye
 
 ARG CITUS=12.0.0
-ARG POSTGRESQL_HLL=2.17
-ARG POSTGRESQL_TOPN=2.5.0
+ARG POSTGRESQL_HLL=2.18
+ARG POSTGRESQL_TOPN=2.6.0
 ARG POSTGIS=3.4.0+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.0
 ARG TIMESCALE=2.11.2
 ARG ZOMBODB=3000.1.24
 ARG PGVECTOR=0.5.0
 ARG PG_HINT_PLAN=14_1_4_1
-ARG PG_CRON=1.5.2
-ARG PG_IVM=1.5.1
-ARG ORAFCE=4_5_0
+ARG PG_CRON=1.6.0
+ARG PG_IVM=1.6
+ARG ORAFCE=4_6_0
 ARG PGSQL_HTTP=1.6.0
 ARG PGAUDIT=1.6.2
 ARG REPMGR=5.4.1
@@ -83,7 +83,7 @@ RUN sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-citus-12.0=$CITUS.citus-1 \
 # pglogical https://github.com/2ndQuadrant/pglogical
                         postgresql-$PG_MAJOR-pglogical \
-# postgis https://github.com/postgis/postgis https://github.com/postgis/docker-postgis/blob/master/14-3.4/Dockerfile
+# postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/14-3.4/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
 # pgroonga https://github.com/pgroonga/pgroonga
@@ -91,13 +91,13 @@ RUN sudo apt-get install -y --no-install-recommends \
 # pg_auto_failover https://github.com/hapostgres/pg_auto_failover
                         pg-auto-failover-cli \
                         postgresql-$PG_MAJOR-auto-failover \
-# hll https://github.com/citusdata/postgresql-hll https://github.com/citusdata/postgresql-hll/tags
+# hll https://github.com/citusdata/postgresql-hll/tags
     && wget -O /tmp/hll.tar.gz "https://github.com/citusdata/postgresql-hll/archive/refs/tags/v${POSTGRESQL_HLL}.tar.gz" \
     && mkdir -p /tmp/hll \
     && tar --extract --file /tmp/hll.tar.gz --directory /tmp/hll --strip-components 1 \
         && cd /tmp/hll \
         && make -j$(nproc) && sudo make install \
-# topn https://github.com/citusdata/postgresql-topn https://github.com/citusdata/postgresql-topn/tags
+# topn https://github.com/citusdata/postgresql-topn/tags
     && wget -O /tmp/topn.tar.gz "https://github.com/citusdata/postgresql-topn/archive/refs/tags/v${POSTGRESQL_TOPN}.tar.gz" \
     && mkdir -p /tmp/topn \
     && tar --extract --file /tmp/topn.tar.gz --directory /tmp/topn --strip-components 1 \
