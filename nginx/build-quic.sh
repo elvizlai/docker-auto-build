@@ -43,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.0.9
+OPENSSL=openssl-3.1.2
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20230410
 
@@ -291,13 +291,13 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.24
+LUA_RESTY_OPENSSL=0.8.25
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
-LUA_RESTY_ACME=0.11.0
+LUA_RESTY_ACME=0.12.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 \cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
