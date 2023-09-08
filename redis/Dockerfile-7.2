@@ -8,9 +8,9 @@ FROM redislabs/rejson:2.6.6 as rejson
 FROM redislabs/rebloom:2.6.3 as rebloom
 # https://hub.docker.com/r/redislabs/redisearch/tags https://redis.io/docs/stack/search/
 # !redissearch 2.8+ require redis 7.1+
-FROM redislabs/redisearch:2.8.4 as redisearch
+FROM redislabs/redisearch:2.8.5 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph/tags https://redis.io/docs/stack/graph/
-FROM redislabs/redisgraph:2.12.7 as redisgraph
+FROM redislabs/redisgraph:2.12.8 as redisgraph
 
 # https://github.com/alibaba/TairString
 FROM tairmodule/tairstring:latest as tairstring
