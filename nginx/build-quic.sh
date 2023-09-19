@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 OPENSSL=openssl-3.1.2
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20230410
+LUAJIT=v2.1-20230911
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -78,7 +78,7 @@ make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=quic
-NGINXNJS=0.8.0
+NGINXNJS=0.8.1
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.2
 NGINXLUA=0.10.25
