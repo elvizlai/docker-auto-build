@@ -37,8 +37,6 @@ jobs:
           bash ./build.sh ikev2
           bash ./build.sh nginx
           bash ./build.sh nginx ffmpeg
-          bash ./build.sh nginx quic
-          bash ./build.sh pg
           bash ./build.sh pg 14
           bash ./build.sh pg 15
           bash ./build.sh redis
