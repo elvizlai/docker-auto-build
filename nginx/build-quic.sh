@@ -43,9 +43,9 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.1.2
+OPENSSL=openssl-3.1.4
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20230911
+LUAJIT=v2.1-20231006
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -78,7 +78,7 @@ make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=quic
-NGINXNJS=0.8.1
+NGINXNJS=0.8.2
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.2
 NGINXLUA=0.10.25
@@ -140,7 +140,7 @@ git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/Spi
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
 git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-module
-git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/headers-more-nginx-module
+git clone --depth 1 --quiet -b v0.35 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet -b v0.2.2 https://github.com/vozlt/nginx-module-vts
