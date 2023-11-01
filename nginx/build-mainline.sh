@@ -68,7 +68,7 @@ cd luajit2.1
 make -j4 && make install && cd ..
 
 
-NGINXVER=${1:-1.24.0}
+NGINXVER=1.25.3 #${1:-1.25.3}
 NGINXNJS=0.8.2
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.2
@@ -77,7 +77,6 @@ NGINXSTREAMLUA=0.0.13
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
-rm -rf ngx_brotli
 git clone https://github.com/google/ngx_brotli
 cd ngx_brotli
 git submodule update --init
@@ -167,6 +166,7 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-http_stub_status_module \
     --with-http_sub_module \
     --with-http_v2_module \
+    --with-http_v3_module \
     --with-http_xslt_module=dynamic \
     --with-mail \
     --with-mail_ssl_module \
@@ -276,7 +276,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.25
+LUA_RESTY_OPENSSL=0.8.26
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
