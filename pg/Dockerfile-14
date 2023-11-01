@@ -20,6 +20,7 @@ ARG POSTGRESQL_TOPN=2.6.0
 ARG POSTGIS=3.4.0+dfsg-1.pgdg110+1
 ARG PGROUTING=3.5.1
 ARG TIMESCALE=2.12.2
+ARG SP_VAULT=0.2.9
 ARG ZOMBODB=3000.1.25
 ARG PGVECTOR=0.5.1
 ARG PG_HINT_PLAN=14_1_4_1
@@ -33,11 +34,7 @@ ARG REPMGR=5.4.1
 # set timezone
 ENV TZ PRC
 
-COPY _curl.sh /usr/local/bin/
-
-RUN _curl.sh https://packages.groonga.org/debian/groonga-apt-source-latest-bullseye.deb > /tmp/groonga.deb \
-    && apt-get install -y /tmp/groonga.deb \
-    && apt-get update && apt-get install -y --no-install-recommends sudo \
+RUN apt-get update && apt-get install -y --no-install-recommends sudo \
     && echo "postgres ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER postgres
@@ -81,13 +78,11 @@ RUN sudo apt-get install -y --no-install-recommends \
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-citus-12.1=$CITUS.citus-1 \
-# pglogical https://github.com/2ndQuadrant/pglogical
-                        postgresql-$PG_MAJOR-pglogical \
 # postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/14-3.4/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
-# pgroonga https://github.com/pgroonga/pgroonga
-                        postgresql-$PG_MAJOR-pgdg-pgroonga \
+# pglogical https://github.com/2ndQuadrant/pglogical
+                        postgresql-$PG_MAJOR-pglogical \ 
 # pg_auto_failover https://github.com/hapostgres/pg_auto_failover
                         pg-auto-failover-cli \
                         postgresql-$PG_MAJOR-auto-failover \
@@ -115,6 +110,16 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cd /tmp/timescale \
         && ./bootstrap -DCMAKE_BUILD_TYPE=RelWithDebInfo -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && sudo make install \
+# supabase-vault + pgsodium + libsodium
+    && git clone -b 1.0.19 https://github.com/jedisct1/libsodium /tmp/libsodium  \
+        && cd /tmp/libsodium \
+        && ./configure && sudo make install \
+    && git clone -b v3.1.8 https://github.com/michelp/pgsodium /tmp/pgsodium \
+        && cd /tmp/pgsodium \
+        && sudo make install \
+    && git clone -b v${SP_VAULT} https://github.com/supabase/vault /tmp/vault \
+        && cd /tmp/vault \
+        && make && sudo make install \
 # age https://github.com/apache/age https://age.apache.org/age-manual/master/intro/setup.html
     && git clone -b PG${PG_MAJOR} https://github.com/apache/age /tmp/age \
         && cd /tmp/age \
@@ -167,13 +172,19 @@ RUN sudo apt-get install -y --no-install-recommends \
         && tar --extract --file /tmp/pgaudit.tar.gz --directory /tmp/pgaudit --strip-components 1 \
         && cd /tmp/pgaudit \
         && sudo make install USE_PGXS=1 \
-# pg_jieba https://github.com/jaiminpan/pg_jieba
-    && git clone https://github.com/jaiminpan/pg_jieba /tmp/pg_jieba \
-        && cd /tmp/pg_jieba \
-        && git submodule update --init --recursive \
-        && mkdir build && cd build \
-        && cmake -DCMAKE_PREFIX_PATH=/usr/share/postgresql/$PG_MAJOR -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$PG_MAJOR/server .. \
-        && make && sudo make install \
+# zhparser + scws
+    && git clone -b V2.2 https://github.com/amutu/zhparser /tmp/zhparser \
+    && mkdir -p /tmp/zhparser/scws \
+    && cd /tmp/zhparser/scws \
+    && wget -q -O - http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 | tar xjf - --strip-components 1 \
+    && ./configure && sudo make install \
+    && cd .. && make && sudo make install \
+# repmgr https://github.com/EnterpriseDB/repmgr
+    && wget -O /tmp/repmgr.tar.gz "https://github.com/EnterpriseDB/repmgr/archive/v${REPMGR}.tar.gz" \
+    && mkdir -p /tmp/repmgr \
+    && tar --extract --file /tmp/repmgr.tar.gz --directory /tmp/repmgr --strip-components 1 \
+        && cd /tmp/repmgr \
+        && ./configure && make && sudo make install \
 # wal2json WAL https://github.com/eulerto/wal2json
     && git clone https://github.com/eulerto/wal2json /tmp/wal2json \
         && cd /tmp/wal2json \
@@ -182,12 +193,6 @@ RUN sudo apt-get install -y --no-install-recommends \
     && git clone https://github.com/michaelpq/pg_plugins /tmp/pg_plugins \
         && cd /tmp/pg_plugins/decoder_raw \
         && make && sudo make install \
-# repmgr https://github.com/EnterpriseDB/repmgr
-    && wget -O /tmp/repmgr.tar.gz "https://github.com/EnterpriseDB/repmgr/archive/v${REPMGR}.tar.gz" \
-    && mkdir -p /tmp/repmgr \
-    && tar --extract --file /tmp/repmgr.tar.gz --directory /tmp/repmgr --strip-components 1 \
-        && cd /tmp/repmgr \
-        && ./configure && make && sudo make install \
 # locale
     && sudo bash -c 'echo -e "en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8" >> /etc/locale.gen' && sudo locale-gen \
 # clean
@@ -221,7 +226,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 USER root
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
-RUN echo "shared_preload_libraries='citus,pg_stat_statements,pgautofailover,pgaudit,timescaledb,pg_cron,pglogical'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries='citus,pg_stat_statements,pgautofailover,pgaudit,timescaledb,pg_cron,pglogical,pgsodium'" >> /usr/share/postgresql/postgresql.conf.sample
 
 # select name,setting from pg_settings where name like 'pgaudit%';
 # all but except misc
@@ -233,6 +238,9 @@ RUN echo "shared_preload_libraries='citus,pg_stat_statements,pgautofailover,pgau
 
 # add scripts to run after initdb
 COPY extension/ /docker-entrypoint-initdb.d/
+
+# add script to gen pgsodium key
+COPY pgsodium_getkey /usr/share/postgresql/$PG_MAJOR/extension/pgsodium_getkey
 
 # add tools
 COPY --from=tools /go/bin/* /usr/local/bin/
