@@ -30,6 +30,7 @@ ARG ORAFCE=4_7_0
 ARG PGSQL_HTTP=1.6.0
 ARG PGAUDIT=1.7.0
 ARG REPMGR=5.4.1
+ARG PG_BACKREST=2.48
 
 # set timezone
 ENV TZ PRC
@@ -74,6 +75,8 @@ RUN sudo apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
         # repmgr
         liblz4-dev libzstd-dev libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
+        # pgBackRest
+        libyaml-dev libbz2-dev \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
@@ -185,6 +188,13 @@ RUN sudo apt-get install -y --no-install-recommends \
     && tar --extract --file /tmp/repmgr.tar.gz --directory /tmp/repmgr --strip-components 1 \
         && cd /tmp/repmgr \
         && ./configure && make && sudo make install \
+# pgBackRest https://github.com/pgbackrest/pgbackrest
+    && mkdir -p /tmp/pgbackrest \
+        && wget -q -O - https://github.com/pgbackrest/pgbackrest/archive/release/${PG_BACKREST}.tar.gz | tar zx -C /tmp/pgbackrest --strip-components 1 \
+        && cd /tmp/pgbackrest/src \
+        && ./configure && make && sudo make install \
+        && sudo mkdir -p /var/log/pgbackrest /var/lib/pgbackrest /etc/pgbackrest \
+        && sudo chown -R postgres:postgres /var/log/pgbackrest /var/lib/pgbackrest /etc/pgbackrest \
 # wal2json WAL https://github.com/eulerto/wal2json
     && git clone https://github.com/eulerto/wal2json /tmp/wal2json \
         && cd /tmp/wal2json \
@@ -214,6 +224,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         libssl-dev \
         libcurl4-openssl-dev \
         liblz4-dev libzstd-dev libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
+        libyaml-dev libbz2-dev \
     && sudo apt-get clean -y \
     && sudo rm -rf \
         "${HOME}/.cache" \
@@ -222,6 +233,18 @@ RUN sudo apt-get install -y --no-install-recommends \
         /var/tmp/* \
         /var/lib/postgresql/.profile \
         /var/lib/postgresql/.pgrx
+
+# pgBackRest config
+RUN echo '[pg]\n\
+pg1-path=/var/lib/postgresql/data\n\
+pg1-port=5432\n\
+pg1-user=postgres\n\
+pg1-host-user=postgres\n\
+\n\
+[global]\n\
+repo1-path=/var/lib/pgbackrest\n\
+repo1-retention-full=2\
+' > /etc/pgbackrest/pgbackrest.conf
 
 USER root
 
@@ -254,9 +277,12 @@ RUN chmod +x /wait-for-manager.sh
 RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
 
 # config tuning
-# replace last docker_temp_server_stop with sed to change pg.max_connections and cron.timezone 
-# \o047 for single quote
-RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 100/max_connections = 1000/" /var/lib/postgresql/data/postgresql.conf\n                        echo "cron.timezone = \o047PRC\o047" >> /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
+# HINT: \o047 for sed single quote
+# replace docker_temp_server_stop with sed to change postgresql.conf
+# max_connections = 1000
+# wal_level = logical
+# cron.timezone = 'PRC'
+RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 100/max_connections = 1000/;s/\#wal_level = replica/wal_level = logical/" /var/lib/postgresql/data/postgresql.conf\n                        echo "cron.timezone = \o047PRC\o047" >> /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
 
 ENV TIMESCALEDB_TELEMETRY off
 
