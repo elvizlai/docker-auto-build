@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 OPENSSL=openssl-3.1.4
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20231006
+LUAJIT=v2.1-20231117
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -71,7 +71,7 @@ make -j4 && make install && cd ..
 NGINXVER=1.25.3 #${1:-1.25.3}
 NGINXNJS=0.8.2
 NGINXDIR=/opt/nginx-$NGINXVER
-NGINXNDK=0.3.2
+NGINXNDK=0.3.3
 NGINXLUA=0.10.25
 NGINXSTREAMLUA=0.0.13
 
@@ -276,7 +276,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=0.8.26
+LUA_RESTY_OPENSSL=1.0.2
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
@@ -325,7 +325,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.4.2
+KONG=3.5.0
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
