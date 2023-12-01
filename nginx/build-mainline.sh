@@ -120,7 +120,7 @@ git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/Spi
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
 git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-module
-git clone --depth 1 --quiet -b v0.35 https://github.com/openresty/headers-more-nginx-module
+git clone --depth 1 --quiet -b v0.36 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet -b v0.2.2 https://github.com/vozlt/nginx-module-vts
@@ -257,7 +257,7 @@ curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$
 rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
 
 # https://github.com/openresty/lua-resty-websocket/tags
-LUA_RESTY_WEBSOCKET=0.10
+LUA_RESTY_WEBSOCKET=0.11
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
 \cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
