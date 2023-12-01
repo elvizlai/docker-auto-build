@@ -17,9 +17,9 @@ FROM postgres:${VERSION}-bullseye
 ARG CITUS=12.1.0
 ARG POSTGRESQL_HLL=2.18
 ARG POSTGRESQL_TOPN=2.6.0
-ARG POSTGIS=3.4.0+dfsg-1.pgdg110+1
-ARG PGROUTING=3.5.1
-ARG TIMESCALE=2.12.2
+ARG POSTGIS=3.4.1+dfsg-1.pgdg110+1
+ARG PGROUTING=3.6.1
+ARG TIMESCALE=2.13.0
 ARG SP_VAULT=0.2.9
 ARG ZOMBODB=3000.1.25
 ARG PGVECTOR=0.5.1
@@ -30,7 +30,7 @@ ARG ORAFCE=4_7_0
 ARG PGSQL_HTTP=1.6.0
 ARG PGAUDIT=1.6.2
 ARG REPMGR=5.4.1
-ARG PG_BACKREST=2.48
+ARG PG_BACKREST=2.49
 
 # set timezone
 ENV TZ PRC
@@ -117,7 +117,7 @@ RUN sudo apt-get install -y --no-install-recommends \
     && git clone -b 1.0.19 https://github.com/jedisct1/libsodium /tmp/libsodium  \
         && cd /tmp/libsodium \
         && ./configure && sudo make install \
-    && git clone -b v3.1.8 https://github.com/michelp/pgsodium /tmp/pgsodium \
+    && git clone -b v3.1.9 https://github.com/michelp/pgsodium /tmp/pgsodium \
         && cd /tmp/pgsodium \
         && sudo make install \
     && git clone -b v${SP_VAULT} https://github.com/supabase/vault /tmp/vault \
