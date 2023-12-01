@@ -563,7 +563,8 @@ http {
     }
 
     server {
-        listen      443 default_server ssl http2 reuseport fastopen=512 backlog=4096 so_keepalive=120s:60s:10;
+        listen      443 default_server ssl;
+        listen      443 quic reuseport;
         server_name _;
         ssl_reject_handshake on;
         return 444;
