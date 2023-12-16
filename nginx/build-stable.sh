@@ -108,7 +108,7 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # waf
-git clone -b v3.0.10 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+git clone -b v3.0.11 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
 make -j$(nproc) && make install
@@ -275,7 +275,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=1.0.2
+LUA_RESTY_OPENSSL=1.1.0
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
@@ -411,10 +411,10 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/nginx/acc
 MODULE_LIST=""
 for file in `ls /etc/nginx/modules/*.so`; do
   if [ -z "$MODULE_LIST" ]; then
-    MODULE_LIST="#load_module \"$file\";"
+    MODULE_LIST="load_module \"$file\";"
   else
     MODULE_LIST="$MODULE_LIST
-#load_module \"$file\";"
+load_module \"$file\";"
   fi
 done
 

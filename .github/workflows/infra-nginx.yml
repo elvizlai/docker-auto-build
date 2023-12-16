@@ -5,6 +5,25 @@ name: Infra Nginx
 on: workflow_dispatch
 
 jobs:
+  build-dev:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: "true"
+
+      # https://github.com/docker/login-action
+      - name: Log into docker hub
+        uses: docker/login-action@v2
+        with:
+          username: sdrzlyz
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build nginx dev
+        run: |
+          bash ./build.sh nginx dev
   build-stable:
     runs-on: ubuntu-latest
 
@@ -21,7 +40,7 @@ jobs:
           username: sdrzlyz
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build infra image
+      - name: Build nginx stable&ffmpeg
         run: |
           bash ./build.sh nginx
           bash ./build.sh nginx ffmpeg
@@ -41,6 +60,6 @@ jobs:
           username: sdrzlyz
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build infra image
+      - name: Build nginx mainline
         run: |
           bash ./build.sh nginx mainline

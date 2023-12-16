@@ -1,4 +1,4 @@
-FROM alpine:3.18 AS builder
+FROM alpine:3.19 AS builder
 
 ARG VERSION=1.24.0
 
@@ -7,19 +7,17 @@ COPY build-stable.sh /opt/build.sh
 RUN sh /opt/build.sh $VERSION
 
 
-FROM alpine
+FROM alpine:3.19
+
+COPY runtime.sh /opt/runtime.sh
+RUN sh /opt/runtime.sh
 
 COPY --from=builder /usr/sbin/nginx /usr/sbin/
 COPY --from=builder /etc/nginx/ /etc/nginx/
 COPY --from=builder /usr/local/lib/ /usr/local/lib/
 COPY --from=builder /usr/bin/envsubst /usr/local/bin/
-COPY --from=builder /usr/lib/libgd.so* /usr/lib/libpng16.so* /usr/lib/libjpeg.so* /usr/lib/libwebp.so* /usr/lib/libfreetype.so* /usr/lib/libbz2.so* /usr/lib/
-COPY --from=builder /usr/lib/libxslt.so* /usr/lib/libexslt.so* /usr/lib/libgcrypt.so* /usr/lib/libgpg-error.so* /usr/lib/
 
 COPY cors.conf /etc/nginx
-COPY runtime.sh /opt/runtime.sh
-
-RUN sh /opt/runtime.sh
 
 EXPOSE 80 443
 

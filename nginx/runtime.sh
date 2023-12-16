@@ -9,6 +9,10 @@ apk add --no-cache \
   pcre \
   libgcc \
   libintl \
+  `# ngx_http_image_filter_module` \
+  libgd fontconfig libxpm tiff libavif \
+  `# ngx_http_xslt_filter_module` \
+  libxslt \
   `# ModSecurity dependencies` \
   libstdc++ \
   libmaxminddb-dev \

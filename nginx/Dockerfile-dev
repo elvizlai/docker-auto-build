@@ -1,0 +1,7 @@
+FROM alpine:3.19 AS builder
+
+ARG VERSION=1.24.0
+
+COPY build-stable.sh /opt/build.sh
+
+RUN sh /opt/build.sh $VERSION
