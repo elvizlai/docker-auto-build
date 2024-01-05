@@ -72,8 +72,8 @@ NGINXVER=1.24.0 #${1:-1.24.0}
 NGINXNJS=0.8.2
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.3
-NGINXLUA=0.10.25
-NGINXSTREAMLUA=0.0.13
+NGINXLUA=0.10.26
+NGINXSTREAMLUA=0.0.14
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -120,7 +120,7 @@ git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/Spi
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
 git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-module
-git clone --depth 1 --quiet -b v0.36 https://github.com/openresty/headers-more-nginx-module
+git clone --depth 1 --quiet -b v0.37 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet -b v0.2.2 https://github.com/vozlt/nginx-module-vts
@@ -208,7 +208,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.27
+LUA_RESTY_CORE=0.1.28
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 \cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -226,7 +226,7 @@ curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LR
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-mysql/tags
-LUA_RESTY_MYSQL=0.26
+LUA_RESTY_MYSQL=0.27
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 \cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
@@ -275,7 +275,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=1.1.0
+LUA_RESTY_OPENSSL=1.2.0
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
