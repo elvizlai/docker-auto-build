@@ -5,7 +5,7 @@ docker run -it --rm \
     -m 1024m \
     -e ALLOW_EMPTY_PASSWORD=yes \
     -p 6379:6379 \
-    sdrzlyz/redis:7.0
+    sdrzlyz/redis:7.2
 ```
 
 example with args
@@ -15,7 +15,7 @@ docker run -it --rm \
     -m 1024m \
     -e ALLOW_EMPTY_PASSWORD=yes \
     -p 6379:6379 \
-    sdrzlyz/redis:7.0 \
+    sdrzlyz/redis:7.2 \
     /run.sh --maxclients 100000 --maxmemory 1024mb --maxmemory-policy volatile-lru
 ```
 
@@ -25,7 +25,7 @@ docker run -it --rm \
     --sysctl net.core.somaxconn=10000 \
     -e ALLOW_EMPTY_PASSWORD=yes \
     -p 6379:6379 \
-    sdrzlyz/redis:7.0 \
+    sdrzlyz/redis:7.2 \
     /run.sh --maxmemory 1G --maxmemory-policy allkeys-lru \
     --loadmodule /opt/modules/rejson.so \
     --loadmodule /opt/modules/redisbloom.so \
