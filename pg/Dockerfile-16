@@ -19,9 +19,9 @@ ARG POSTGRESQL_HLL=2.18
 ARG POSTGRESQL_TOPN=2.6.0
 ARG POSTGIS=3.4.1+dfsg-1.pgdg110+1
 ARG PGROUTING=3.6.1
-ARG TIMESCALE=2.13.0
+ARG TIMESCALE=2.13.1
 ARG SP_VAULT=0.2.9
-ARG ZOMBODB=3000.2.1
+ARG ZOMBODB=3000.2.2
 ARG PGVECTOR=0.5.1
 ARG PG_HINT_PLAN=16_1_6_0
 ARG PG_CRON=1.6.2
@@ -123,18 +123,18 @@ RUN sudo apt-get install -y --no-install-recommends \
     && git clone -b v${SP_VAULT} https://github.com/supabase/vault /tmp/vault \
         && cd /tmp/vault \
         && make && sudo make install \
-# # age https://github.com/apache/age https://age.apache.org/age-manual/master/intro/setup.html
-#     && git clone -b PG${PG_MAJOR} https://github.com/apache/age /tmp/age \
-#         && cd /tmp/age \
-#         && make && sudo make install \
+# age https://github.com/apache/age https://age.apache.org/age-manual/master/intro/setup.html
+    && git clone -b PG${PG_MAJOR} https://github.com/apache/age /tmp/age \
+        && cd /tmp/age \
+        && make && sudo make install \
 # zombodb https://github.com/zombodb/zombodb
-    && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
-        && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
-        && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
-        && cd /tmp/zombodb \
-        && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
-        && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
-        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
+    # && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
+    #     && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
+    #     && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
+    #     && cd /tmp/zombodb \
+    #     && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
+    #     && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
+    #     && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
 # vector https://github.com/pgvector/pgvector/tags
     && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector.git /tmp/pgvector \
         && cd /tmp/pgvector \
