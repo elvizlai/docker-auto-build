@@ -68,8 +68,8 @@ cd luajit2.1
 make -j4 && make install && cd ..
 
 
-NGINXVER=1.25.3 #${1:-1.25.3}
-NGINXNJS=0.8.2
+NGINXVER=1.25.4 #${1:-1.25.4}
+NGINXNJS=0.8.3
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.3
 NGINXLUA=0.10.26
@@ -129,10 +129,6 @@ git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_
 # https://nginx.org/en/download.html
 cd $NGINXDIR
 curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --strip-components 1
-
-# this not work for nginx 1.24.0
-# curl -sSL https://raw.githubusercontent.com/kn007/patch/master/nginx.patch > nginx.patch
-# patch -p1 < nginx.patch
 
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
@@ -288,7 +284,7 @@ curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
 
 # https://github.com/thibaultcha/lua-resty-mlcache/tags
-LUA_RESTY_MLCACHE=2.6.1
+LUA_RESTY_MLCACHE=2.7.0
 curl -sSL https://github.com/thibaultcha/lua-resty-mlcache/archive/$LUA_RESTY_MLCACHE.tar.gz | tar zxf -
 \cp -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE/lib/* .
 rm -rf lua-resty-mlcache-$LUA_RESTY_MLCACHE
@@ -325,7 +321,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.5.0
+KONG=3.6.0
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
