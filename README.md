@@ -1,3 +1,14 @@
+#### Docker Auto Build
+This repo contains high quality production ready Dockerfile and script to build images.
+
+It can be automatic build using github action or manually by command `sh build.sh dir_name`.
+
+
+#### Contributing Guide
+
+- Please follow Dockerfile best practice
+- Changes MUST be compatible for same image tag
+
 #### Images
 
 - sdrzlyz/alpine
@@ -15,22 +26,3 @@
 - sdrzlyz/strapi:4.3.4
 - sdrzlyz/tools netcat tcpdump psql mycli
 - sdrzlyz/ubuntu
-
-#### [CentOS Docker](https://docs.docker.com/engine/install/centos/)
-
-```
-sudo yum install -y yum-utils
-
-sudo yum-config-manager \
-    --add-repo \
-    https://download.docker.com/linux/centos/docker-ce.repo
-
-sudo yum install -y docker-ce docker-ce-cli containerd.io
-sudo systemctl start docker && sudo systemctl enable docker
-```
-
-```
-# adding to '/etc/sysctl.conf', then 'sysctl -p'
-net.bridge.bridge-nf-call-iptables = 1
-net.bridge.bridge-nf-call-ip6tables = 1
-```
