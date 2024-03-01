@@ -269,13 +269,13 @@ mv -f lua-cjson-$LUA_CJSON/cjson.so .
 rm -rf lua-cjson-$LUA_CJSON
 
 # https://github.com/ledgetech/lua-resty-http/tags
-LUA_RESTY_HTTP=0.17.1
+LUA_RESTY_HTTP=0.17.2
 curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
 \cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=1.2.0
+LUA_RESTY_OPENSSL=1.2.1
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
