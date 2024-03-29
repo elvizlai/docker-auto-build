@@ -22,7 +22,7 @@ ARG PGROUTING=3.6.1
 ARG TIMESCALE=2.14.2
 ARG SP_VAULT=0.2.9
 ARG ZOMBODB=3000.2.3
-ARG PGVECTOR=0.6.1
+ARG PGVECTOR=0.6.2
 ARG PG_HINT_PLAN=14_1_4_1
 ARG PG_CRON=1.6.2
 ARG PG_IVM=1.8
@@ -250,7 +250,7 @@ USER root
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
 # pgautofailover,pglogical
-RUN echo "shared_preload_libraries='citus,pg_stat_statements,pgaudit,timescaledb,pg_cron,pgsodium'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries='citus,pg_stat_statements,timescaledb'" >> /usr/share/postgresql/postgresql.conf.sample
 
 # select name,setting from pg_settings where name like 'pgaudit%';
 # all but except misc
@@ -283,7 +283,7 @@ RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
 # max_connections = 1000
 # wal_level = logical
 # cron.timezone = 'PRC'
-RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 100/max_connections = 1000/;s/\#wal_level = replica/wal_level = logical/" /var/lib/postgresql/data/postgresql.conf\n                        echo "cron.timezone = \o047PRC\o047" >> /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
+RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = [0-9]\\+/max_connections = 1000/;s/\#wal_level = replica/wal_level = logical/" /var/lib/postgresql/data/postgresql.conf\n                        echo "cron.timezone = \o047PRC\o047" >> /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
 
 ENV TIMESCALEDB_TELEMETRY off
 
