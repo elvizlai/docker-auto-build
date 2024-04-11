@@ -29,8 +29,8 @@ apk add --no-cache --virtual .build-deps \
   gcc \
   libc-dev
 
-LUAJIT=v2.1-20231117
-LUAROCKS=3.10.0
+LUAJIT=v2.1-20240314
+LUAROCKS=3.11.0
 
 mkdir -p /tmp/lib-src && cd /tmp/lib-src
 

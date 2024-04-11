@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 OPENSSL=openssl-3.1.5
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20231117
+LUAJIT=v2.1-20240314
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -278,7 +278,7 @@ curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENS
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
-LUA_RESTY_ACME=0.12.0
+LUA_RESTY_ACME=0.13.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 \cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
@@ -302,7 +302,7 @@ curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf 
 rm -rf pgmoon-$LUA_PGMOON
 
 # https://github.com/starwing/lua-protobuf/tags
-LUA_PROTOBUF=0.5.0
+LUA_PROTOBUF=0.5.1
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
 cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && \cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
