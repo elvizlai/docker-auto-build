@@ -1,6 +1,6 @@
 FROM sdrzlyz/ffmpeg:alpine-static as builder
 
-FROM sdrzlyz/nginx:1.24.0
+FROM sdrzlyz/nginx:1.26.0
 
 COPY --from=builder /ffmpeg /ffprobe /usr/local/bin/
 COPY bin/ttyd /usr/local/bin/ttyd
