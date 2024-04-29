@@ -1,10 +1,8 @@
 FROM alpine:3.19 AS builder
 
-ARG VERSION=1.25.4
-
 COPY build-mainline.sh /opt/build.sh
 
-RUN sh /opt/build.sh $VERSION
+RUN sh /opt/build.sh 1.25.5
 
 
 FROM alpine:3.19

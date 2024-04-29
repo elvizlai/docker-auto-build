@@ -43,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.1.5
+OPENSSL=openssl-3.0.13
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20240314
 
@@ -92,7 +92,8 @@ curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz 
 curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.gz | tar zxf -
 
 # https://github.com/openresty/stream-lua-nginx-module/tags
-curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXSTREAMLUA.tar.gz | tar zxf -
+# curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXSTREAMLUA.tar.gz | tar zxf -
+git clone https://github.com/openresty/stream-lua-nginx-module stream-lua-nginx-module-$NGINXSTREAMLUA
 
 # deprecated: using nginx-http-flv-module
 # https://github.com/pingostack/pingos
@@ -560,7 +561,10 @@ http {
 
     server {
         listen      443 default_server ssl;
+        http2       on;
+
         listen      443 quic reuseport;
+        
         server_name _;
         ssl_reject_handshake on;
         return 444;
