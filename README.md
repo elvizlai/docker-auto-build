@@ -21,7 +21,7 @@ It can be automatic build using github action or manually by command `sh build.s
 - sdrzlyz/ml
 - sdrzlyz/nginx:1.26.0
 - sdrzlyz/pg:13
-- sdrzlyz/prest:1.3.1
+- sdrzlyz/prest:1.5.2
 - sdrzlyz/redis:7.0
 - sdrzlyz/strapi:4.3.4
 - sdrzlyz/tools netcat tcpdump psql mycli
