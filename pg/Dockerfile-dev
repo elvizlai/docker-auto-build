@@ -1,0 +1,156 @@
+ARG VERSION=15
+
+# Build tools for timescaledb
+ARG GO_VERSION=1.19.6
+FROM golang:${GO_VERSION}-alpine AS tools
+
+ENV TOOLS_VERSION 0.8.1
+
+# https://github.com/timescale/timescaledb-docker/blob/main/Dockerfile
+RUN apk update && apk add --no-cache git gcc \
+    && go install github.com/timescale/timescaledb-tune/cmd/timescaledb-tune@latest \
+    && go install github.com/timescale/timescaledb-parallel-copy/cmd/timescaledb-parallel-copy@latest
+
+# postgres
+FROM postgres:${VERSION}-bullseye
+
+ARG CITUS=12.1.0
+ARG POSTGRESQL_HLL=2.18
+ARG POSTGRESQL_TOPN=2.6.0
+ARG POSTGIS=3.4.0+dfsg-1.pgdg110+1
+ARG PGROUTING=3.5.1
+ARG TIMESCALE=2.12.2
+ARG SP_VAULT=0.2.9
+ARG ZOMBODB=3000.1.25
+ARG PGVECTOR=0.5.1
+ARG PG_HINT_PLAN=15_1_5_0
+ARG PG_CRON=1.6.2
+ARG PG_IVM=1.7
+ARG ORAFCE=4_7_0
+ARG PGSQL_HTTP=1.6.0
+ARG PGAUDIT=1.7.0
+ARG REPMGR=5.4.1
+ARG PG_BACKREST=2.48
+
+# set timezone
+ENV TZ PRC
+
+RUN apt-get update && apt-get install -y --no-install-recommends sudo \
+    && echo "postgres ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER postgres
+
+# dep:
+## pgrouting: libboost-graph-dev
+## timescale: libkrb5-dev
+## age: build-essential libreadline-dev zlib1g-dev flex bison
+## zombodb: bison flex zlib1g zlib1g-dev pkg-config make libssl-dev libreadline-dev
+## pgsql-http: libcurl4-openssl-dev
+## repmgr: flex libedit-dev libkrb5-dev libpam0g-dev libreadline-dev libselinux1-dev libssl-dev libxml2-dev libxslt1-dev
+## repmgr-pg15: liblz4-dev libzstd-dev
+
+RUN sudo apt-get install -y --no-install-recommends \
+        ca-certificates \
+        procps \
+        curl \
+        build-essential \
+        git \
+        dpkg-dev \
+        gcc \
+        libc-dev \
+        make \
+        cmake \
+        wget \
+        pkg-config \
+        postgresql-server-dev-$PG_MAJOR \
+        # pgrouting
+        libboost-graph-dev \
+        # timescale, repmgr
+        libkrb5-dev \
+        # age, zombodb
+        bison flex zlib1g-dev libreadline-dev \
+        # zombodb
+        zlib1g libssl-dev \
+        # pgsql-http
+        libcurl4-openssl-dev \
+        # repmgr
+        liblz4-dev libzstd-dev libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
+        # pgBackRest
+        libyaml-dev libbz2-dev \
+# pgBackRest https://github.com/pgbackrest/pgbackrest
+    && mkdir -p /tmp/pgbackrest \
+        && wget -q -O - https://github.com/pgbackrest/pgbackrest/archive/release/2.48.tar.gz | tar zx -C /tmp/pgbackrest --strip-components 1 \
+        && cd /tmp/pgbackrest/src \
+        && ./configure && make && sudo make install \
+# zhparser + scws
+    && git clone -b V2.2 https://github.com/amutu/zhparser /tmp/zhparser \
+    && mkdir -p /tmp/zhparser/scws \
+    && cd /tmp/zhparser/scws \
+    && wget -q -O - http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 | tar xjf - --strip-components 1 \
+    && ./configure && sudo make install \
+    && cd .. && make && sudo make install \
+# locale
+    && sudo bash -c 'echo -e "en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8" >> /etc/locale.gen' && sudo locale-gen \
+# clean
+    && sudo apt-get autoremove --purge -y --allow-remove-essential \
+        curl \
+        build-essential \
+        git \
+        dpkg-dev \
+        gcc \
+        libc-dev \
+        make \
+        cmake \
+        wget \
+        pkg-config \
+        postgresql-server-dev-$PG_MAJOR \
+        libboost-graph-dev \
+        libkrb5-dev \
+        bison flex zlib1g-dev libreadline-dev \
+        libssl-dev \
+        libcurl4-openssl-dev \
+        liblz4-dev libzstd-dev libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
+    && sudo apt-get clean -y \
+    && sudo rm -rf \
+        "${HOME}/.cache" \
+        /var/lib/apt/lists/* \
+        /tmp/* \
+        /var/tmp/* \
+        /var/lib/postgresql/.profile \
+        /var/lib/postgresql/.pgrx
+
+USER root
+
+# multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
+# RUN echo "shared_preload_libraries='citus,pg_stat_statements,pgautofailover,pgaudit,timescaledb,pg_cron,pglogical'" >> /usr/share/postgresql/postgresql.conf.sample
+
+# select name,setting from pg_settings where name like 'pgaudit%';
+# all but except misc
+#pgaudit.log = 'all, -misc'
+#pgaudit.log_client = on
+#pgaudit.log_parameter = on
+#pgaudit.log_relation = on
+#pgaudit.log_statement_once = on
+
+# add scripts to run after initdb
+# COPY extension/ /docker-entrypoint-initdb.d/
+
+# add tools
+COPY --from=tools /go/bin/* /usr/local/bin/
+
+# add health check script
+COPY pg_healthcheck wait-for-manager.sh /
+RUN chmod +x /wait-for-manager.sh
+
+# entry point unsets PGPASSWORD, but we need it to connect to workers
+# https://github.com/docker-library/postgres/blob/33bccfcaddd0679f55ee1028c012d26cd196537d/12/docker-entrypoint.sh#L303
+RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
+
+# config tuning
+# replace last docker_temp_server_stop with sed to change pg.max_connections and cron.timezone 
+# \o047 for single quote
+RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = 100/max_connections = 1000/" /var/lib/postgresql/data/postgresql.conf\n                        echo "cron.timezone = \o047PRC\o047" >> /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
+
+ENV TIMESCALEDB_TELEMETRY off
+
+HEALTHCHECK --interval=4s --timeout=10s --retries=3 --start-period=6s CMD ./pg_healthcheck
