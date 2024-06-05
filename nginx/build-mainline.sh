@@ -43,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.0.13
+OPENSSL=openssl-3.0.14
 JEMALLOC=5.3.0
 LUAJIT=v2.1-20240314
 
@@ -279,7 +279,7 @@ curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENS
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
-LUA_RESTY_ACME=0.13.0
+LUA_RESTY_ACME=0.14.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 \cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
@@ -322,7 +322,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.6.1
+KONG=3.7.0
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
