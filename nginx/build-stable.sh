@@ -68,7 +68,7 @@ cd luajit2.1
 make -j4 && make install && cd ..
 
 
-NGINXVER=${1:-1.26.0}
+NGINXVER=${1:-1.26.1}
 NGINXNJS=0.8.4
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.3

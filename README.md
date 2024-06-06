@@ -19,7 +19,7 @@ It can be automatic build using github action or manually by command `sh build.s
 - sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.9
 - sdrzlyz/ml
-- sdrzlyz/nginx:1.26.0
+- sdrzlyz/nginx:1.26.1
 - sdrzlyz/pg:13
 - sdrzlyz/prest:1.5.2
 - sdrzlyz/redis:7.0
