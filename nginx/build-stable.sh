@@ -264,7 +264,7 @@ curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_W
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
 
 # https://github.com/openresty/lua-cjson/tags
-LUA_CJSON=2.1.0.13
+LUA_CJSON=2.1.0.14
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
 mv -f lua-cjson-$LUA_CJSON/cjson.so .
