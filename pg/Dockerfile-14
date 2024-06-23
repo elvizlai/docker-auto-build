@@ -23,6 +23,7 @@ ARG TIMESCALE=2.15.2
 ARG SP_VAULT=0.2.9
 ARG ZOMBODB=3000.2.5
 ARG PGVECTOR=0.7.2
+ARG PG_MQ=1.3.3
 ARG PG_HINT_PLAN=14_1_4_2
 ARG PG_CRON=1.6.2
 ARG PG_IVM=1.8
@@ -136,8 +137,12 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
 # vector https://github.com/pgvector/pgvector/tags
-    && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector.git /tmp/pgvector \
+    && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector /tmp/pgvector \
         && cd /tmp/pgvector \
+        && make && sudo make install \
+# pgmq https://github.com/tembo-io/pgmq
+    && git clone -b v${PG_MQ} https://github.com/tembo-io/pgmq /tmp/pgmq \
+        && cd /tmp/pgmq \
         && make && sudo make install \
 # pg_hint_plan https://github.com/ossc-db/pg_hint_plan
     && wget -O /tmp/pg_hint_plan.tar.gz "https://github.com/ossc-db/pg_hint_plan/archive/REL${PG_HINT_PLAN}.tar.gz" \
