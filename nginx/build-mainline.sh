@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 OPENSSL=openssl-3.0.14
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20240314
+LUAJIT=v2.1-20240626
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -69,7 +69,7 @@ make -j4 && make install && cd ..
 
 
 NGINXVER=${1:-1.27.0}
-NGINXNJS=0.8.4
+NGINXNJS=0.8.5
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.3
 NGINXLUA=0.10.26
@@ -303,7 +303,7 @@ curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf 
 rm -rf pgmoon-$LUA_PGMOON
 
 # https://github.com/starwing/lua-protobuf/tags
-LUA_PROTOBUF=0.5.1
+LUA_PROTOBUF=0.5.2
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
 cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && \cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
@@ -322,7 +322,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.7.0
+KONG=3.7.1
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
