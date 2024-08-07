@@ -19,19 +19,19 @@ ARG POSTGRESQL_HLL=2.18
 ARG POSTGRESQL_TOPN=2.6.0
 ARG POSTGIS=3.4.2+dfsg-1.pgdg110+1
 ARG PGROUTING=3.6.2
-ARG TIMESCALE=2.15.3
+ARG TIMESCALE=2.16.1
 ARG SP_VAULT=0.2.9
-ARG ZOMBODB=3000.2.5
-ARG PGVECTOR=0.7.2
-ARG PG_MQ=1.3.3
+ARG ZOMBODB=3000.2.6
+ARG PGVECTOR=0.7.4
+ARG PG_MQ=1.4.0
 ARG PG_HINT_PLAN=15_1_5_1
-ARG PG_CRON=1.6.2
-ARG PG_IVM=1.8
+ARG PG_CRON=1.6.3
+ARG PG_IVM=1.9
 ARG ORAFCE=4_10_3
 ARG PGSQL_HTTP=1.6.0
 ARG PGAUDIT=1.7.0
 ARG REPMGR=5.4.1
-ARG PG_BACKREST=2.52.1
+ARG PG_BACKREST=2.53
 
 # set timezone
 ENV TZ PRC
@@ -142,7 +142,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         && make && sudo make install \
 # pgmq https://github.com/tembo-io/pgmq
     && git clone -b v${PG_MQ} https://github.com/tembo-io/pgmq /tmp/pgmq \
-        && cd /tmp/pgmq \
+        && cd /tmp/pgmq/pgmq-extension \
         && make && sudo make install \
 # pg_hint_plan https://github.com/ossc-db/pg_hint_plan
     && wget -O /tmp/pg_hint_plan.tar.gz "https://github.com/ossc-db/pg_hint_plan/archive/REL${PG_HINT_PLAN}.tar.gz" \
