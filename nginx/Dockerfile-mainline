@@ -2,7 +2,7 @@ FROM alpine:3.19 AS builder
 
 COPY build-mainline.sh /opt/build.sh
 
-RUN sh /opt/build.sh 1.27.0
+RUN sh /opt/build.sh 1.27.1
 
 
 FROM alpine:3.19

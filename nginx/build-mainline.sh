@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 OPENSSL=openssl-3.0.14
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20240626
+LUAJIT=v2.1-20240815
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -68,12 +68,12 @@ cd luajit2.1
 make -j4 && make install && cd ..
 
 
-NGINXVER=${1:-1.27.0}
+NGINXVER=${1:-1.27.1}
 NGINXNJS=0.8.5
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.3
-NGINXLUA=0.10.26
-NGINXSTREAMLUA=0.0.14
+NGINXLUA=0.10.27
+NGINXSTREAMLUA=0.0.15
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -206,7 +206,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.28
+LUA_RESTY_CORE=0.1.29
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 \cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -218,7 +218,7 @@ curl -sSL https://github.com/openresty/lua-resty-lock/archive/v$LUA_RESTY_LOCK.t
 rm -rf lua-resty-lock-$LUA_RESTY_LOCK
 
 # https://github.com/openresty/lua-resty-lrucache/tags
-LUA_RESTY_LRUCACHE=0.13
+LUA_RESTY_LRUCACHE=0.14
 curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
 \cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
@@ -230,13 +230,13 @@ curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
 
 # https://github.com/openresty/lua-resty-redis/tags
-LUA_RESTY_REDIS=0.30
+LUA_RESTY_REDIS=0.31
 curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS.tar.gz | tar zxf -
 \cp -rf lua-resty-redis-$LUA_RESTY_REDIS/lib/* .
 rm -rf lua-resty-redis-$LUA_RESTY_REDIS
 
 # https://github.com/openresty/lua-resty-string/tags
-LUA_RESTY_STRING=0.15
+LUA_RESTY_STRING=0.16
 curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
 \cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
 rm -rf lua-resty-string-$LUA_RESTY_STRING
@@ -254,7 +254,7 @@ curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$
 rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
 
 # https://github.com/openresty/lua-resty-websocket/tags
-LUA_RESTY_WEBSOCKET=0.11
+LUA_RESTY_WEBSOCKET=0.12
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
 \cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
@@ -273,13 +273,13 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=1.5.0
+LUA_RESTY_OPENSSL=1.5.1
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
 
 # https://github.com/fffonion/lua-resty-acme/tags
-LUA_RESTY_ACME=0.14.0
+LUA_RESTY_ACME=0.15.0
 curl -sSL https://github.com/fffonion/lua-resty-acme/archive/$LUA_RESTY_ACME.tar.gz | tar zxf -
 \cp -rf lua-resty-acme-$LUA_RESTY_ACME/lib/* .
 rm -rf lua-resty-acme-$LUA_RESTY_ACME
