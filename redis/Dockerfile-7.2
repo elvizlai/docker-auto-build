@@ -3,9 +3,9 @@ ARG VERSION=7.2
 # https://docs.redis.com/latest/modules/
 
 # https://hub.docker.com/r/redislabs/rejson/tags https://redis.io/docs/stack/json/
-FROM redislabs/rejson:2.8.0 as rejson
+FROM redislabs/rejson:2.8.4 as rejson
 # https://hub.docker.com/r/redislabs/rebloom/tags https://redis.io/docs/stack/bloom/
-FROM redislabs/rebloom:2.6.12 as rebloom
+FROM redislabs/rebloom:2.8.1 as rebloom
 # https://hub.docker.com/r/redislabs/redisearch/tags https://redis.io/docs/stack/search/
 # !redissearch 2.8+ require redis 7.1+
 FROM redislabs/redisearch:2.8.8 as redisearch
