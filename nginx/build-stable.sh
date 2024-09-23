@@ -50,7 +50,7 @@ LUAJIT=v2.1-20240815
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
 # openssl https://www.openssl.org/source/
-curl -sSL https://www.openssl.org/source/$OPENSSL.tar.gz | tar zxf -
+curl -sSL https://github.com/openssl/openssl/releases/download/$OPENSSL/$OPENSSL.tar.gz | tar zxf -
 cd $OPENSSL
 ./config --prefix=/usr/local --libdir=/usr/local/lib shared
 make -j4 && make install_sw && cd ..
