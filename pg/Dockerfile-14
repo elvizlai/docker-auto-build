@@ -16,10 +16,10 @@ FROM postgres:${VERSION}-bullseye
 
 ARG CITUS=12.1.4
 ARG POSTGRESQL_HLL=2.18
-ARG POSTGRESQL_TOPN=2.6.0
-ARG POSTGIS=3.4.2+dfsg-1.pgdg110+1
-ARG PGROUTING=3.6.2
-ARG TIMESCALE=2.16.1
+ARG POSTGRESQL_TOPN=2.7.0
+ARG POSTGIS=3.5.0+dfsg-1.pgdg110+1
+ARG PGROUTING=3.6.3
+ARG TIMESCALE=2.17.1
 ARG SP_VAULT=0.2.9
 ARG ZOMBODB=3000.2.6
 ARG PGVECTOR=0.7.4
@@ -27,11 +27,11 @@ ARG PG_MQ=1.4.4
 ARG PG_HINT_PLAN=14_1_4_3
 ARG PG_CRON=1.6.4
 ARG PG_IVM=1.9
-ARG ORAFCE=4_13_0
-ARG PGSQL_HTTP=1.6.0
+ARG ORAFCE=4_13_5
+ARG PGSQL_HTTP=1.6.1
 ARG PGAUDIT=1.6.2
 ARG REPMGR=5.4.1
-ARG PG_BACKREST=2.53.1
+ARG PG_BACKREST=2.54.0
 
 # set timezone
 ENV TZ PRC
@@ -82,7 +82,7 @@ RUN sudo apt-get install -y --no-install-recommends \
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-citus-12.1=$CITUS.citus-1 \
-# postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/14-3.4/Dockerfile
+# postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/14-3.5/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
 # pglogical https://github.com/2ndQuadrant/pglogical

@@ -1,4 +1,4 @@
-ARG VERSION=16
+ARG VERSION=17
 
 # Build tools for timescaledb
 ARG GO_VERSION=1.22.4
@@ -24,12 +24,12 @@ ARG SP_VAULT=0.2.9
 ARG ZOMBODB=3000.2.6
 ARG PGVECTOR=0.7.4
 ARG PG_MQ=1.4.4
-ARG PG_HINT_PLAN=16_1_6_1
+ARG PG_HINT_PLAN=17_1_7_0
 ARG PG_CRON=1.6.4
 ARG PG_IVM=1.9
 ARG ORAFCE=4_13_5
 ARG PGSQL_HTTP=1.6.1
-ARG PGAUDIT=16.0
+ARG PGAUDIT=17.0
 ARG REPMGR=5.4.1
 ARG PG_BACKREST=2.54.0
 
@@ -82,7 +82,7 @@ RUN sudo apt-get install -y --no-install-recommends \
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
                         postgresql-$PG_MAJOR-citus-12.1=$CITUS.citus-1 \
-# postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/16-3.5/Dockerfile
+# postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/17-3.5/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
 # pglogical https://github.com/2ndQuadrant/pglogical
