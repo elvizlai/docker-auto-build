@@ -1,9 +1,18 @@
 Source
+
 ```
 https://github.com/docker-library/postgres
 ```
 
+Reference
+
+```
+https://pigsty.io/zh/
+https://ext.pigsty.io
+```
+
 Single Node Example
+
 ```
 docker run -itd \
     --restart always \
@@ -14,14 +23,16 @@ docker run -itd \
 ```
 
 PostgREST
+
 ```
-CREATE ROLE web_anon NOLOGIN; 
-GRANT USAGE ON SCHEMA PUBLIC TO web_anon; 
+CREATE ROLE web_anon NOLOGIN;
+GRANT USAGE ON SCHEMA PUBLIC TO web_anon;
 GRANT SELECT ON ALL TABLES IN SCHEMA PUBLIC TO web_anon;
 ```
 
 Extension  
 usage `psql -U postgres`
+
 ```
 CREATE EXTENSION IF NOT EXISTS citus
 
@@ -39,11 +50,13 @@ CREATE EXTENSION IF NOT EXISTS pg_cron;
 ```
 
 citus check node
+
 ```
 select master_get_active_worker_nodes();
 ```
 
 citus check
+
 ```
 set citus.shard_replication_factor = 2;
 
@@ -68,6 +81,7 @@ INSERT INTO "github_events" ("event_id", "event_type", "event_public", "repo_id"
 ```
 
 For pgml
+
 ```
 apt install python3-pip
 pip3 install xgboost
