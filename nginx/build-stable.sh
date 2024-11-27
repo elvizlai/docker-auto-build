@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 OPENSSL=openssl-3.0.15
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20241104
+LUAJIT=v2.1-20241113
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 

@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 OPENSSL=openssl-3.0.15
 JEMALLOC=5.3.0
-LUAJIT=v2.1-20241104
+LUAJIT=v2.1-20241113
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -68,7 +68,7 @@ cd luajit2.1
 make -j4 && make install && cd ..
 
 
-NGINXVER=${1:-1.27.2}
+NGINXVER=${1:-1.27.3}
 NGINXNJS=0.8.7
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.3
