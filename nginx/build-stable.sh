@@ -101,7 +101,7 @@ git clone https://github.com/openresty/stream-lua-nginx-module stream-lua-nginx-
 # mv pingos/modules/* .
 
 # https://github.com/winshining/nginx-http-flv-module
-git clone -b v1.2.11 https://github.com/winshining/nginx-http-flv-module.git
+git clone -b v1.2.12 https://github.com/winshining/nginx-http-flv-module.git
 
 # dynamic modules
 rm -rf $NGINXDIR/module/dynamic
@@ -124,7 +124,7 @@ git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-mod
 git clone --depth 1 --quiet -b v0.37 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
-git clone --depth 1 --quiet -b v0.2.2 https://github.com/vozlt/nginx-module-vts
+git clone --depth 1 --quiet -b v0.2.3 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 # https://nginx.org/en/download.html
@@ -326,7 +326,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.8.0
+KONG=3.9.0
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
