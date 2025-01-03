@@ -22,11 +22,13 @@ ARG PGROUTING=3.7.1
 ARG TIMESCALE=2.17.2
 ARG SP_VAULT=0.2.9
 ARG ZOMBODB=3000.2.7
+ARG PARADEDB=0.13.2
+ARG PG_ANALYTICS=0.2.4
 ARG PGVECTOR=0.8.0
-ARG PG_MQ=1.5.0
-ARG PG_HINT_PLAN=15_1_5_2
 ARG PG_CRON=1.6.4
 ARG PG_IVM=1.9
+ARG PG_MQ=1.5.0
+ARG PG_HINT_PLAN=15_1_5_2
 ARG ORAFCE=4_14_1
 ARG PGSQL_HTTP=1.6.1
 ARG PGAUDIT=1.7.0
@@ -58,7 +60,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         git \
         dpkg-dev \
         gcc \
-        libc-dev \
+        libc6-dev \
         make \
         cmake \
         wget \
@@ -136,19 +138,22 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
         && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
+# paradedb https://github.com/paradedb/paradedb
+    && git clone -b v${PARADEDB} https://github.com/paradedb/paradedb /tmp/paradedb \
+        && cd /tmp/paradedb \
+        && PGRX_VERSION=$(cargo tree --depth 1 -i pgrx -p pg_search | head -n 1 | sed -E 's/.*v([0-9]+\.[0-9]+\.[0-9]+).*/\1/') \
+        && echo "PGRX_VERSION=$PGRX_VERSION" \
+        && cargo install --locked cargo-pgrx --version "${PGRX_VERSION}" \
+        && cargo pgrx init "--pg${PG_MAJOR}=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config" \
+        && cd /tmp/paradedb/pg_search \
+        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx PARADEDB_TELEMETRY=false cargo pgrx install --release --features icu' \
+# pg_analytics https://github.com/paradedb/pg_analytics
+    && git clone --branch v${PG_ANALYTICS} https://github.com/paradedb/pg_analytics /tmp/pg_analytics \
+        && cd /tmp/pg_analytics \
+        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
 # vector https://github.com/pgvector/pgvector/tags
     && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector /tmp/pgvector \
         && cd /tmp/pgvector \
-        && make && sudo make install \
-# pgmq https://github.com/tembo-io/pgmq
-    && git clone -b v${PG_MQ} https://github.com/tembo-io/pgmq /tmp/pgmq \
-        && cd /tmp/pgmq/pgmq-extension \
-        && make && sudo make install \
-# pg_hint_plan https://github.com/ossc-db/pg_hint_plan
-    && wget -O /tmp/pg_hint_plan.tar.gz "https://github.com/ossc-db/pg_hint_plan/archive/REL${PG_HINT_PLAN}.tar.gz" \
-        && mkdir -p /tmp/pg_hint_plan \
-        && tar --extract --file /tmp/pg_hint_plan.tar.gz --directory /tmp/pg_hint_plan --strip-components 1 \
-        && cd /tmp/pg_hint_plan \
         && make && sudo make install \
 # pg_cron https://github.com/citusdata/pg_cron
     && wget -O /tmp/pg_cron.tar.gz "https://github.com/citusdata/pg_cron/archive/v${PG_CRON}.tar.gz" \
@@ -161,6 +166,16 @@ RUN sudo apt-get install -y --no-install-recommends \
         && mkdir -p /tmp/pg_ivm \
         && tar -zxf /tmp/pg_ivm.tar.gz -C /tmp/pg_ivm --strip-components 1 \
         && cd /tmp/pg_ivm \
+        && make && sudo make install \
+# pgmq https://github.com/tembo-io/pgmq
+    && git clone -b v${PG_MQ} https://github.com/tembo-io/pgmq /tmp/pgmq \
+        && cd /tmp/pgmq/pgmq-extension \
+        && make && sudo make install \
+# pg_hint_plan https://github.com/ossc-db/pg_hint_plan
+    && wget -O /tmp/pg_hint_plan.tar.gz "https://github.com/ossc-db/pg_hint_plan/archive/REL${PG_HINT_PLAN}.tar.gz" \
+        && mkdir -p /tmp/pg_hint_plan \
+        && tar --extract --file /tmp/pg_hint_plan.tar.gz --directory /tmp/pg_hint_plan --strip-components 1 \
+        && cd /tmp/pg_hint_plan \
         && make && sudo make install \
 # orafce https://github.com/orafce/orafce
     && wget -O /tmp/orafce.tar.gz "https://github.com/orafce/orafce/archive/VERSION_${ORAFCE}.tar.gz" \

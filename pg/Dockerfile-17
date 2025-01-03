@@ -22,11 +22,13 @@ ARG PGROUTING=3.7.1
 ARG TIMESCALE=2.17.2
 ARG SP_VAULT=0.2.9
 ARG ZOMBODB=3000.2.7
+ARG PARADEDB=0.13.2
+ARG PG_ANALYTICS=0.2.4
 ARG PGVECTOR=0.8.0
-ARG PG_MQ=1.5.0
-ARG PG_HINT_PLAN=17_1_7_0
 ARG PG_CRON=1.6.4
 ARG PG_IVM=1.9
+ARG PG_MQ=1.5.0
+ARG PG_HINT_PLAN=17_1_7_0
 ARG ORAFCE=4_14_1
 ARG PGSQL_HTTP=1.6.1
 ARG PGAUDIT=17.0
@@ -81,7 +83,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
-                        postgresql-$PG_MAJOR-citus-12.1=$CITUS.citus-1 \
+                        #postgresql-$PG_MAJOR-citus-12.1=$CITUS.citus-1 \
 # postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/17-3.5/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
@@ -129,26 +131,29 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cd /tmp/age \
         && make && sudo make install \
 # zombodb https://github.com/zombodb/zombodb
-    # && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
-    #     && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
+    && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
+        && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
     #     && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
     #     && cd /tmp/zombodb \
     #     && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
     #     && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
     #     && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
+# paradedb https://github.com/paradedb/paradedb
+    && git clone -b v${PARADEDB} https://github.com/paradedb/paradedb /tmp/paradedb \
+        && cd /tmp/paradedb \
+        && PGRX_VERSION=$(cargo tree --depth 1 -i pgrx -p pg_search | head -n 1 | sed -E 's/.*v([0-9]+\.[0-9]+\.[0-9]+).*/\1/') \
+        && echo "PGRX_VERSION=$PGRX_VERSION" \
+        && cargo install --locked cargo-pgrx --version "${PGRX_VERSION}" \
+        && cargo pgrx init "--pg${PG_MAJOR}=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config" \
+        && cd /tmp/paradedb/pg_search \
+        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx PARADEDB_TELEMETRY=false cargo pgrx install --release --features icu' \
+# pg_analytics https://github.com/paradedb/pg_analytics
+    && git clone --branch v${PG_ANALYTICS} https://github.com/paradedb/pg_analytics /tmp/pg_analytics \
+        && cd /tmp/pg_analytics \
+        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
 # vector https://github.com/pgvector/pgvector/tags
     && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector /tmp/pgvector \
         && cd /tmp/pgvector \
-        && make && sudo make install \
-# pgmq https://github.com/tembo-io/pgmq
-    && git clone -b v${PG_MQ} https://github.com/tembo-io/pgmq /tmp/pgmq \
-        && cd /tmp/pgmq/pgmq-extension \
-        && make && sudo make install \
-# pg_hint_plan https://github.com/ossc-db/pg_hint_plan
-    && wget -O /tmp/pg_hint_plan.tar.gz "https://github.com/ossc-db/pg_hint_plan/archive/REL${PG_HINT_PLAN}.tar.gz" \
-        && mkdir -p /tmp/pg_hint_plan \
-        && tar --extract --file /tmp/pg_hint_plan.tar.gz --directory /tmp/pg_hint_plan --strip-components 1 \
-        && cd /tmp/pg_hint_plan \
         && make && sudo make install \
 # pg_cron https://github.com/citusdata/pg_cron
     && wget -O /tmp/pg_cron.tar.gz "https://github.com/citusdata/pg_cron/archive/v${PG_CRON}.tar.gz" \
@@ -161,6 +166,16 @@ RUN sudo apt-get install -y --no-install-recommends \
         && mkdir -p /tmp/pg_ivm \
         && tar -zxf /tmp/pg_ivm.tar.gz -C /tmp/pg_ivm --strip-components 1 \
         && cd /tmp/pg_ivm \
+        && make && sudo make install \
+# pgmq https://github.com/tembo-io/pgmq
+    && git clone -b v${PG_MQ} https://github.com/tembo-io/pgmq /tmp/pgmq \
+        && cd /tmp/pgmq/pgmq-extension \
+        && make && sudo make install \
+# pg_hint_plan https://github.com/ossc-db/pg_hint_plan
+    && wget -O /tmp/pg_hint_plan.tar.gz "https://github.com/ossc-db/pg_hint_plan/archive/REL${PG_HINT_PLAN}.tar.gz" \
+        && mkdir -p /tmp/pg_hint_plan \
+        && tar --extract --file /tmp/pg_hint_plan.tar.gz --directory /tmp/pg_hint_plan --strip-components 1 \
+        && cd /tmp/pg_hint_plan \
         && make && sudo make install \
 # orafce https://github.com/orafce/orafce
     && wget -O /tmp/orafce.tar.gz "https://github.com/orafce/orafce/archive/VERSION_${ORAFCE}.tar.gz" \
@@ -217,7 +232,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         git \
         dpkg-dev \
         gcc \
-        libc-dev \
+        libc6-dev \
         make \
         cmake \
         wget \

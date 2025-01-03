@@ -5,25 +5,6 @@ name: Infra DB
 on: workflow_dispatch
 
 jobs:
-  build-pg-14:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          submodules: "true"
-
-      # https://github.com/docker/login-action
-      - name: Log into docker hub
-        uses: docker/login-action@v2
-        with:
-          username: sdrzlyz
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build image
-        run: |
-          bash ./build.sh pg 14
   build-pg-15:
     runs-on: ubuntu-latest
 
