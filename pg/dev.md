@@ -87,6 +87,8 @@ cd /tmp/pg_analytics
 cargo pgrx install --release
 
 
+cp /usr/include/postgresql/15/server/pg_config.h /usr/include/postgresql/
+
 # repmgr https://github.com/EnterpriseDB/repmgr
 wget -O /tmp/repmgr.tar.gz "https://github.com/EnterpriseDB/repmgr/archive/v${REPMGR}.tar.gz" \
 && mkdir -p /tmp/repmgr \
