@@ -16,6 +16,7 @@ export SP_VAULT=0.2.9
 export ZOMBODB=3000.2.7
 export PARADEDB=0.14.0
 export PG_ANALYTICS=0.3.0
+export PG_ANON=2.0.0
 export PGVECTOR=0.8.0
 export PG_CRON=1.6.4
 export PG_IVM=1.9
@@ -85,6 +86,14 @@ cargo pgrx install --release --features icu
 git clone --branch v${PG_ANALYTICS} https://github.com/paradedb/pg_analytics.git /tmp/pg_analytics
 cd /tmp/pg_analytics
 cargo pgrx install --release
+
+
+git clone --branch ${PG_ANON} https://gitlab.com/dalibo/postgresql_anonymizer.git /tmp/pg_anonymizer
+cd /tmp/pg_anonymizer
+cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g')
+PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx init "--pg${PG_MAJOR}=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config"
+PGRX_HOME=/var/lib/postgresql/.pgrx make extension PG_CONFIG=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config PGVER="pg${PG_MAJOR}"
+PGRX_HOME=/var/lib/postgresql/.pgrx make install PG_CONFIG=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config PGVER="pg${PG_MAJOR}"
 
 
 cp /usr/include/postgresql/15/server/pg_config.h /usr/include/postgresql/
