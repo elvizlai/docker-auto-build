@@ -7,10 +7,10 @@ docker run --platform linux/amd64 -it  postgres:17-bullseye bash
 # docker run --platform linux/amd64 -it postgres:15-bookworm bash
 
 export CITUS=12.1.5
-export POSTGIS=3.5.1+dfsg-1.pgdg110+1
+export POSTGIS=3.5.2+dfsg-1.pgdg110+1
 export POSTGRESQL_HLL=2.18
 export POSTGRESQL_TOPN=2.7.0
-export PGROUTING=3.7.1
+export PGROUTING=3.7.2
 export TIMESCALE=2.17.2
 export SP_VAULT=0.2.9
 export ZOMBODB=3000.2.7
