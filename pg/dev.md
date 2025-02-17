@@ -6,16 +6,16 @@ docker run --platform linux/amd64 -it  postgres:17-bullseye bash
 # NOT WORKING
 # docker run --platform linux/amd64 -it postgres:15-bookworm bash
 
-export CITUS=12.1.5
+export CITUS=13.0.1
 export POSTGIS=3.5.2+dfsg-1.pgdg110+1
 export POSTGRESQL_HLL=2.18
 export POSTGRESQL_TOPN=2.7.0
 export PGROUTING=3.7.3
-export TIMESCALE=2.18.0
+export TIMESCALE=2.18.1
 export SP_VAULT=0.2.9
 export ZOMBODB=3000.2.7
 export PARADEDB=0.14.0
-export PG_ANALYTICS=0.3.2
+export PG_ANALYTICS=0.3.3
 export PG_ANON=2.0.0
 export PGVECTOR=0.8.0
 export PG_CRON=1.6.4
