@@ -19,8 +19,8 @@ ARG POSTGIS=3.5.2+dfsg-1.pgdg110+1
 ARG POSTGRESQL_HLL=2.18
 ARG POSTGRESQL_TOPN=2.7.0
 ARG PGROUTING=3.7.3
-ARG TIMESCALE=2.18.1
-ARG SP_VAULT=0.2.9
+ARG TIMESCALE=2.18.2
+ARG SP_VAULT=0.3.1
 ARG ZOMBODB=3000.2.7
 ARG PGVECTOR=0.8.0
 ARG PG_MQ=1.5.0
@@ -31,7 +31,7 @@ ARG ORAFCE=4_14_1
 ARG PGSQL_HTTP=1.6.3
 ARG PGAUDIT=1.7.0
 ARG REPMGR=5.4.1
-ARG PG_BACKREST=2.54.1
+ARG PG_BACKREST=2.54.2
 
 # set timezone
 ENV TZ PRC
@@ -81,7 +81,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
-                        postgresql-$PG_MAJOR-citus-12.1=$CITUS.citus-1 \
+                        postgresql-$PG_MAJOR-citus-13.0=$CITUS.citus-1 \
 # postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/15-3.5/Dockerfile
                         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                         postgresql-$PG_MAJOR-postgis-3-scripts \
@@ -114,13 +114,10 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cd /tmp/timescale \
         && ./bootstrap -DCMAKE_BUILD_TYPE=RelWithDebInfo -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && sudo make install \
-# supabase-vault + pgsodium + libsodium
+# supabase-vault + libsodium
     && git clone -b 1.0.20-RELEASE https://github.com/jedisct1/libsodium /tmp/libsodium  \
         && cd /tmp/libsodium \
         && ./configure && sudo make install \
-    && git clone -b v3.1.9 https://github.com/michelp/pgsodium /tmp/pgsodium \
-        && cd /tmp/pgsodium \
-        && sudo make install \
     && git clone -b v${SP_VAULT} https://github.com/supabase/vault /tmp/vault \
         && cd /tmp/vault \
         && make && sudo make install \
@@ -181,7 +178,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cd /tmp/pgaudit \
         && sudo make install USE_PGXS=1 \
 # zhparser + scws
-    && git clone -b V2.2 https://github.com/amutu/zhparser /tmp/zhparser \
+    && git clone -b v2.3 https://github.com/amutu/zhparser /tmp/zhparser \
     && mkdir -p /tmp/zhparser/scws \
     && cd /tmp/zhparser/scws \
     && wget -q -O - http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 | tar xjf - --strip-components 1 \
@@ -267,9 +264,6 @@ RUN echo "shared_preload_libraries='citus,pg_stat_statements,timescaledb'" >> /u
 
 # add scripts to run after initdb
 COPY extension/ /docker-entrypoint-initdb.d/
-
-# add script to gen pgsodium key
-COPY pgsodium_getkey /usr/share/postgresql/$PG_MAJOR/extension/pgsodium_getkey
 
 # add tools
 COPY --from=tools /go/bin/* /usr/local/bin/

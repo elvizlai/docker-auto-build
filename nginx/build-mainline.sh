@@ -71,7 +71,7 @@ make -j4 && make install && cd ..
 NGINXVER=${1:-1.27.4}
 NGINXNJS=0.8.9
 NGINXDIR=/opt/nginx-$NGINXVER
-NGINXNDK=0.3.3
+NGINXNDK=0.3.4
 NGINXLUA=0.10.28
 NGINXSTREAMLUA=0.0.16
 
@@ -109,7 +109,7 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # waf
-git clone -b v3.0.13 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+git clone -b v3.0.14 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
 make -j$(nproc) && make install

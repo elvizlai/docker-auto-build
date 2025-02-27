@@ -11,11 +11,11 @@ export POSTGIS=3.5.2+dfsg-1.pgdg110+1
 export POSTGRESQL_HLL=2.18
 export POSTGRESQL_TOPN=2.7.0
 export PGROUTING=3.7.3
-export TIMESCALE=2.18.1
-export SP_VAULT=0.2.9
+export TIMESCALE=2.18.2
+export SP_VAULT=0.3.1
 export ZOMBODB=3000.2.7
-export PARADEDB=0.14.0
-export PG_ANALYTICS=0.3.3
+export PARADEDB=0.15.5
+export PG_ANALYTICS=0.3.4
 export PG_ANON=2.0.0
 export PGVECTOR=0.8.0
 export PG_CRON=1.6.4
@@ -26,7 +26,7 @@ export ORAFCE=4_14_1
 export PGSQL_HTTP=1.6.3
 export PGAUDIT=1.7.0
 export REPMGR=5.5.0
-export PG_BACKREST=2.54.1
+export PG_BACKREST=2.54.2
 
 apt-get update
 
@@ -54,7 +54,7 @@ apt-get install -y --no-install-recommends \
 
 curl -s https://install.citusdata.com/community/deb.sh | bash
 apt-get install -y --no-install-recommends \
-                postgresql-$PG_MAJOR-citus-12.1=$CITUS.citus-1 \
+                postgresql-$PG_MAJOR-citus-13.0=$CITUS.citus-1 \
                 postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
                 postgresql-$PG_MAJOR-postgis-3-scripts \
                 postgresql-$PG_MAJOR-pglogical \
@@ -69,7 +69,7 @@ git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
     && cd /tmp/zombodb \
     && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
     && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
-    && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
+    && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release'
 
 
 # https://docs.paradedb.com/deploy/self-hosted/extensions
