@@ -4,6 +4,8 @@
 
 ```bash
 pg_dump -h localhost -p 5432 -U postgres -d postgres -f postgres.sql
+
+pg_dump -U postgres -W -F t db_name > output.tar
 ```
 
 #### pg_dumpall 备份所有数据库
@@ -16,6 +18,8 @@ pg_dumpall -h localhost -p 5432 -U postgres -f postgres.sql
 
 ```bash
 pg_restore -h localhost -p 5432 -U postgres -d postgres -f postgres.sql
+
+pg_restore -U postgres -d db_name path_to_db_backup_file.tar
 ```
 
 
