@@ -22,7 +22,7 @@ ARG PGROUTING=3.7.3
 ARG TIMESCALE=2.18.2
 ARG SP_VAULT=0.3.1
 ARG ZOMBODB=3000.2.8
-ARG PARADEDB=0.15.6
+ARG PARADEDB=0.15.7
 ARG PG_ANALYTICS=0.3.5
 ARG PG_ANON=2.0.0
 ARG PGVECTOR=0.8.0
@@ -149,7 +149,7 @@ RUN sudo apt-get install -y --no-install-recommends \
     && git clone --branch v${PG_ANALYTICS} https://github.com/paradedb/pg_analytics /tmp/pg_analytics \
         && cd /tmp/pg_analytics \
         && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
-# pg_anonymizer  https://gitlab.com/dalibo/postgresql_anonymizer
+# pg_anonymizer  https://gitlab.com/dalibo/postgresql_anonymizer/tags
     && git clone --branch ${PG_ANON} https://gitlab.com/dalibo/postgresql_anonymizer.git /tmp/pg_anonymizer \
         && cd /tmp/pg_anonymizer \
         && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
