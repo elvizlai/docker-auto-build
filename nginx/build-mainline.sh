@@ -124,7 +124,7 @@ git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-mod
 git clone --depth 1 --quiet -b v0.38 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
-git clone --depth 1 --quiet -b v0.2.3 https://github.com/vozlt/nginx-module-vts
+git clone --depth 1 --quiet -b v0.2.4 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 # https://nginx.org/en/download.html
