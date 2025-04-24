@@ -1,3 +1,3 @@
 ```
-docker build -f Dockerfile-quic -t sdrzlyz/nginx:quic .
+docker build -f Dockerfile-stable -t sdrzlyz/nginx:stable .
 ```
