@@ -21,9 +21,8 @@ ARG POSTGRESQL_TOPN=2.7.0
 ARG PGROUTING=3.7.3
 ARG TIMESCALE=2.19.3
 ARG SP_VAULT=0.3.1
+ARG PARADEDB=0.15.18
 ARG ZOMBODB=3000.2.8
-ARG PARADEDB=0.15.17
-ARG PG_ANALYTICS=0.3.5
 ARG PG_ANON=2.1.0
 ARG PGVECTOR=0.8.0
 ARG PG_CRON=1.6.4
@@ -128,14 +127,9 @@ RUN sudo apt-get install -y --no-install-recommends \
     && git clone -b PG${PG_MAJOR} https://github.com/apache/age /tmp/age \
         && cd /tmp/age \
         && make && sudo make install \
-# zombodb https://github.com/zombodb/zombodb
-    && export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
+# rust https://rustup.rs/
+    && export RUSTUP_HOME=/tmp/rustup && export CARGO_HOME=/tmp/cargo && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
-        && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
-        && cd /tmp/zombodb \
-        && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
-        && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
-        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
 # paradedb https://github.com/paradedb/paradedb
     && git clone -b v${PARADEDB} https://github.com/paradedb/paradedb /tmp/paradedb \
         && cd /tmp/paradedb \
@@ -144,18 +138,21 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cargo install --locked cargo-pgrx --version "${PGRX_VERSION}" \
         && cargo pgrx init "--pg${PG_MAJOR}=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config" \
         && cd /tmp/paradedb/pg_search \
-        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx PARADEDB_TELEMETRY=false cargo pgrx install --release --features icu' \
-# pg_analytics https://github.com/paradedb/pg_analytics
-    && git clone --branch v${PG_ANALYTICS} https://github.com/paradedb/pg_analytics /tmp/pg_analytics \
-        && cd /tmp/pg_analytics \
-        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
+        && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx PARADEDB_TELEMETRY=false cargo pgrx install --release --features icu' \
+# zombodb https://github.com/zombodb/zombodb
+    && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
+        && cd /tmp/zombodb \
+        # force using 0.13.0(provided by pg_search PGRX_VERSION)
+        && cargo install -j$(nproc) cargo-pgrx --version $PGRX_VERSION --locked \
+        && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
+        && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
 # pg_anonymizer  https://gitlab.com/dalibo/postgresql_anonymizer/tags
     && git clone --branch ${PG_ANON} https://gitlab.com/dalibo/postgresql_anonymizer.git /tmp/pg_anonymizer \
         && cd /tmp/pg_anonymizer \
         && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
         && PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx init "--pg${PG_MAJOR}=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config" \
         && PGRX_HOME=/var/lib/postgresql/.pgrx make extension PG_CONFIG=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config PGVER=pg${PG_MAJOR} \
-        && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx make install PG_CONFIG=/usr/lib/postgresql/15/bin/pg_config PGVER=pg15' \
+        && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx make install PG_CONFIG=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config PGVER=pg${PG_MAJOR}' \
 # vector https://github.com/pgvector/pgvector/tags
     && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector /tmp/pgvector \
         && cd /tmp/pgvector \

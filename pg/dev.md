@@ -6,6 +6,7 @@ docker run --platform linux/amd64 -it  postgres:17-bullseye bash
 # NOT WORKING
 # docker run --platform linux/amd64 -it postgres:15-bookworm bash
 
+
 export CITUS=13.0.1
 export POSTGIS=3.5.2+dfsg-1.pgdg110+1
 export POSTGRESQL_HLL=2.18
@@ -13,9 +14,8 @@ export POSTGRESQL_TOPN=2.7.0
 export PGROUTING=3.7.3
 export TIMESCALE=2.19.3
 export SP_VAULT=0.3.1
+export PARADEDB=0.15.18
 export ZOMBODB=3000.2.8
-export PARADEDB=0.15.17
-export PG_ANALYTICS=0.3.5
 export PG_ANON=2.1.0
 export PGVECTOR=0.8.0
 export PG_CRON=1.6.4
@@ -28,9 +28,15 @@ export PGAUDIT=1.7.1
 export REPMGR=5.5.0
 export PG_BACKREST=2.54.2
 
-apt-get update
 
-apt-get install -y --no-install-recommends \
+apt-get update && apt-get install -y --no-install-recommends sudo \
+    && echo "postgres ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+
+su postgres -
+
+
+sudo apt-get install -y --no-install-recommends \
         ca-certificates \
         procps \
         curl \
@@ -52,6 +58,7 @@ apt-get install -y --no-install-recommends \
         liblz4-dev libzstd-dev libedit-dev libpam0g-dev libselinux1-dev libxml2-dev libxslt1-dev libjson-c-dev \
         libyaml-dev libbz2-dev
 
+
 curl -s https://install.citusdata.com/community/deb.sh | bash
 apt-get install -y --no-install-recommends \
                 postgresql-$PG_MAJOR-citus-13.0=$CITUS.citus-1 \
@@ -61,15 +68,9 @@ apt-get install -y --no-install-recommends \
                 pg-auto-failover-cli \
                 postgresql-$PG_MAJOR-auto-failover
 
-export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export PATH=$CARGO_HOME/bin:$PATH \
+
+export RUSTUP_HOME=/tmp/rustup && export CARGO_HOME=/tmp/cargo && export PATH=$CARGO_HOME/bin:$PATH \
     && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
-
-
-git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
-    && cd /tmp/zombodb \
-    && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
-    && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
-    && sudo bash -c 'CARGO_HOME=/tmp/cargo RUSTUP_HOME=/tmp/rustup PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release'
 
 
 # https://docs.paradedb.com/deploy/self-hosted/extensions
@@ -79,13 +80,15 @@ PGRX_VERSION=$(cargo tree --depth 1 -i pgrx -p pg_search | head -n 1 | sed -E 's
 echo "PGRX_VERSION=$PGRX_VERSION"
 cargo install --locked cargo-pgrx --version "${PGRX_VERSION}"
 cargo pgrx init "--pg${PG_MAJOR}=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config"
-
 cd /tmp/paradedb/pg_search
-cargo pgrx install --release --features icu
+sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx PARADEDB_TELEMETRY=false cargo pgrx install --release --features icu'
 
-git clone --branch v${PG_ANALYTICS} https://github.com/paradedb/pg_analytics.git /tmp/pg_analytics
-cd /tmp/pg_analytics
-cargo pgrx install --release
+
+git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
+    && cd /tmp/zombodb \
+    && cargo install -j$(nproc) cargo-pgrx --version $PGRX_VERSION --locked \
+    && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
+    && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release'
 
 
 git clone --branch ${PG_ANON} https://gitlab.com/dalibo/postgresql_anonymizer.git /tmp/pg_anonymizer
