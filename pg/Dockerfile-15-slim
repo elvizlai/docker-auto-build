@@ -1,0 +1,16 @@
+FROM sdrzlyz/pg:15 AS builder
+
+FROM postgres:15-bullseye
+
+COPY --from=builder /usr/lib/postgresql/15/lib/ /usr/lib/postgresql/15/lib/
+COPY --from=builder /usr/share/postgresql/15/extension/ /usr/share/postgresql/15/extension/
+
+# TODO: fix
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libcurl4 \
+        postgresql-contrib \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = [0-9]\\+/max_connections = 1000/;s/\#wal_level = replica/wal_level = logical/" /var/lib/postgresql/data/postgresql.conf\n                        echo "cron.timezone = \o047PRC\o047" >> /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh

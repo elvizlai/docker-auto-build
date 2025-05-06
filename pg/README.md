@@ -9,6 +9,8 @@ Reference
 ```
 https://pigsty.io/zh/
 https://ext.pigsty.io
+
+https://github.com/ApsaraDB/PolarDB-for-PostgreSQL
 ```
 
 Single Node Example
@@ -34,17 +36,52 @@ Extension
 usage `psql -U postgres`
 
 ```
-CREATE EXTENSION IF NOT EXISTS citus
+CREATE EXTENSION citus;
 
-CREATE EXTENSION IF NOT EXISTS postgis;
-CREATE EXTENSION IF NOT EXISTS postgis_topology;
-CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
-CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
+CREATE EXTENSION postgis;
+CREATE EXTENSION postgis_topology;
+CREATE EXTENSION fuzzystrmatch;
+CREATE EXTENSION postgis_tiger_geocoder;
 
-CREATE EXTENSION IF NOT EXISTS pgrouting;
-CREATE EXTENSION IF NOT EXISTS timescaledb;
+# 需要先添加到 shared_preload_libraries
+CREATE EXTENSION pglogical;
 
-CREATE EXTENSION IF NOT EXISTS pg_cron;
+# 需要先添加到 shared_preload_libraries
+CREATE EXTENSION pgautofailover CASCADE;
+
+CREATE EXTENSION pgrouting;
+CREATE EXTENSION timescaledb;
+
+CREATE EXTENSION supabase_vault;
+
+CREATE EXTENSION age;
+
+# 需要先添加到 shared_preload_libraries
+CREATE EXTENSION pg_search;
+
+CREATE EXTENSION zombodb;
+
+CREATE EXTENSION anon;
+
+CREATE EXTENSION vector;
+
+CREATE EXTENSION pg_cron;
+
+CREATE EXTENSION pg_ivm;
+
+CREATE EXTENSION pgmq;
+
+CREATE EXTENSION orafce;
+
+CREATE EXTENSION http;
+
+CREATE EXTENSION zhparser;
+
+# 需要先添加到 shared_preload_libraries
+CREATE EXTENSION pgaudit;
+
+# pg_hint_plan 不需要安装，使用时通过 LOAD 'pg_hint_plan';
+
 
 -- \dx or SELECT * FROM pg_extension;
 ```
