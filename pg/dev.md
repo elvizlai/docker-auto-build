@@ -1,4 +1,4 @@
-### compile
+### image
 ```
 docker run --platform linux/amd64 -it postgres:15-bullseye bash
 docker run --platform linux/amd64 -it postgres:16-bullseye bash
@@ -10,8 +10,10 @@ sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg ma
 
 # NOT WORKING
 # docker run --platform linux/amd64 -it postgres:15-bookworm bash
+```
 
-
+### compile
+```
 export CITUS=13.0.1
 export POSTGIS=3.5.2+dfsg-1.pgdg110+1
 export POSTGRESQL_HLL=2.18

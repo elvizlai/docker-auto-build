@@ -4,7 +4,7 @@ ARG VERSION=17
 ARG GO_VERSION=1.22.4
 FROM golang:${GO_VERSION}-alpine AS tools
 
-ENV TOOLS_VERSION 0.8.1
+ENV TOOLS_VERSION=0.8.1
 
 # https://github.com/timescale/timescaledb-docker/blob/main/Dockerfile
 RUN apk update && apk add --no-cache git gcc musl-dev \
@@ -36,7 +36,7 @@ ARG PG_HINT_PLAN=17_1_7_0
 ARG PG_BACKREST=2.55.1
 
 # set timezone
-ENV TZ PRC
+ENV TZ=PRC
 
 RUN apt-get update && apt-get install -y --no-install-recommends sudo \
     && echo "postgres ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
@@ -81,7 +81,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         postgresql-$PG_MAJOR-postgis-3-scripts \
 # pglogical https://github.com/2ndQuadrant/pglogical
         postgresql-$PG_MAJOR-pglogical \
-# pg_auto_failover https://github.com/hapostgres/pg_auto_failover
+# pgautofailover https://github.com/hapostgres/pg_auto_failover
         pg-auto-failover-cli \
         postgresql-$PG_MAJOR-auto-failover \
 # hll https://github.com/citusdata/postgresql-hll/tags
@@ -102,12 +102,12 @@ RUN sudo apt-get install -y --no-install-recommends \
         && tar --extract --file /tmp/pgrouting.tar.gz --directory /tmp/pgrouting --strip-components 1 \
         && cd /tmp/pgrouting/build \
         && cmake .. && make -j$(nproc) && sudo make install \
-# timescale https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
+# timescaledb https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
     && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \
         && cd /tmp/timescale \
         && ./bootstrap -DCMAKE_BUILD_TYPE=RelWithDebInfo -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
         && cd build && make -j$(nproc) && sudo make install \
-# supabase-vault
+# supabase_vault https://github.com/supabase/vault
     && git clone -b v${SP_VAULT} https://github.com/supabase/vault /tmp/vault \
         && cd /tmp/vault \
         && make -j$(nproc) && sudo make install \
@@ -118,7 +118,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # rust https://rustup.rs/
     && export RUSTUP_HOME=/tmp/rustup && export CARGO_HOME=/tmp/cargo && export PATH=$CARGO_HOME/bin:$PATH \
         && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
-# paradedb https://github.com/paradedb/paradedb
+# pg_search https://github.com/paradedb/paradedb
     && wget -O /tmp/icu4c.tgz https://github.com/unicode-org/icu/releases/download/release-76-1/icu4c-76_1-src.tgz \
         && mkdir -p /tmp/icu \
         && tar --extract --file /tmp/icu4c.tgz --directory /tmp/icu --strip-components 1 \
@@ -133,7 +133,7 @@ RUN sudo apt-get install -y --no-install-recommends \
         && cargo pgrx init "--pg${PG_MAJOR}=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config" \
         && cd /tmp/paradedb/pg_search \
         && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx PARADEDB_TELEMETRY=false cargo pgrx install --features icu --release' \
-# pg_anonymizer https://gitlab.com/dalibo/postgresql_anonymizer/tags
+# anon https://gitlab.com/dalibo/postgresql_anonymizer/tags
     && git clone --branch ${PG_ANON} https://gitlab.com/dalibo/postgresql_anonymizer.git /tmp/pg_anonymizer \
         && cd /tmp/pg_anonymizer \
         && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
@@ -211,7 +211,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # locale
     && sudo bash -c 'echo -e "en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8" >> /etc/locale.gen' && sudo locale-gen \
 # clean
-    && sudo apt-get autoremove --purge -y --auto-remove --allow-remove-essential \
+    && sudo apt-get autoremove -y --purge --allow-remove-essential \
         ca-certificates \
         curl \
         wget \
@@ -275,7 +275,7 @@ COPY pg_healthcheck wait-for-manager.sh /
 RUN chmod +x /wait-for-manager.sh
 
 # entry point unsets PGPASSWORD, but we need it to connect to workers
-# https://github.com/docker-library/postgres/blob/33bccfcaddd0679f55ee1028c012d26cd196537d/12/docker-entrypoint.sh#L303
+# https://github.com/docker-library/postgres/blob/master/docker-entrypoint.sh#L338
 RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
 
 # config tuning
@@ -286,6 +286,6 @@ RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
 # cron.timezone = 'PRC'
 RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = [0-9]\\+/max_connections = 1000/;s/\#wal_level = replica/wal_level = logical/" /var/lib/postgresql/data/postgresql.conf\n                        echo "cron.timezone = \o047PRC\o047" >> /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
 
-ENV TIMESCALEDB_TELEMETRY off
+ENV TIMESCALEDB_TELEMETRY=off
 
 HEALTHCHECK --interval=4s --timeout=10s --retries=3 --start-period=6s CMD ./pg_healthcheck

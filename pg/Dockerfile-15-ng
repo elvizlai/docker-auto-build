@@ -1,0 +1,94 @@
+ARG GO_VERSION=1.22.4
+FROM golang:${GO_VERSION}-alpine AS tools
+
+ENV TOOLS_VERSION=0.8.1
+
+# https://github.com/timescale/timescaledb-docker/blob/main/Dockerfile
+RUN apk update && apk add --no-cache git gcc musl-dev \
+    && go install github.com/timescale/timescaledb-tune/cmd/timescaledb-tune@latest \
+    && go install github.com/timescale/timescaledb-parallel-copy/cmd/timescaledb-parallel-copy@latest
+
+
+FROM postgres:15-bookworm
+
+# set timezone
+ENV TZ=PRC
+
+RUN apt-get update && apt-get install -y --no-install-recommends sudo ca-certificates curl \
+    && echo "postgres ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER postgres
+
+# pigsty
+RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/keyrings/pgdg.gpg && \
+    curl -fsSL https://repo.pigsty.io/key | sudo gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg && \
+    . /etc/os-release && \
+    echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null && \
+    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/infra generic main" | sudo tee /etc/apt/sources.list.d/pigsty.list > /dev/null && \
+    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/pgsql/${VERSION_CODENAME} ${VERSION_CODENAME} main" | sudo tee -a /etc/apt/sources.list.d/pigsty.list > /dev/null && \
+    curl -fsSL https://repo.pigsty.io/pig | sudo bash \
+    && pig repo update \
+    && pig ext add -y citus postgis pglogical pgautofailover hll topn pgrouting timescaledb \
+        supabase_vault age pg_search anon vector smlar pg_cron pg_ivm pgmq orafce http zhparser \
+        pgaudit pg_hint_plan wal2json decoder_raw \
+    && sudo apt-get install -y --no-install-recommends \
+        postgresql-server-dev-$PG_MAJOR git gcc pkg-config libssl-dev \
+    && export RUSTUP_HOME=/tmp/rustup && export CARGO_HOME=/tmp/cargo && export PATH=$CARGO_HOME/bin:$PATH \
+        && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
+    && git clone -b v3000.2.8 https://github.com/zombodb/zombodb /tmp/zombodb \
+        && cd /tmp/zombodb \
+        && cargo install -j$(nproc) cargo-pgrx --version 0.13.0 --locked \
+        && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
+        && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
+    && sudo apt-get autoremove -y --purge \
+        curl \
+        postgresql-server-dev-$PG_MAJOR git gcc pkg-config libssl-dev \
+    && sudo apt-get clean -y \
+    && sudo rm -rf \
+        "${HOME}/.cache" \
+        /var/lib/apt/lists/* \
+        /tmp/* \
+        /var/tmp/* \
+        /var/lib/postgresql/.profile \
+        /var/lib/postgresql/.pgrx \
+        /var/log/*.log
+
+USER root
+
+# multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
+# pgautofailover,pglogical
+RUN echo "shared_preload_libraries='citus,pg_stat_statements,timescaledb'" >> /usr/share/postgresql/postgresql.conf.sample
+
+# select name,setting from pg_settings where name like 'pgaudit%';
+# all but except misc
+#pgaudit.log = 'all, -misc'
+#pgaudit.log_client = on
+#pgaudit.log_parameter = on
+#pgaudit.log_relation = on
+#pgaudit.log_statement_once = on
+
+# add scripts to run after initdb
+COPY extension/ /docker-entrypoint-initdb.d/
+
+# add tools
+COPY --from=tools /go/bin/* /usr/local/bin/
+
+# add health check script
+COPY pg_healthcheck wait-for-manager.sh /
+RUN chmod +x /wait-for-manager.sh
+
+# entry point unsets PGPASSWORD, but we need it to connect to workers
+# https://github.com/docker-library/postgres/blob/master/docker-entrypoint.sh#L338
+RUN sed "/unset PGPASSWORD/d" -i /usr/local/bin/docker-entrypoint.sh
+
+# config tuning
+# HINT: \o047 for sed single quote
+# replace docker_temp_server_stop with sed to change postgresql.conf
+# max_connections = 1000
+# wal_level = logical
+# cron.timezone = 'PRC'
+RUN sed -i ':a;N;$!ba;s#\(.*\)docker_temp_server_stop#\1docker_temp_server_stop\n                        sed -i "s/max_connections = [0-9]\\+/max_connections = 1000/;s/\#wal_level = replica/wal_level = logical/" /var/lib/postgresql/data/postgresql.conf\n                        echo "cron.timezone = \o047PRC\o047" >> /var/lib/postgresql/data/postgresql.conf#' /usr/local/bin/docker-entrypoint.sh
+
+ENV TIMESCALEDB_TELEMETRY=off
+
+HEALTHCHECK --interval=4s --timeout=10s --retries=3 --start-period=6s CMD ./pg_healthcheck

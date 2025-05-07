@@ -69,7 +69,7 @@ make -j4 && make install && cd ..
 
 
 NGINXVER=${1:-1.28.0}
-NGINXNJS=0.8.10
+NGINXNJS=0.9.0
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
 NGINXLUA=0.10.28
