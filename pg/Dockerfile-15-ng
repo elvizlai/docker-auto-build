@@ -29,7 +29,7 @@ RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --d
     curl -fsSL https://repo.pigsty.io/pig | sudo bash \
     && pig repo update \
     && pig ext add -y citus postgis pglogical pgautofailover hll topn pgrouting timescaledb \
-        supabase_vault age pg_search anon vector smlar pg_cron pg_ivm pgmq orafce http zhparser \
+        supabase_vault age pg_search anon vchord vector smlar pg_cron pg_ivm pgmq orafce http zhparser \
         pgaudit pg_hint_plan wal2json decoder_raw \
     && sudo apt-get install -y --no-install-recommends \
         postgresql-server-dev-$PG_MAJOR git gcc pkg-config libssl-dev \
