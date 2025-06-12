@@ -44,8 +44,7 @@ apk update && apk upgrade \
 
 
 OPENSSL=openssl-3.0.16
-JEMALLOC=5.3.0
-LUAJIT=v2.1-20250117
+LUAJIT=v2.1-20250529
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -54,12 +53,6 @@ curl -sSL https://github.com/openssl/openssl/releases/download/$OPENSSL/$OPENSSL
 cd $OPENSSL
 ./config --prefix=/usr/local --libdir=/usr/local/lib shared
 make -j4 && make install_sw && cd ..
-
-# jemalloc https://github.com/jemalloc/jemalloc
-curl -sSL https://github.com/jemalloc/jemalloc/releases/download/$JEMALLOC/jemalloc-$JEMALLOC.tar.bz2 | tar xjf -
-cd jemalloc-$JEMALLOC
-./configure --prefix=/usr/local --libdir=/usr/local/lib
-make -j4 && make install && cd ..
 
 # lua-jit https://github.com/openresty/luajit2/tags
 mkdir -p luajit2.1
@@ -76,11 +69,6 @@ NGINXLUA=0.10.28
 NGINXSTREAMLUA=0.0.16
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
-
-git clone https://github.com/google/ngx_brotli
-cd ngx_brotli
-git submodule update --init
-cd ..
 
 # https://github.com/nginx/njs/tags
 git clone -b $NGINXNJS https://github.com/nginx/njs
@@ -116,7 +104,7 @@ make -j$(nproc) && make install
 cd ..
 
 # https://github.com/SpiderLabs/ModSecurity-nginx/tags
-git clone -b v1.0.3 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
+git clone -b v1.0.4 --depth=1 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity-nginx
 # waf
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
@@ -135,7 +123,7 @@ export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
 ./configure \
     --with-cc-opt="-DTCP_FASTOPEN=23 -Wno-error" \
-    --with-ld-opt="-ljemalloc -Wl,-rpath,$LUAJIT_LIB" \
+    --with-ld-opt="-Wl,-rpath,$LUAJIT_LIB" \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
     --sbin-path=/usr/sbin/nginx \
@@ -174,7 +162,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-threads \
     --add-module=./module/lua-nginx-module-$NGINXLUA \
     --add-module=./module/nginx-http-flv-module \
-    --add-module=./module/ngx_brotli \
     --add-module=./module/ngx_devel_kit-$NGINXNDK \
     --add-module=./module/njs/nginx \
     --add-module=./module/stream-lua-nginx-module-$NGINXSTREAMLUA \
@@ -224,7 +211,7 @@ curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LR
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-mysql/tags
-LUA_RESTY_MYSQL=0.27
+LUA_RESTY_MYSQL=0.28
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 \cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
@@ -303,7 +290,7 @@ curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf 
 rm -rf pgmoon-$LUA_PGMOON
 
 # https://github.com/starwing/lua-protobuf/tags
-LUA_PROTOBUF=0.5.2
+LUA_PROTOBUF=0.5.3
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
 cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && \cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
@@ -322,7 +309,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.9.0
+KONG=3.9.1
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
@@ -497,12 +484,6 @@ http {
     gzip_proxied any;
     gzip_min_length 1000;
     gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
-
-    brotli            on;
-    brotli_comp_level 6;
-    brotli_buffers    16 8k;
-    brotli_min_length 20;
-    brotli_types      *;
 
     # SSL
     ssl_session_timeout 1d;

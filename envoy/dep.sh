@@ -8,7 +8,7 @@ apk add --virtual build_deps curl make gcc libc-dev readline-dev ncurses-dev
 
 apk add unzip outils-md5
 
-LUAJIT=v2.1-20250117
+LUAJIT=v2.1-20250529
 LUAROCKS=3.11.0
 
 # lua-jit https://github.com/openresty/luajit2
