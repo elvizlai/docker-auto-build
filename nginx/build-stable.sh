@@ -43,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.0.16
+OPENSSL=openssl-3.0.17
 LUAJIT=v2.1-20250529
 
 mkdir -p /opt/lib-src && cd /opt/lib-src

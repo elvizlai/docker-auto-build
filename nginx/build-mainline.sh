@@ -43,7 +43,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.0.16
+OPENSSL=openssl-3.0.17
 LUAJIT=v2.1-20250529
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
@@ -61,7 +61,7 @@ cd luajit2.1
 make -j4 && make install && cd ..
 
 
-NGINXVER=${1:-1.27.5}
+NGINXVER=${1:-1.29.0}
 NGINXNJS=0.9.0
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
