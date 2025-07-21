@@ -62,7 +62,7 @@ make -j4 && make install && cd ..
 
 
 NGINXVER=${1:-1.28.0}
-NGINXNJS=0.9.0
+NGINXNJS=0.9.1
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
 NGINXLUA=0.10.28
@@ -221,7 +221,7 @@ curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
 
 # https://github.com/openresty/lua-resty-redis/tags
-LUA_RESTY_REDIS=0.32
+LUA_RESTY_REDIS=0.33
 curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS.tar.gz | tar zxf -
 \cp -rf lua-resty-redis-$LUA_RESTY_REDIS/lib/* .
 rm -rf lua-resty-redis-$LUA_RESTY_REDIS
