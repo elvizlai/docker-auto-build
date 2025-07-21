@@ -19,15 +19,15 @@ ARG POSTGIS=3.5.2+dfsg-1.pgdg110+1
 ARG POSTGRESQL_HLL=2.18
 ARG POSTGRESQL_TOPN=2.7.0
 ARG PGROUTING=3.8.0
-ARG TIMESCALE=2.20.3
+ARG TIMESCALE=2.21.0
 ARG SP_VAULT=0.3.1
-ARG PARADEDB=0.15.25
+ARG PARADEDB=0.17.0
 ARG ZOMBODB=3000.2.8
-ARG PG_ANON=2.2.1
+ARG PG_ANON=2.3.0
 ARG PGVECTOR=0.8.0
 ARG PG_CRON=1.6.4
 ARG PG_IVM=1.11
-ARG PG_MQ=1.5.1
+ARG PG_MQ=1.6.1
 ARG ORAFCE=4_14_4
 ARG PGSQL_HTTP=1.6.3
 
@@ -76,7 +76,7 @@ RUN sudo apt-get install -y --no-install-recommends \
 # citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
     && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
     && sudo apt-get install -y --no-install-recommends \
-        postgresql-$PG_MAJOR-citus-13.0=$CITUS.citus-1 \
+        postgresql-$PG_MAJOR-citus-13.1=$CITUS.citus-1 \
 # postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/15-3.5/Dockerfile
         postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
         postgresql-$PG_MAJOR-postgis-3-scripts \

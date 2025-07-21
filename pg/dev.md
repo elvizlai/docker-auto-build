@@ -19,15 +19,15 @@ export POSTGIS=3.5.2+dfsg-1.pgdg110+1
 export POSTGRESQL_HLL=2.18
 export POSTGRESQL_TOPN=2.7.0
 export PGROUTING=3.8.0
-export TIMESCALE=2.20.3
+export TIMESCALE=2.21.0
 export SP_VAULT=0.3.1
-export PARADEDB=0.15.25
+export PARADEDB=0.17.0
 export ZOMBODB=3000.2.8
-export PG_ANON=2.2.1
+export PG_ANON=2.3.0
 export PGVECTOR=0.8.0
 export PG_CRON=1.6.4
 export PG_IVM=1.11
-export PG_MQ=1.5.1
+export PG_MQ=1.6.1
 export ORAFCE=4_14_4
 export PGSQL_HTTP=1.6.3
 export PG_DUCKDB=0.3.1
@@ -79,7 +79,7 @@ sudo apt-get install -y --no-install-recommends \
 
 curl -s https://install.citusdata.com/community/deb.sh | sudo bash
 sudo apt-get install -y --no-install-recommends \
-    postgresql-$PG_MAJOR-citus-13.0=$CITUS.citus-1 \
+    postgresql-$PG_MAJOR-citus-13.1=$CITUS.citus-1 \
     postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
     postgresql-$PG_MAJOR-postgis-3-scripts \
     postgresql-$PG_MAJOR-pglogical \
