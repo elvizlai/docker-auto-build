@@ -89,7 +89,9 @@ git clone https://github.com/openresty/stream-lua-nginx-module stream-lua-nginx-
 # mv pingos/modules/* .
 
 # https://github.com/winshining/nginx-http-flv-module
-git clone -b v1.2.12 https://github.com/winshining/nginx-http-flv-module.git
+git clone -b v1.2.12 https://github.com/winshining/nginx-http-flv-module
+
+git clone -b 0.3.0 https://github.com/fffonion/lua-resty-openssl-aux-module
 
 # dynamic modules
 rm -rf $NGINXDIR/module/dynamic
@@ -109,7 +111,7 @@ git clone -b v1.0.4 --depth=1 --recursive --single-branch https://github.com/Spi
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
 git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-module
-git clone --depth 1 --quiet -b v0.38 https://github.com/openresty/headers-more-nginx-module
+git clone --depth 1 --quiet -b v0.39 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet -b v0.2.4 https://github.com/vozlt/nginx-module-vts
@@ -122,6 +124,10 @@ curl -sSL https://nginx.org/download/nginx-$NGINXVER.tar.gz | tar zxf - -C . --s
 # this not work for nginx 1.24.0
 # curl -sSL https://raw.githubusercontent.com/kn007/patch/master/nginx.patch > nginx.patch
 # patch -p1 < nginx.patch
+
+# for lua-resty-openssl-aux-module
+export NGX_LUA_LOC=./module/lua-nginx-module-$NGINXLUA
+export NGX_STREAM_LUA_LOC=./module/stream-lua-nginx-module-$NGINXSTREAMLUA
 
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
@@ -161,14 +167,17 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-mail_ssl_module \
     --with-pcre-jit \
     --with-stream \
+    --with-stream_realip_module \
     --with-stream_ssl_module \
     --with-stream_ssl_preread_module \
     --with-threads \
-    --add-module=./module/lua-nginx-module-$NGINXLUA \
-    --add-module=./module/nginx-http-flv-module \
     --add-module=./module/ngx_devel_kit-$NGINXNDK \
-    --add-module=./module/njs/nginx \
+    --add-module=./module/lua-nginx-module-$NGINXLUA \
     --add-module=./module/stream-lua-nginx-module-$NGINXSTREAMLUA \
+    --add-module=./module/lua-resty-openssl-aux-module \
+    --add-module=./module/lua-resty-openssl-aux-module/stream \
+    --add-module=./module/nginx-http-flv-module \
+    --add-module=./module/njs/nginx \
     --add-dynamic-module=./module/dynamic/echo-nginx-module \
     --add-dynamic-module=./module/dynamic/headers-more-nginx-module \
     --add-dynamic-module=./module/dynamic/ModSecurity-nginx \
