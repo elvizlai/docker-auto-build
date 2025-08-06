@@ -73,6 +73,10 @@ mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 # https://github.com/nginx/njs/tags
 git clone -b $NGINXNJS https://github.com/nginx/njs
 
+# njs engine
+git clone https://github.com/bellard/quickjs
+cd quickjs && CFLAGS='-fPIC' make libquickjs.a && cd ..
+
 # https://github.com/vision5/ngx_devel_kit/tags
 curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz | tar zxf -
 
@@ -91,6 +95,7 @@ git clone https://github.com/openresty/stream-lua-nginx-module stream-lua-nginx-
 # https://github.com/winshining/nginx-http-flv-module
 git clone -b v1.2.12 https://github.com/winshining/nginx-http-flv-module
 
+# https://github.com/fffonion/lua-resty-openssl-aux-module/tags
 git clone -b 0.3.0 https://github.com/fffonion/lua-resty-openssl-aux-module
 
 # dynamic modules
@@ -132,8 +137,8 @@ export NGX_STREAM_LUA_LOC=./module/stream-lua-nginx-module-$NGINXSTREAMLUA
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
 ./configure \
-    --with-cc-opt="-DTCP_FASTOPEN=23 -Wno-error" \
-    --with-ld-opt="-Wl,-rpath,$LUAJIT_LIB" \
+    --with-cc-opt="-DTCP_FASTOPEN=23 -Wno-error -I/opt/lib-src/quickjs" \
+    --with-ld-opt="-Wl,-rpath,$LUAJIT_LIB -L/opt/lib-src/quickjs" \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
     --sbin-path=/usr/sbin/nginx \
