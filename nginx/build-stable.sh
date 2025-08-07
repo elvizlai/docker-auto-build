@@ -557,16 +557,15 @@ http {
     }
 
     server {
-        listen      80 default_server;
+        listen      80 default_server reuseport;
         server_name _;
         return 444;
     }
 
     server {
-        listen      443 default_server ssl;
-        http2       on;
-
+        listen      443 default_server ssl reuseport;
         listen      443 quic reuseport;
+        http2       on;
 
         server_name _;
         ssl_reject_handshake on;
