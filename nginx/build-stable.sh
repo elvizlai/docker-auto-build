@@ -516,8 +516,8 @@ http {
     ssl_stapling_verify on;
     ssl_early_data on;
 
-    resolver 8.8.8.8 223.5.5.5 119.29.29.29 valid=60s ipv6=off;
-    resolver_timeout 15s;
+    resolver 119.29.29.29 223.5.5.5 8.8.8.8 valid=300s ipv6=off;
+    resolver_timeout 5s;
 
     #modsecurity on;
     #modsecurity_rules_file /etc/nginx/modsec/main.conf;
