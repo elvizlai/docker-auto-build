@@ -3,16 +3,16 @@
 set -e
 
 apk update && apk upgrade \
-  && apk add --no-cache ca-certificates \
+  && apk add --no-cache ca-certificates curl git \
   && update-ca-certificates \
   && apk add --no-cache --virtual .build-deps \
-  curl \
+  perl \
+  make \
   gcc \
   libc-dev \
-  make \
+  linux-headers \
   pcre-dev \
   zlib-dev \
-  linux-headers \
   gnupg \
   libxslt-dev \
   gd-dev \
@@ -22,11 +22,9 @@ apk update && apk upgrade \
   autoconf \
   libtool \
   automake \
-  git \
   g++ \
   cmake \
   go \
-  perl \
   rust \
   cargo \
   patch \
@@ -43,7 +41,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.0.17
+OPENSSL=openssl-3.5.2
 LUAJIT=v2.1-20250529
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
@@ -51,14 +49,14 @@ mkdir -p /opt/lib-src && cd /opt/lib-src
 # openssl https://www.openssl.org/source/
 curl -sSL https://github.com/openssl/openssl/releases/download/$OPENSSL/$OPENSSL.tar.gz | tar zxf -
 cd $OPENSSL
-./config --prefix=/usr/local --libdir=/usr/local/lib shared
-make -j4 && make install_sw && cd ..
+./config --prefix=/usr/local --libdir=/usr/local/lib --openssldir=/etc/ssl shared
+make -j$(nproc) && make install_sw && cd ..
 
 # lua-jit https://github.com/openresty/luajit2/tags
 mkdir -p luajit2.1
 curl -sSL https://github.com/openresty/luajit2/archive/$LUAJIT.tar.gz | tar zxf - -C luajit2.1 --strip-components 1
 cd luajit2.1
-make -j4 && make install && cd ..
+make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=${1:-1.29.0}
@@ -345,7 +343,7 @@ rm -rf yaml-$LIB_YAML
 
 # cert gen
 mkdir -p /etc/nginx/cert /etc/nginx/acme
-openssl dhparam -out /etc/nginx/dhparam.pem 1024
+openssl dhparam -out /etc/nginx/dhparam.pem 2048
 
 # rsa
 openssl req \
