@@ -1,6 +1,3 @@
-ARG VERSION=17
-
-# Build tools for timescaledb
 ARG GO_VERSION=1.22.4
 FROM golang:${GO_VERSION}-alpine AS tools
 
@@ -11,224 +8,30 @@ RUN apk update && apk add --no-cache git gcc musl-dev \
     && go install github.com/timescale/timescaledb-tune/cmd/timescaledb-tune@latest \
     && go install github.com/timescale/timescaledb-parallel-copy/cmd/timescaledb-parallel-copy@latest
 
-# postgres
-FROM postgres:${VERSION}-bullseye
 
-ARG CITUS=13.1.0
-ARG POSTGIS=3.5.2+dfsg-1.pgdg110+1
-ARG POSTGRESQL_HLL=2.18
-ARG POSTGRESQL_TOPN=2.7.0
-ARG PGROUTING=3.8.0
-ARG TIMESCALE=2.21.0
-ARG SP_VAULT=0.3.1
-ARG PARADEDB=0.15.25
-ARG PG_ANON=2.3.0
-ARG PGVECTOR=0.8.0
-ARG PG_CRON=1.6.4
-ARG PG_IVM=1.11
-ARG PG_MQ=1.6.1
-ARG ORAFCE=4_14_4
-ARG PGSQL_HTTP=1.6.3
-
-ARG PGAUDIT=17.1
-ARG PG_HINT_PLAN=17_1_7_0
-
-ARG PG_BACKREST=2.55.1
+FROM postgres:17-bookworm
 
 # set timezone
 ENV TZ=PRC
 
-RUN apt-get update && apt-get install -y --no-install-recommends sudo \
+RUN apt-get update && apt-get install -y --no-install-recommends sudo ca-certificates curl \
     && echo "postgres ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER postgres
 
-# dep:
-## pgrouting: cmake libboost-graph-dev
-## supabase-vault: libsodium-dev libsodium23(运行时)
-## age: flex bison
-## paradedb: pkg-config libopenblas-dev
-## pgsql-http: libcurl4-openssl-dev
-## zhparser: bzip2
-## pgbackrest: meson python3-setuptools libbz2-dev liblz4-dev libyaml-dev zlib1g-dev libssh2-1-dev libzstd-dev
-## pgaudit: libkrb5-dev
-
-RUN sudo apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        wget \
-        git \
-        postgresql-server-dev-$PG_MAJOR \
-        make \
-        gcc \
-        g++ \
-        cmake \
-        libboost-graph-dev \
-        libsodium-dev \
-        flex bison \
-        pkg-config libopenblas-dev \
-        libcurl4-openssl-dev \
-        bzip2 \
-        meson python3-setuptools libbz2-dev liblz4-dev libyaml-dev zlib1g-dev libssh2-1-dev libzstd-dev \
-        libkrb5-dev \
-        libsodium23 \
-# citus https://github.com/citusdata/citus https://github.com/citusdata/docker/blob/master/Dockerfile
-    && curl -s https://install.citusdata.com/community/deb.sh | sudo bash \
-    && sudo apt-get install -y --no-install-recommends \
-        #postgresql-$PG_MAJOR-citus-13.1=$CITUS.citus-1 \
-# postgis https://github.com/postgis/postgis/tags https://github.com/postgis/docker-postgis/blob/master/17-3.5/Dockerfile
-        postgresql-$PG_MAJOR-postgis-3=$POSTGIS \
-        postgresql-$PG_MAJOR-postgis-3-scripts \
-# pglogical https://github.com/2ndQuadrant/pglogical
-        postgresql-$PG_MAJOR-pglogical \
-# pgautofailover https://github.com/hapostgres/pg_auto_failover
-        pg-auto-failover-cli \
-        postgresql-$PG_MAJOR-auto-failover \
-# hll https://github.com/citusdata/postgresql-hll/tags
-    && wget -O /tmp/hll.tar.gz "https://github.com/citusdata/postgresql-hll/archive/refs/tags/v${POSTGRESQL_HLL}.tar.gz" \
-        && mkdir -p /tmp/hll \
-        && tar --extract --file /tmp/hll.tar.gz --directory /tmp/hll --strip-components 1 \
-        && cd /tmp/hll \
-        && make -j$(nproc) && sudo make install \
-# topn https://github.com/citusdata/postgresql-topn/tags
-    && wget -O /tmp/topn.tar.gz "https://github.com/citusdata/postgresql-topn/archive/refs/tags/v${POSTGRESQL_TOPN}.tar.gz" \
-        && mkdir -p /tmp/topn \
-        && tar --extract --file /tmp/topn.tar.gz --directory /tmp/topn --strip-components 1 \
-        && cd /tmp/topn \
-        && make -j$(nproc) && sudo make install \
-# pgrouting https://github.com/pgRouting/pgrouting https://github.com/pgRouting/docker-pgrouting
-    && wget -O /tmp/pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING}.tar.gz" \
-        && mkdir -p /tmp/pgrouting/build \
-        && tar --extract --file /tmp/pgrouting.tar.gz --directory /tmp/pgrouting --strip-components 1 \
-        && cd /tmp/pgrouting/build \
-        && cmake .. && make -j$(nproc) && sudo make install \
-# timescaledb https://github.com/timescale/timescaledb https://github.com/timescale/timescaledb-docker
-    && git clone -b ${TIMESCALE} https://github.com/timescale/timescaledb /tmp/timescale \
-        && cd /tmp/timescale \
-        && ./bootstrap -DCMAKE_BUILD_TYPE=RelWithDebInfo -DREGRESS_CHECKS=OFF -DTAP_CHECKS=OFF -DGENERATE_DOWNGRADE_SCRIPT=ON -DWARNINGS_AS_ERRORS=OFF -DPROJECT_INSTALL_METHOD="docker" \
-        && cd build && make -j$(nproc) && sudo make install \
-# supabase_vault https://github.com/supabase/vault
-    && git clone -b v${SP_VAULT} https://github.com/supabase/vault /tmp/vault \
-        && cd /tmp/vault \
-        && make -j$(nproc) && sudo make install \
-# age https://github.com/apache/age https://age.apache.org/age-manual/master/intro/setup.html
-    && git clone -b PG${PG_MAJOR} https://github.com/apache/age /tmp/age \
-        && cd /tmp/age \
-        && make -j$(nproc) && sudo make install \
-# rust https://rustup.rs/
-    && export RUSTUP_HOME=/tmp/rustup && export CARGO_HOME=/tmp/cargo && export PATH=$CARGO_HOME/bin:$PATH \
-        && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y \
-# pg_search https://github.com/paradedb/paradedb
-    && wget -O /tmp/icu4c.tgz https://github.com/unicode-org/icu/releases/download/release-76-1/icu4c-76_1-src.tgz \
-        && mkdir -p /tmp/icu \
-        && tar --extract --file /tmp/icu4c.tgz --directory /tmp/icu --strip-components 1 \
-        && cd /tmp/icu/source/ \
-        && ./runConfigureICU Linux --prefix=/usr/local && make "-j$(nproc)" && sudo make install \
-        && sudo ldconfig && sudo ldconfig \
-        && git clone -b v${PARADEDB} https://github.com/paradedb/paradedb /tmp/paradedb \
-        && cd /tmp/paradedb \
-        && PGRX_VERSION=$(cargo tree --depth 1 -i pgrx -p pg_search | head -n 1 | sed -E 's/.*v([0-9]+\.[0-9]+\.[0-9]+).*/\1/') \
-        && echo "PGRX_VERSION=$PGRX_VERSION" \
-        && cargo install --locked cargo-pgrx --version "${PGRX_VERSION}" \
-        && cargo pgrx init "--pg${PG_MAJOR}=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config" \
-        && cd /tmp/paradedb/pg_search \
-        && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx PARADEDB_TELEMETRY=false cargo pgrx install --features icu --release' \
-# anon https://gitlab.com/dalibo/postgresql_anonymizer/tags
-    && git clone --branch ${PG_ANON} https://gitlab.com/dalibo/postgresql_anonymizer.git /tmp/pg_anonymizer \
-        && cd /tmp/pg_anonymizer \
-        && cargo install -j$(nproc) cargo-pgrx --version $(cat Cargo.toml | grep "pgrx = " | sed 's/pgrx = //g' | sed 's/"//g') \
-        && PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx init "--pg${PG_MAJOR}=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config" \
-        && PGRX_HOME=/var/lib/postgresql/.pgrx make extension PG_CONFIG=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config PGVER=pg${PG_MAJOR} \
-        && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx make install PG_CONFIG=/usr/lib/postgresql/17/bin/pg_config PGVER=pg17' \
-# vector https://github.com/pgvector/pgvector/tags
-    && git clone -b v${PGVECTOR} https://github.com/pgvector/pgvector /tmp/pgvector \
-        && cd /tmp/pgvector \
-        && make -j$(nproc) && sudo make install \
-# pg_cron https://github.com/citusdata/pg_cron
-    && wget -O /tmp/pg_cron.tar.gz "https://github.com/citusdata/pg_cron/archive/v${PG_CRON}.tar.gz" \
-        && mkdir -p /tmp/pg_cron \
-        && tar -zxf /tmp/pg_cron.tar.gz -C /tmp/pg_cron --strip-components 1 \
-        && cd /tmp/pg_cron \
-        && make -j$(nproc) && sudo make install \
-# pg_ivm https://github.com/sraoss/pg_ivm
-    && wget -O /tmp/pg_ivm.tar.gz "https://github.com/sraoss/pg_ivm/archive/v${PG_IVM}.tar.gz" \
-        && mkdir -p /tmp/pg_ivm \
-        && tar -zxf /tmp/pg_ivm.tar.gz -C /tmp/pg_ivm --strip-components 1 \
-        && cd /tmp/pg_ivm \
-        && make -j$(nproc) && sudo make install \
-# pgmq https://github.com/tembo-io/pgmq
-    && git clone -b v${PG_MQ} https://github.com/tembo-io/pgmq /tmp/pgmq \
-        && cd /tmp/pgmq/pgmq-extension \
-        && make -j$(nproc) && sudo make install \
-# orafce https://github.com/orafce/orafce
-    && wget -O /tmp/orafce.tar.gz "https://github.com/orafce/orafce/archive/VERSION_${ORAFCE}.tar.gz" \
-        && mkdir -p /tmp/orafce \
-        && tar --extract --file /tmp/orafce.tar.gz --directory /tmp/orafce --strip-components 1 \
-        && cd /tmp/orafce \
-        && make -j$(nproc) && sudo make install \
-# http https://github.com/pramsey/pgsql-http
-    && wget -O /tmp/pgsql-http.tar.gz "https://github.com/pramsey/pgsql-http/archive/v${PGSQL_HTTP}.tar.gz" \
-        && mkdir -p /tmp/pgsql-http \
-        && tar --extract --file /tmp/pgsql-http.tar.gz --directory /tmp/pgsql-http --strip-components 1 \
-        && cd /tmp/pgsql-http \
-        && make -j$(nproc) && sudo make install \
-# zhparser + scws
-    && git clone -b v2.3 https://github.com/amutu/zhparser /tmp/zhparser \
-        && mkdir -p /tmp/zhparser/scws \
-        && cd /tmp/zhparser/scws \
-        && wget -q -O - http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 | tar xjf - --strip-components 1 \
-        && ./configure && sudo make install \
-        && cd .. && make -j$(nproc) && sudo make install \
-# pgaudit https://github.com/pgaudit/pgaudit/tags
-    && wget -O /tmp/pgaudit.tar.gz "https://github.com/pgaudit/pgaudit/archive/${PGAUDIT}.tar.gz" \
-        && mkdir -p /tmp/pgaudit \
-        && tar --extract --file /tmp/pgaudit.tar.gz --directory /tmp/pgaudit --strip-components 1 \
-        && cd /tmp/pgaudit \
-        && sudo make install USE_PGXS=1 \
-# pg_hint_plan https://github.com/ossc-db/pg_hint_plan
-    && wget -O /tmp/pg_hint_plan.tar.gz "https://github.com/ossc-db/pg_hint_plan/archive/REL${PG_HINT_PLAN}.tar.gz" \
-        && mkdir -p /tmp/pg_hint_plan \
-        && tar --extract --file /tmp/pg_hint_plan.tar.gz --directory /tmp/pg_hint_plan --strip-components 1 \
-        && cd /tmp/pg_hint_plan \
-        && make -j$(nproc) && sudo make install \
-# wal2json WAL https://github.com/eulerto/wal2json
-    && git clone https://github.com/eulerto/wal2json /tmp/wal2json \
-        && cd /tmp/wal2json \
-        && make -j$(nproc) && sudo make install \
-# decoder_raw WAL https://github.com/michaelpq/pg_plugins
-    && git clone https://github.com/michaelpq/pg_plugins /tmp/pg_plugins \
-        && cd /tmp/pg_plugins/decoder_raw \
-        && make -j$(nproc) && sudo make install \
-# pgBackRest https://github.com/pgbackrest/pgbackrest
-    && wget -O /tmp/pgbackrest.tar.gz https://github.com/pgbackrest/pgbackrest/archive/release/${PG_BACKREST}.tar.gz \
-        && mkdir -p /tmp/pgbackrest \
-        && tar --extract --file /tmp/pgbackrest.tar.gz --directory /tmp/pgbackrest --strip-components 1 \
-        && meson setup /tmp/pgbackrest /tmp/pgbackrest-release \
-        && ninja -C /tmp/pgbackrest-release \
-        && sudo mv /tmp/pgbackrest-release/src/pgbackrest /usr/bin \
-        && sudo mkdir -p /var/log/pgbackrest /var/lib/pgbackrest /etc/pgbackrest \
-        && sudo chown -R postgres:postgres /var/log/pgbackrest /var/lib/pgbackrest /etc/pgbackrest \
-# locale
-    && sudo bash -c 'echo -e "en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8" >> /etc/locale.gen' && sudo locale-gen \
-# clean
-    && sudo apt-get autoremove -y --purge --allow-remove-essential \
-        ca-certificates \
-        curl \
-        wget \
-        git \
-        postgresql-server-dev-$PG_MAJOR \
-        make \
-        gcc \
-        g++ \
-        cmake \
-        libboost-graph-dev \
-        libsodium-dev \
-        flex bison \
-        pkg-config libopenblas-dev \
-        libcurl4-openssl-dev \
-        bzip2 \
-        meson python3-setuptools libbz2-dev liblz4-dev libyaml-dev zlib1g-dev libssh2-1-dev libzstd-dev \
-        libkrb5-dev \
+# pigsty
+RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/keyrings/pgdg.gpg && \
+    curl -fsSL https://repo.pigsty.io/key | sudo gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg && \
+    . /etc/os-release && \
+    echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null && \
+    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/infra generic main" | sudo tee /etc/apt/sources.list.d/pigsty.list > /dev/null && \
+    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/pgsql/${VERSION_CODENAME} ${VERSION_CODENAME} main" | sudo tee -a /etc/apt/sources.list.d/pigsty.list > /dev/null && \
+    curl -fsSL https://repo.pigsty.io/pig | sudo bash \
+    && pig repo update \
+    && pig ext add -y citus postgis pglogical pgautofailover hll topn pgrouting timescaledb \
+        supabase_vault age pg_search vector pg_cron pg_ivm anon smlar vchord vchord_bm25 pgmq orafce http zhparser \
+        pgaudit pg_hint_plan wal2json decoder_raw \
+    && sudo apt-get autoremove -y --purge curl \
     && sudo apt-get clean -y \
     && sudo rm -rf \
         "${HOME}/.cache" \
@@ -236,19 +39,8 @@ RUN sudo apt-get install -y --no-install-recommends \
         /tmp/* \
         /var/tmp/* \
         /var/lib/postgresql/.profile \
-        /var/lib/postgresql/.pgrx
-
-# pgBackRest config
-RUN echo '[pg]\n\
-pg1-path=/var/lib/postgresql/data\n\
-pg1-port=5432\n\
-pg1-user=postgres\n\
-pg1-host-user=postgres\n\
-\n\
-[global]\n\
-repo1-path=/var/lib/pgbackrest\n\
-repo1-retention-full=2\
-' > /etc/pgbackrest/pgbackrest.conf
+        /var/lib/postgresql/.pgrx \
+        /var/log/*.log
 
 USER root
 

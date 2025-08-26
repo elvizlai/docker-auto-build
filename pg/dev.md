@@ -19,7 +19,7 @@ export POSTGIS=3.5.2+dfsg-1.pgdg110+1
 export POSTGRESQL_HLL=2.18
 export POSTGRESQL_TOPN=2.7.0
 export PGROUTING=3.8.0
-export TIMESCALE=2.21.0
+export TIMESCALE=2.21.3
 export SP_VAULT=0.3.1
 export PARADEDB=0.15.25
 export ZOMBODB=3000.2.8
@@ -29,7 +29,7 @@ export PG_CRON=1.6.4
 export PG_IVM=1.11
 export PG_MQ=1.6.1
 export ORAFCE=4_14_4
-export PGSQL_HTTP=1.6.3
+export PGSQL_HTTP=1.7.0
 export PG_DUCKDB=0.3.1
 
 export PGAUDIT=1.7.1
