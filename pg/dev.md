@@ -19,14 +19,14 @@ export POSTGIS=3.5.2+dfsg-1.pgdg110+1
 export POSTGRESQL_HLL=2.18
 export POSTGRESQL_TOPN=2.7.0
 export PGROUTING=3.8.0
-export TIMESCALE=2.21.3
+export TIMESCALE=2.22.0
 export SP_VAULT=0.3.1
-export PARADEDB=0.15.25
+export PARADEDB=0.18.1
 export ZOMBODB=3000.2.8
 export PG_ANON=2.3.0
-export PGVECTOR=0.8.0
-export PG_CRON=1.6.4
-export PG_IVM=1.11
+export PGVECTOR=0.8.1
+export PG_CRON=1.6.7
+export PG_IVM=1.12
 export PG_MQ=1.6.1
 export ORAFCE=4_14_4
 export PGSQL_HTTP=1.7.0
@@ -147,7 +147,7 @@ wget -O /tmp/icu4c.tgz https://github.com/unicode-org/icu/releases/download/rele
 
 git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
     && cd /tmp/zombodb \
-    && cargo install -j$(nproc) cargo-pgrx --version $PGRX_VERSION --locked \
+    && cargo install -j$(nproc) cargo-pgrx --version 0.13.0 --locked \
     && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
     && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release'
 

@@ -19,14 +19,14 @@ ARG POSTGIS=3.5.2+dfsg-1.pgdg110+1
 ARG POSTGRESQL_HLL=2.18
 ARG POSTGRESQL_TOPN=2.7.0
 ARG PGROUTING=3.8.0
-ARG TIMESCALE=2.21.3
+ARG TIMESCALE=2.22.0
 ARG SP_VAULT=0.3.1
-ARG PARADEDB=0.15.25
+ARG PARADEDB=0.18.1
 ARG ZOMBODB=3000.2.8
 ARG PG_ANON=2.3.0
-ARG PGVECTOR=0.8.0
-ARG PG_CRON=1.6.4
-ARG PG_IVM=1.11
+ARG PGVECTOR=0.8.1
+ARG PG_CRON=1.6.7
+ARG PG_IVM=1.12
 ARG PG_MQ=1.6.1
 ARG ORAFCE=4_14_4
 ARG PGSQL_HTTP=1.7.0
@@ -137,8 +137,8 @@ RUN sudo apt-get install -y --no-install-recommends \
 # zombodb https://github.com/zombodb/zombodb
     && git clone -b v${ZOMBODB} https://github.com/zombodb/zombodb /tmp/zombodb \
         && cd /tmp/zombodb \
-        # force using 0.13.0(provided by pg_search PGRX_VERSION)
-        && cargo install -j$(nproc) cargo-pgrx --version $PGRX_VERSION --locked \
+        # force using 0.13.0
+        && cargo install -j$(nproc) cargo-pgrx --version 0.13.0 --locked \
         && cargo pgrx init --pg${PG_MAJOR}=$(which pg_config) \
         && sudo bash -c 'RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo PATH=$CARGO_HOME/bin:$PATH PGRX_HOME=/var/lib/postgresql/.pgrx cargo pgrx install --release' \
 # anon https://gitlab.com/dalibo/postgresql_anonymizer/tags
