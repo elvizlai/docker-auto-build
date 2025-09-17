@@ -1,26 +1,18 @@
-ARG VERSION=7.0
+ARG VERSION=8.2
 
 # https://docs.redis.com/latest/modules/
-
-# https://hub.docker.com/r/redislabs/rejson/tags https://redis.io/docs/stack/json/
-FROM redislabs/rejson:2.6.6 as rejson
-# https://hub.docker.com/r/redislabs/rebloom/tags https://redis.io/docs/stack/bloom/
-FROM redislabs/rebloom:2.6.3 as rebloom
-# https://hub.docker.com/r/redislabs/redisearch/tags https://redis.io/docs/stack/search/
-# !redissearch 2.8+ require redis 7.1+
-FROM redislabs/redisearch:2.6.13 as redisearch
 # https://hub.docker.com/r/redislabs/redisgraph/tags https://redis.io/docs/stack/graph/
-FROM redislabs/redisgraph:2.12.6 as redisgraph
+FROM redislabs/redisgraph:2.12.10 AS redisgraph
 
 # https://github.com/alibaba/TairString
-FROM tairmodule/tairstring:latest as tairstring
+FROM tairmodule/tairstring:latest AS tairstring
 # https://github.com/alibaba/TairZset
-FROM tairmodule/tairzset:latest as tairzset
+FROM tairmodule/tairzset:latest AS tairzset
 
 # Tairhash + ReDe compile
 # https://github.com/alibaba/TairHash
 # https://github.com/TamarLabs/ReDe
-FROM redis:${VERSION} as tairhash
+FROM redis:${VERSION} AS tairhash
 RUN set -ex; \
     \
     BUILD_DEPS=' \
@@ -47,10 +39,10 @@ RUN set -ex; \
     chmod +x /usr/local/lib/*.so
 
 # redis release
-FROM bitnami/redis:${VERSION}
+FROM redis:${VERSION}
 
 ARG DEPS="ca-certificates libgomp1"
-ENV LIBDIR /opt/modules
+ENV LIBDIR=/opt/modules
 
 # Required to perform privileged actions
 USER 0
@@ -60,13 +52,18 @@ RUN set -ex; \
 	apt-get install -y --no-install-recommends ${DEPS}; \
     mkdir -p ${LIBDIR};
 
-COPY --from=rejson /usr/lib/redis/modules/rejson.so ${LIBDIR}
-COPY --from=redisearch /usr/lib/redis/modules/redisearch.so ${LIBDIR}
 COPY --from=redisgraph /usr/lib/redis/modules/redisgraph.so ${LIBDIR}
-COPY --from=rebloom /usr/lib/redis/modules/redisbloom.so ${LIBDIR}
 COPY --from=tairhash /usr/local/lib/rede.so ${LIBDIR}/rede.so
 COPY --from=tairstring /usr/local/lib/tairstring_module.so ${LIBDIR}/tairstring.so
 COPY --from=tairhash /usr/local/lib/tairhash_module.so ${LIBDIR}/tairhash.so
 COPY --from=tairzset /usr/local/lib/tairzset_module.so ${LIBDIR}/tairzset.so
 
-USER 1001
+# modify /usr/local/bin/docker-entrypoint.sh to password
+RUN sed -i '/exec "\$@"/i\
+if [ -z "\$REDIS_PASSWORD" ] && [ "\$ALLOW_EMPTY_PASSWORD" != "yes" ]; then\n\
+    echo >&2 "ERROR: Please set REDIS_PASSWORD or using ALLOW_EMPTY_PASSWORD=yes to allow empty password.";\n\
+    exit 1;\n\
+fi;\n\
+if [ -n "\$REDIS_PASSWORD" ]; then\n\
+    set -- "\$@" --requirepass "\$REDIS_PASSWORD";\n\
+fi\n' `which docker-entrypoint.sh`
