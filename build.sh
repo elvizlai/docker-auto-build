@@ -52,7 +52,7 @@ if [ "$DSKIPPUSH" != "true" -a "$DSKIPPUSH" != "1" ]; then
             echo -e "\033[35mtry check_$1\033[0m"
             if [ "$(check_$1 $img)" != "1" ]; then
                 echo -e "\033[91mcheck $img faild, skip push\033[0m"
-                continue
+                exit 1
             fi
         fi
         echo -e "\033[31mimg to push $img\033[0m"
