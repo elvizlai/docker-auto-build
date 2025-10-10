@@ -41,7 +41,7 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.5.3
+OPENSSL=openssl-3.5.4
 LUAJIT=v2.1-20250826
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
@@ -60,7 +60,7 @@ make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=${1:-1.28.0}
-NGINXNJS=0.9.1
+NGINXNJS=0.9.3
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
 NGINXLUA=0.10.28
