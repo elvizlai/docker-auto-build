@@ -20,7 +20,7 @@ It can be automatic build using github action or manually by command `sh build.s
 - sdrzlyz/ikev2:5.9.9
 - sdrzlyz/ml
 - sdrzlyz/nginx:1.28.0
-- sdrzlyz/pg:13
+- sdrzlyz/pg:17
 - sdrzlyz/redis:8.2
 - sdrzlyz/strapi:4.3.4
 - sdrzlyz/tools netcat tcpdump psql mycli

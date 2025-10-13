@@ -38,7 +38,7 @@ jobs:
           bash ./build.sh nginx
           bash ./build.sh nginx ffmpeg
           bash ./build.sh nginx mainline
-          bash ./build.sh pg 15
+          bash ./build.sh pg 17
           bash ./build.sh redis
           bash ./build.sh tools
           bash ./build.sh centos-sshd
