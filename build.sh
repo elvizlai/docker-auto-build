@@ -49,9 +49,11 @@ if [ "$DSKIPPUSH" != "true" -a "$DSKIPPUSH" != "1" ]; then
     for img in "${imgList[@]}"
     do
         if [ "$(type -t check_$1)" == function ]; then
-            echo -e "\033[35mtry check_$1\033[0m"
-            if [ "$(check_$1 $img)" != "1" ]; then
-                echo -e "\033[91mcheck $img faild, skip push\033[0m"
+            echo -e "\033[35mtry check_$1 with $img\033[0m"
+            check_result="$(check_$1 $img)"
+            if [ "$check_result" != "1" ]; then
+                echo -e "\033[91mcheck failed, skip push\033[0m"
+                echo "check result: $check_result"
                 exit 1
             fi
         fi

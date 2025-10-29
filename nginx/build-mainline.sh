@@ -42,7 +42,7 @@ apk update && apk upgrade \
 
 
 OPENSSL=openssl-3.5.4
-LUAJIT=v2.1-20250826
+LUAJIT=v2.1-20251030
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -59,12 +59,12 @@ cd luajit2.1
 make -j$(nproc) && make install && cd ..
 
 
-NGINXVER=${1:-1.29.2}
-NGINXNJS=0.9.3
+NGINXVER=${1:-1.29.3}
+NGINXNJS=0.9.4
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
-NGINXLUA=0.10.28
-NGINXSTREAMLUA=0.0.16
+NGINXLUA=0.10.29
+NGINXSTREAMLUA=0.0.17
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -205,7 +205,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.31
+LUA_RESTY_CORE=0.1.32
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 \cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
