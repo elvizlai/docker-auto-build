@@ -113,7 +113,7 @@ git clone -b v1.0.4 --depth=1 --recursive --single-branch https://github.com/Spi
 # waf
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
-git clone --depth 1 --quiet -b v0.63 https://github.com/openresty/echo-nginx-module
+git clone --depth 1 --quiet -b v0.64 https://github.com/openresty/echo-nginx-module
 git clone --depth 1 --quiet -b v0.39 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
@@ -366,11 +366,11 @@ openssl req \
   echo 'x509_extensions = v3_req'; \
   echo 'prompt = no'; \
   echo '[req_distinguished_name]'; \
-  echo 'C = HJ'; \
+  echo 'C = US'; \
   echo 'OU = IT'; \
   echo 'CN = hijack.local'; \
   echo '[v3_req]'; \
-  echo 'keyUsage = digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment'; \
+  echo 'keyUsage = digitalSignature,keyEncipherment'; \
   echo 'extendedKeyUsage = serverAuth,clientAuth'; \
   echo 'basicConstraints = CA:FALSE'; \
   echo 'subjectAltName = @alt_names'; \
@@ -395,11 +395,11 @@ openssl req \
   echo 'x509_extensions = v3_req'; \
   echo 'prompt = no'; \
   echo '[req_distinguished_name]'; \
-  echo 'C = HJ'; \
+  echo 'C = US'; \
   echo 'OU = IT'; \
   echo 'CN = hijack.local'; \
   echo '[v3_req]'; \
-  echo 'keyUsage = digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment'; \
+  echo 'keyUsage = digitalSignature,keyAgreement'; \
   echo 'extendedKeyUsage = serverAuth,clientAuth'; \
   echo 'basicConstraints = CA:FALSE'; \
   echo 'subjectAltName = @alt_names'; \
