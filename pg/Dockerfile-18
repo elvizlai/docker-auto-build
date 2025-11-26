@@ -14,6 +14,9 @@ FROM postgres:18-bookworm
 # set timezone
 ENV TZ=PRC
 
+# set default data dir
+ENV PGDATA=/var/lib/postgresql/data
+
 RUN apt-get update && apt-get install -y --no-install-recommends sudo ca-certificates curl \
     && echo "postgres ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
@@ -28,8 +31,8 @@ RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --d
     echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/pgsql/${VERSION_CODENAME} ${VERSION_CODENAME} main" | sudo tee -a /etc/apt/sources.list.d/pigsty.list > /dev/null && \
     curl -fsSL https://repo.pigsty.io/pig | sudo bash \
     && pig repo update \
-    && pig ext add -y citus postgis pglogical pgautofailover hll topn pgrouting timescaledb pg_duckdb \
-        supabase_vault age pg_search vector pg_cron pg_ivm anon smlar vchord vchord_bm25 pgmq orafce http zhparser \
+    && pig ext add -y postgis pglogical pgautofailover hll topn pgrouting timescaledb pg_duckdb \
+        supabase_vault vector pg_cron pg_ivm anon smlar vchord vchord_bm25 pgmq orafce http zhparser \
         pgaudit pg_hint_plan wal2json decoder_raw \
     && sudo apt-get autoremove -y --purge curl \
     && sudo apt-get clean -y \
@@ -46,7 +49,7 @@ USER root
 
 # multi: using comma as spliter, example: shared_preload_libraries='citus,timescaledb'
 # pgautofailover,pglogical
-RUN echo "shared_preload_libraries='citus,pg_stat_statements,timescaledb'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries='pg_stat_statements,timescaledb'" >> /usr/share/postgresql/postgresql.conf.sample
 
 # select name,setting from pg_settings where name like 'pgaudit%';
 # all but except misc

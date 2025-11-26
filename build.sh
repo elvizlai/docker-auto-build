@@ -57,7 +57,7 @@ if [ "$DSKIPPUSH" != "true" -a "$DSKIPPUSH" != "1" ]; then
                 exit 1
             fi
         fi
-        echo -e "\033[31mimg to push $img\033[0m"
+        echo -e "\033[31mimage to push $img\033[0m"
         docker push "$img"
     done
 fi

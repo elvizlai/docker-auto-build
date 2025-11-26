@@ -1,8 +1,9 @@
 ### image
 ```
-docker run --platform linux/amd64 -it postgres:15-bullseye bash
-docker run --platform linux/amd64 -it postgres:16-bullseye bash
-docker run --platform linux/amd64 -it postgres:17-bullseye bash
+docker run --platform linux/amd64 -it postgres:15-bookworm bash
+docker run --platform linux/amd64 -it postgres:16-bookworm bash
+docker run --platform linux/amd64 -it postgres:17-bookworm bash
+docker run --platform linux/amd64 -it postgres:18-bookworm bash
 
 docker run --platform linux/amd64 -it polardb/polardb_pg_devel:debian11 bash
 sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
