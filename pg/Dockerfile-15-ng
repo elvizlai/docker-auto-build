@@ -30,7 +30,7 @@ RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --d
     && pig repo update \
     && pig ext add -y citus postgis pglogical pgautofailover hll topn pgrouting timescaledb pg_duckdb \
         supabase_vault age pg_search vector pg_cron pg_ivm anon smlar vchord vchord_bm25 pgmq orafce http zhparser \
-        pgaudit pg_hint_plan wal2json decoder_raw \
+        pg_repack pgaudit pg_hint_plan wal2json decoder_raw \
     && sudo apt-get install -y --no-install-recommends \
         postgresql-server-dev-$PG_MAJOR git gcc pkg-config libssl-dev \
     && export RUSTUP_HOME=/tmp/rustup && export CARGO_HOME=/tmp/cargo && export PATH=$CARGO_HOME/bin:$PATH \

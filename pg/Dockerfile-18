@@ -33,7 +33,7 @@ RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --d
     && pig repo update \
     && pig ext add -y postgis pglogical pgautofailover hll topn pgrouting timescaledb pg_duckdb \
         supabase_vault vector pg_cron pg_ivm anon smlar vchord vchord_bm25 pgmq orafce http zhparser \
-        pgaudit pg_hint_plan wal2json decoder_raw \
+        pg_repack pgaudit pg_hint_plan wal2json decoder_raw \
     && sudo apt-get autoremove -y --purge curl \
     && sudo apt-get clean -y \
     && sudo rm -rf \
