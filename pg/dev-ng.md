@@ -13,7 +13,7 @@ apt-get update && apt-get install -y --no-install-recommends sudo ca-certificate
 su postgres -
 
 curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/keyrings/pgdg.gpg
-curl -fsSL https://repo.pigsty.io/key | sudo gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg
+curl -fsSL https://repo.pigsty.cc/key | sudo gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg
 
 . /etc/os-release
 
@@ -22,13 +22,13 @@ deb [signed-by=/etc/apt/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/
 EOF
 
 sudo tee /etc/apt/sources.list.d/pigsty-io.list > /dev/null <<EOF
-deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/infra generic main
-deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/pgsql/${VERSION_CODENAME} ${VERSION_CODENAME} main
+deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.cc/apt/infra generic main
+deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.cc/apt/pgsql/${VERSION_CODENAME} ${VERSION_CODENAME} main
 EOF
 
 
 # 安装 pig
-curl -fsSL https://repo.pigsty.io/pig | sudo bash
+curl -fsSL https://repo.pigsty.cc/pig | sudo bash
 
 # 刷新缓存
 pig repo update

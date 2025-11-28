@@ -21,12 +21,12 @@ USER postgres
 
 # pigsty
 RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/keyrings/pgdg.gpg && \
-    curl -fsSL https://repo.pigsty.io/key | sudo gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg && \
+    curl -fsSL https://repo.pigsty.cc/key | sudo gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg && \
     . /etc/os-release && \
     echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null && \
-    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/infra generic main" | sudo tee /etc/apt/sources.list.d/pigsty.list > /dev/null && \
-    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/pgsql/${VERSION_CODENAME} ${VERSION_CODENAME} main" | sudo tee -a /etc/apt/sources.list.d/pigsty.list > /dev/null && \
-    curl -fsSL https://repo.pigsty.io/pig | sudo bash \
+    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.cc/apt/infra generic main" | sudo tee /etc/apt/sources.list.d/pigsty.list > /dev/null && \
+    echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.cc/apt/pgsql/${VERSION_CODENAME} ${VERSION_CODENAME} main" | sudo tee -a /etc/apt/sources.list.d/pigsty.list > /dev/null && \
+    curl -fsSL https://repo.pigsty.cc/pig | sudo bash \
     && pig repo update \
     && pig ext add -y citus postgis pglogical pgautofailover hll topn pgrouting timescaledb pg_duckdb \
         supabase_vault age pg_search vector pg_cron pg_ivm anon smlar vchord vchord_bm25 pgmq orafce http zhparser \
