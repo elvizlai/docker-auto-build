@@ -28,7 +28,7 @@ RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --d
     echo "deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.cc/apt/pgsql/${VERSION_CODENAME} ${VERSION_CODENAME} main" | sudo tee -a /etc/apt/sources.list.d/pigsty.list > /dev/null && \
     curl -fsSL https://repo.pigsty.cc/pig | sudo bash \
     && pig repo update \
-    && pig ext add -y citus postgis pglogical pgautofailover hll topn pgrouting timescaledb pg_duckdb \
+    && pig ext add -y citus postgis pglogical pgautofailover hll topn pgrouting timescaledb timescaledb_toolkit pg_duckdb \
         supabase_vault age pg_search vector pg_cron pg_ivm anon smlar vchord vchord_bm25 pgmq orafce http zhparser \
         pg_repack pgaudit pg_hint_plan wal2json decoder_raw \
     && sudo apt-get install -y --no-install-recommends \
