@@ -59,7 +59,7 @@ cd luajit2.1
 make -j$(nproc) && make install && cd ..
 
 
-NGINXVER=${1:-1.29.3}
+NGINXVER=${1:-1.29.4}
 NGINXNJS=0.9.4
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
