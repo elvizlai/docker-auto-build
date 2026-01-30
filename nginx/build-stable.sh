@@ -41,8 +41,8 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.5.4
-LUAJIT=v2.1-20251030
+OPENSSL=openssl-3.5.5
+LUAJIT=v2.1-20260114
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -59,8 +59,8 @@ cd luajit2.1
 make -j$(nproc) && make install && cd ..
 
 
-NGINXVER=${1:-1.28.0}
-NGINXNJS=0.9.4
+NGINXVER=${1:-1.28.1}
+NGINXNJS=0.9.5
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
 NGINXLUA=0.10.29
@@ -117,7 +117,7 @@ git clone --depth 1 --quiet -b v0.64 https://github.com/openresty/echo-nginx-mod
 git clone --depth 1 --quiet -b v0.39 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
-git clone --depth 1 --quiet -b v0.2.4 https://github.com/vozlt/nginx-module-vts
+git clone --depth 1 --quiet -b v0.2.5 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 # https://nginx.org/en/download.html
@@ -227,7 +227,7 @@ curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LR
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-mysql/tags
-LUA_RESTY_MYSQL=0.28
+LUA_RESTY_MYSQL=0.29
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 \cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
@@ -263,7 +263,7 @@ curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_W
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
 
 # https://github.com/openresty/lua-cjson/tags
-LUA_CJSON=2.1.0.15
+LUA_CJSON=2.1.0.16
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
 mv -f lua-cjson-$LUA_CJSON/cjson.so .
@@ -276,7 +276,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=1.7.0
+LUA_RESTY_OPENSSL=1.7.1
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
