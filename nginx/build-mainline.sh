@@ -42,7 +42,7 @@ apk update && apk upgrade \
 
 
 OPENSSL=openssl-3.5.5
-LUAJIT=v2.1-20260114
+LUAJIT=v2.1-20260227
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -60,7 +60,7 @@ make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=${1:-1.29.5}
-NGINXNJS=0.9.5
+NGINXNJS=0.9.6
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
 NGINXLUA=0.10.29
@@ -91,7 +91,7 @@ git clone https://github.com/openresty/stream-lua-nginx-module stream-lua-nginx-
 # mv pingos/modules/* .
 
 # https://github.com/winshining/nginx-http-flv-module
-git clone -b v1.2.12 https://github.com/winshining/nginx-http-flv-module
+git clone -b v1.2.13 https://github.com/winshining/nginx-http-flv-module
 
 # https://github.com/fffonion/lua-resty-openssl-aux-module/tags
 git clone -b 0.3.0 https://github.com/fffonion/lua-resty-openssl-aux-module
@@ -116,7 +116,7 @@ git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_modul
 git clone --depth 1 --quiet -b v0.64 https://github.com/openresty/echo-nginx-module
 git clone --depth 1 --quiet -b v0.39 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
-git clone --depth 1 --quiet -b v0.5.2 https://github.com/aperezdc/ngx-fancyindex
+git clone --depth 1 --quiet -b v0.6.0 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet -b v0.2.5 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
