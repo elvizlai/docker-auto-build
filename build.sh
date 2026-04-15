@@ -4,6 +4,8 @@ set -e
 
 source check.sh
 
+export DOCKER_DEFAULT_PLATFORM="${DOCKER_DEFAULT_PLATFORM:-linux/amd64}"
+
 collect() {
     echo $(cat README.md | grep sdrzlyz/$1 | head -n1 | awk '{print $2}')
 }
@@ -45,7 +47,7 @@ if [ "$DTAG" != "latest" -a "$2" = "" ]; then
     imgList+=("$DNAME:latest")
 fi
 
-if [ "$DSKIPPUSH" != "true" -a "$DSKIPPUSH" != "1" ]; then
+if [ "$SKIP_PUSH" != "true" -a "$SKIP_PUSH" != "1" ]; then
     for img in "${imgList[@]}"
     do
         if [ "$(type -t check_$1)" == function ]; then

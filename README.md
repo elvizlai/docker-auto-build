@@ -2,7 +2,7 @@
 This repo contains high quality production ready Dockerfile and script to build images.
 
 It can be automatic build using github action or manually by command `sh build.sh dir_name`.
-
+Using `SKIP_PUSH=1` var or env to skip auto image upload.
 
 #### Contributing Guide
 
@@ -19,7 +19,7 @@ It can be automatic build using github action or manually by command `sh build.s
 - sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.9
 - sdrzlyz/ml
-- sdrzlyz/nginx:1.28.2
+- sdrzlyz/nginx:1.30.0
 - sdrzlyz/pg:17
 - sdrzlyz/redis:8.2
 - sdrzlyz/strapi:4.3.4
