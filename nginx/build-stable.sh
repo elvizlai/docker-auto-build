@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -e
+set -eu
 
 apk update && apk upgrade \
   && apk add --no-cache ca-certificates curl git \
@@ -11,7 +11,7 @@ apk update && apk upgrade \
   gcc \
   libc-dev \
   linux-headers \
-  pcre-dev \
+  pcre2-dev \
   zlib-dev \
   gnupg \
   libxslt-dev \
@@ -42,7 +42,7 @@ apk update && apk upgrade \
 
 
 OPENSSL=openssl-3.5.6
-LUAJIT=v2.1-20260311
+LUAJIT=v2.1-20260415
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -60,7 +60,7 @@ make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=${1:-1.30.0}
-NGINXNJS=0.9.6
+NGINXNJS=0.9.8
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
 NGINXLUA=0.10.30rc2
@@ -102,7 +102,7 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # waf
-git clone -b v3.0.14 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+git clone -b v3.0.15 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
 make -j$(nproc) && make install
@@ -151,7 +151,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-http_auth_request_module \
     --with-compat \
     --with-http_dav_module \
-    --with-http_flv_module \
     --with-http_gunzip_module \
     --with-http_gzip_static_module \
     --with-http_image_filter_module=dynamic \
@@ -166,8 +165,6 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-http_v2_module \
     --with-http_v3_module \
     --with-http_xslt_module=dynamic \
-    --with-mail \
-    --with-mail_ssl_module \
     --with-pcre-jit \
     --with-stream \
     --with-stream_realip_module \
@@ -227,7 +224,7 @@ curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LR
 rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-mysql/tags
-LUA_RESTY_MYSQL=0.29
+LUA_RESTY_MYSQL=0.30
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 \cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
@@ -333,7 +330,7 @@ rm -rf kong-$KONG
 
 # https://pyyaml.org
 LIB_YAML=0.2.5
-curl -sSL http://pyyaml.org/download/libyaml/yaml-$LIB_YAML.tar.gz | tar zxf -
+curl -sSL https://pyyaml.org/download/libyaml/yaml-$LIB_YAML.tar.gz | tar zxf -
 cd yaml-$LIB_YAML && ./configure && make && make install && cd ..
 rm -rf yaml-$LIB_YAML
 
@@ -349,63 +346,29 @@ rm -rf yaml-$LIB_YAML
 mkdir -p /etc/nginx/cert /etc/nginx/acme
 openssl dhparam -out /etc/nginx/dhparam.pem 2048
 
-# rsa
-openssl req \
--new \
--x509 \
--nodes \
--days 36500 \
--newkey rsa:2048 \
--sha256 \
--keyout /etc/nginx/default.key \
--out /etc/nginx/default.crt \
--extensions 'v3_req' \
--config <( \
-  echo '[req]'; \
-  echo 'distinguished_name = req_distinguished_name'; \
-  echo 'x509_extensions = v3_req'; \
-  echo 'prompt = no'; \
-  echo '[req_distinguished_name]'; \
-  echo 'C = US'; \
-  echo 'OU = IT'; \
-  echo 'CN = hijack.local'; \
-  echo '[v3_req]'; \
-  echo 'keyUsage = digitalSignature,keyEncipherment'; \
-  echo 'extendedKeyUsage = serverAuth,clientAuth'; \
-  echo 'basicConstraints = CA:FALSE'; \
-  echo 'subjectAltName = @alt_names'; \
-  echo '[alt_names]'; \
-  echo 'DNS.1 = hijack.local'; \
-  echo 'DNS.2 = *.hijack.local')
+# RSA
+openssl req -new -x509 -nodes -days 36500 \
+  -newkey rsa:2048 \
+  -sha256 \
+  -keyout /etc/nginx/default.key \
+  -out /etc/nginx/default.crt \
+  -subj "/C=US/OU=IT/CN=hijack.local" \
+  -addext "keyUsage=digitalSignature,keyEncipherment" \
+  -addext "extendedKeyUsage=serverAuth,clientAuth" \
+  -addext "basicConstraints=CA:FALSE" \
+  -addext "subjectAltName=DNS:hijack.local,DNS:*.hijack.local"
 
-# ecc
-openssl req \
--new \
--x509 \
--nodes \
--days 36500 \
--newkey ec:<(openssl ecparam -name prime256v1) \
--sha256 \
--keyout /etc/nginx/default-ecc.key \
--out /etc/nginx/default-ecc.crt \
--extensions 'v3_req' \
--config <( \
-  echo '[req]'; \
-  echo 'distinguished_name = req_distinguished_name'; \
-  echo 'x509_extensions = v3_req'; \
-  echo 'prompt = no'; \
-  echo '[req_distinguished_name]'; \
-  echo 'C = US'; \
-  echo 'OU = IT'; \
-  echo 'CN = hijack.local'; \
-  echo '[v3_req]'; \
-  echo 'keyUsage = digitalSignature,keyAgreement'; \
-  echo 'extendedKeyUsage = serverAuth,clientAuth'; \
-  echo 'basicConstraints = CA:FALSE'; \
-  echo 'subjectAltName = @alt_names'; \
-  echo '[alt_names]'; \
-  echo 'DNS.1 = hijack.local'; \
-  echo 'DNS.2 = *.hijack.local')
+# ECC
+openssl req -new -x509 -nodes -days 36500 \
+  -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 \
+  -sha256 \
+  -keyout /etc/nginx/default-ecc.key \
+  -out /etc/nginx/default-ecc.crt \
+  -subj "/C=US/OU=IT/CN=hijack.local" \
+  -addext "keyUsage=digitalSignature,keyAgreement" \
+  -addext "extendedKeyUsage=serverAuth,clientAuth" \
+  -addext "basicConstraints=CA:FALSE" \
+  -addext "subjectAltName=DNS:hijack.local,DNS:*.hijack.local"
 
 # create account key
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/nginx/account.key

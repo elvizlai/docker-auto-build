@@ -6,7 +6,7 @@ apk add --no-cache \
   `# Bring in tzdata so users could set the timezones through the environment variables` \
   tzdata \
   `# Dependencies` \
-  pcre \
+  pcre2 \
   libgcc \
   libintl \
   `# ngx_http_image_filter_module` \
@@ -29,7 +29,7 @@ apk add --no-cache --virtual .build-deps \
   gcc \
   libc-dev
 
-LUAJIT=v2.1-20260311
+LUAJIT=v2.1-20260415
 LUAROCKS=3.13.0
 
 mkdir -p /tmp/lib-src && cd /tmp/lib-src
