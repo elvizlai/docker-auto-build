@@ -66,8 +66,8 @@ NGINXVER=${1:-1.30.0}
 NGINXNJS=0.9.8
 NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNDK=0.3.4
-NGINXLUA=0.10.30rc2
-NGINXSTREAMLUA=0.0.18RC2
+NGINXLUA=0.10.31rc1
+NGINXSTREAMLUA=0.0.19rc1
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -208,7 +208,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/ngin
 cd /etc/nginx/lualib
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.32
+LUA_RESTY_CORE=0.1.34rc1
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 \cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -346,7 +346,6 @@ rm -rf yaml-$LIB_YAML
 
 # cert gen
 mkdir -p /etc/nginx/cert /etc/nginx/acme
-openssl dhparam -out /etc/nginx/dhparam.pem 2048
 
 # RSA
 openssl req -new -x509 -nodes -days 36500 \
@@ -464,20 +463,22 @@ http {
     gzip_disable "MSIE [1-6].";
     gzip_proxied any;
     gzip_min_length 1000;
-    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
+    gzip_types text/plain text/css application/javascript application/json application/xml application/xml+rss image/svg+xml application/wasm;
 
     # SSL
     ssl_session_timeout 1d;
-    ssl_session_cache   builtin:1000 shared:SSL:50m;
+    ssl_session_cache   shared:SSL:10m;
     ssl_session_tickets off;
-    # Diffie-Hellman parameter for DHE ciphersuites
-    ssl_dhparam   dhparam.pem;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers   TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-128-CCM-8-SHA256:TLS13-AES-128-CCM-SHA256:EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
-    ssl_prefer_server_ciphers off;
+
+    ssl_protocols  TLSv1.2 TLSv1.3;
+    ssl_ciphers    ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
+    ssl_ecdh_curve X25519:secp256r1;
+    # TLS 1.3
+    ssl_conf_command Ciphersuites TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256;
+
     ssl_stapling on;
     ssl_stapling_verify on;
-    ssl_early_data on;
+    ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
 
     resolver 119.29.29.29 223.5.5.5 8.8.8.8 valid=300s ipv6=off;
     resolver_timeout 5s;

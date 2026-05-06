@@ -1,4 +1,4 @@
-FROM sdrzlyz/ffmpeg:alpine-static as builder
+FROM sdrzlyz/ffmpeg:alpine-static AS builder
 
 FROM sdrzlyz/nginx:1.30.0
 
