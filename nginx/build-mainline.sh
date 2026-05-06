@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -eu
+set -e
 
 apk update && apk upgrade \
   && apk add --no-cache ca-certificates curl git \
