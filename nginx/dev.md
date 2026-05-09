@@ -201,29 +201,29 @@ strip /usr/local/bin/* || true
 strip /usr/local/lib/*.so* || true
 strip /usr/local/lib/*.a || true
 
-mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d /etc/nginx/lualib
+mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d
 
 # lualib module
 # https://github.com/bungle/awesome-resty
-cd /etc/nginx/lualib
+cd /usr/local/share/lua/5.1
 
 # https://github.com/openresty/lua-resty-core/tags
 LUA_RESTY_CORE=0.1.34rc2
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
-\cp -rf lua-resty-core-$LUA_RESTY_CORE/lib/* .
+cd lua-resty-core-$LUA_RESTY_CORE && make install LUA_LIB_DIR=/usr/local/share/lua/5.1 && cd ..
 rm -rf lua-resty-core-$LUA_RESTY_CORE
+
+# https://github.com/openresty/lua-resty-lrucache/tags
+LUA_RESTY_LRUCACHE=0.15
+curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
+cd lua-resty-lrucache-$LUA_RESTY_LRUCACHE && make install LUA_LIB_DIR=/usr/local/share/lua/5.1 && cd ..
+rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-lock/tags
 LUA_RESTY_LOCK=0.09
 curl -sSL https://github.com/openresty/lua-resty-lock/archive/v$LUA_RESTY_LOCK.tar.gz | tar zxf -
 \cp -rf lua-resty-lock-$LUA_RESTY_LOCK/lib/* .
 rm -rf lua-resty-lock-$LUA_RESTY_LOCK
-
-# https://github.com/openresty/lua-resty-lrucache/tags
-LUA_RESTY_LRUCACHE=0.15
-curl -sSL https://github.com/openresty/lua-resty-lrucache/archive/v$LUA_RESTY_LRUCACHE.tar.gz | tar zxf -
-\cp -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE/lib/* .
-rm -rf lua-resty-lrucache-$LUA_RESTY_LRUCACHE
 
 # https://github.com/openresty/lua-resty-mysql/tags
 LUA_RESTY_MYSQL=0.30
@@ -265,7 +265,7 @@ rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
 LUA_CJSON=2.1.0.17
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
-mv -f lua-cjson-$LUA_CJSON/cjson.so .
+mv -f lua-cjson-$LUA_CJSON/cjson.so /usr/local/lib/lua/5.1
 rm -rf lua-cjson-$LUA_CJSON
 
 # https://github.com/ledgetech/lua-resty-http/tags
@@ -307,7 +307,7 @@ rm -rf pgmoon-$LUA_PGMOON
 # https://github.com/starwing/lua-protobuf/tags
 LUA_PROTOBUF=0.5.3
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
-cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o ../pb.so && \cp -rf protoc.lua ../ && cd ..
+cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o /usr/local/lib/lua/5.1/pb.so && \cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF
 
 # https://github.com/ysugimoto/lua-resty-grpc-gateway/tags
@@ -319,7 +319,7 @@ rm -rf lua-protobuf-$LUA_PROTOBUF
 ## lua_pack https://github.com/Kong/lua-pack/tags
 LUA_PACK=2.0.0
 curl -sSL https://github.com/Kong/lua-pack/archive/$LUA_PACK.tar.gz | tar zxf -
-gcc -O2 -shared -fPIC  -I/usr/local/include/luajit-2.1 lua-pack-$LUA_PACK/lua_pack.c -o lua_pack.so
+gcc -O2 -shared -fPIC  -I/usr/local/include/luajit-2.1 lua-pack-$LUA_PACK/lua_pack.c -o /usr/local/lib/lua/5.1/lua_pack.so
 rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
@@ -418,9 +418,6 @@ rtmp {
 }
 
 stream {
-    lua_package_path  "/etc/nginx/lualib/?.lua;/etc/nginx/lualib/?/init.lua;;";
-    lua_package_cpath "/etc/nginx/lualib/?.so;;";
-
     log_format stream '\$remote_addr [\$time_local] '
                  '\$protocol $status \$bytes_sent \$bytes_received '
                  '\$session_time "\$upstream_addr" '
@@ -433,9 +430,6 @@ stream {
 }
 
 http {
-    lua_package_path  "/etc/nginx/lualib/?.lua;/etc/nginx/lualib/?/init.lua;;";
-    lua_package_cpath "/etc/nginx/lualib/?.so;;";
-
     charset utf-8;
 
     # MIME
