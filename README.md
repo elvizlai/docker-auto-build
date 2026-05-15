@@ -19,7 +19,7 @@ Using `SKIP_PUSH=1` var or env to skip auto image upload.
 - sdrzlyz/go-dev
 - sdrzlyz/ikev2:5.9.9
 - sdrzlyz/ml
-- sdrzlyz/nginx:1.30.0
+- sdrzlyz/nginx:1.30.1
 - sdrzlyz/pg:17
 - sdrzlyz/redis:8.2
 - sdrzlyz/strapi:4.3.4
