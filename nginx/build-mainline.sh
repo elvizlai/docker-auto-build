@@ -60,11 +60,12 @@ make -j$(nproc) && make install && cd ..
 
 
 NGINXVER=${1:-1.31.0}
-NGINXNJS=0.9.8
 NGINXDIR=/opt/nginx-$NGINXVER
+
+NGINXNJS=0.9.9
 NGINXNDK=0.3.4
 NGINXLUA=0.10.31rc2
-NGINXSTREAMLUA=0.0.19rc2
+NGINXSTREAMLUA=0.0.19rc3
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -82,8 +83,7 @@ curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz 
 curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.gz | tar zxf -
 
 # https://github.com/openresty/stream-lua-nginx-module/tags
-# curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXSTREAMLUA.tar.gz | tar zxf -
-git clone https://github.com/openresty/stream-lua-nginx-module stream-lua-nginx-module-$NGINXSTREAMLUA
+curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXSTREAMLUA.tar.gz | tar zxf -
 
 # deprecated: using nginx-http-flv-module
 # https://github.com/pingostack/pingos
@@ -131,8 +131,8 @@ export NGX_STREAM_LUA_LOC=./module/stream-lua-nginx-module-$NGINXSTREAMLUA
 export LUAJIT_LIB=/usr/local/lib
 export LUAJIT_INC=/usr/local/include/luajit-2.1
 ./configure \
-    --with-cc-opt="-DTCP_FASTOPEN=23 -Wno-error -I/opt/lib-src/quickjs" \
-    --with-ld-opt="-Wl,-rpath,$LUAJIT_LIB -L/opt/lib-src/quickjs" \
+    --with-cc-opt="-DTCP_FASTOPEN=23 -Wno-error -I$NGINXDIR/module/quickjs" \
+    --with-ld-opt="-Wl,-rpath,$LUAJIT_LIB -L$NGINXDIR/module/quickjs" \
     --prefix=/etc/nginx \
     --conf-path=/etc/nginx/nginx.conf \
     --sbin-path=/usr/sbin/nginx \
@@ -413,7 +413,7 @@ rtmp {
 
 stream {
     log_format stream '\$remote_addr [\$time_local] '
-                 '\$protocol $status \$bytes_sent \$bytes_received '
+                 '\$protocol \$status \$bytes_sent \$bytes_received '
                  '\$session_time "\$upstream_addr" '
                  '"\$upstream_bytes_sent" "\$upstream_bytes_received" "\$upstream_connect_time"';
 

@@ -1,5 +1,5 @@
 ```
-docker build -f Dockerfile-stable -t sdrzlyz/nginx:stable .
+docker build -f Dockerfile -t sdrzlyz/nginx:stable .
 ```
 
 ### 日志轮转
