@@ -41,8 +41,8 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.5.6
-LUAJIT=v2.1-20260415
+OPENSSL=openssl-3.5.7
+LUAJIT=v2.1-20260606
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -59,13 +59,13 @@ cd luajit2.1
 make -j$(nproc) && make install && cd ..
 
 
-NGINXVER=${1:-1.31.0}
+NGINXVER=${1:-1.31.1}
 NGINXDIR=/opt/nginx-$NGINXVER
 
 NGINXNJS=0.9.9
 NGINXNDK=0.3.4
-NGINXLUA=0.10.31rc2
-NGINXSTREAMLUA=0.0.19rc3
+NGINXLUA=0.10.31
+NGINXSTREAMLUA=0.0.19rc4
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -202,7 +202,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d
 cd /usr/local/share/lua/5.1
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.34rc2
+LUA_RESTY_CORE=0.1.34rc3
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 cd lua-resty-core-$LUA_RESTY_CORE && make install LUA_LIB_DIR=/usr/local/share/lua/5.1 && cd ..
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -232,7 +232,7 @@ curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS
 rm -rf lua-resty-redis-$LUA_RESTY_REDIS
 
 # https://github.com/openresty/lua-resty-string/tags
-LUA_RESTY_STRING=0.17
+LUA_RESTY_STRING=0.18
 curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
 \cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
 rm -rf lua-resty-string-$LUA_RESTY_STRING
@@ -269,7 +269,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=1.7.1
+LUA_RESTY_OPENSSL=1.8.0
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
@@ -318,7 +318,7 @@ rm -rf lua-pack-$LUA_PACK
 
 ## kong.plugins.grpc-gateway https://github.com/Kong/kong
 mkdir -p kong/plugins kong/tools
-KONG=3.9.1
+KONG=3.9.2
 curl -sSL https://github.com/Kong/kong/archive/$KONG.tar.gz | tar zxf -
 \cp -rf kong-$KONG/kong/plugins/grpc-gateway kong/plugins/
 \cp -rf kong-$KONG/kong/tools/grpc.lua kong/tools/
