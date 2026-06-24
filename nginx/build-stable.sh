@@ -42,7 +42,7 @@ apk update && apk upgrade \
 
 
 OPENSSL=openssl-3.5.7
-LUAJIT=v2.1-20260606
+LUAJIT=v2.1-20260620
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -59,13 +59,13 @@ cd luajit2.1
 make -j$(nproc) && make install && cd ..
 
 
-NGINXVER=${1:-1.30.2}
+NGINXVER=${1:-1.30.3}
 NGINXDIR=/opt/nginx-$NGINXVER
 
-NGINXNJS=0.9.9
+NGINXNJS=1.0.0
 NGINXNDK=0.3.4
-NGINXLUA=0.10.31
-NGINXSTREAMLUA=0.0.19rc4
+NGINXLUA=0.10.32rc1
+NGINXSTREAMLUA=0.0.20rc1
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -113,9 +113,9 @@ git clone -b v1.0.4 --depth=1 --recursive --single-branch https://github.com/Spi
 # waf
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
-git clone --depth 1 --quiet -b v0.64 https://github.com/openresty/echo-nginx-module
-git clone --depth 1 --quiet -b v0.39 https://github.com/openresty/headers-more-nginx-module
-git clone --depth 1 --quiet -b v0.33 https://github.com/openresty/srcache-nginx-module
+git clone --depth 1 --quiet -b v0.65 https://github.com/openresty/echo-nginx-module
+git clone --depth 1 --quiet -b v0.40 https://github.com/openresty/headers-more-nginx-module
+git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.6.0 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet -b v0.2.5 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
@@ -206,7 +206,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d
 cd /usr/local/share/lua/5.1
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.34rc3
+LUA_RESTY_CORE=0.1.35rc1
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 cd lua-resty-core-$LUA_RESTY_CORE && make install LUA_LIB_DIR=/usr/local/share/lua/5.1 && cd ..
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -224,7 +224,7 @@ curl -sSL https://github.com/openresty/lua-resty-lock/archive/v$LUA_RESTY_LOCK.t
 rm -rf lua-resty-lock-$LUA_RESTY_LOCK
 
 # https://github.com/openresty/lua-resty-mysql/tags
-LUA_RESTY_MYSQL=0.30
+LUA_RESTY_MYSQL=0.31
 curl -sSL https://github.com/openresty/lua-resty-mysql/archive/v$LUA_RESTY_MYSQL.tar.gz | tar zxf -
 \cp -rf lua-resty-mysql-$LUA_RESTY_MYSQL/lib/* .
 rm -rf lua-resty-mysql-$LUA_RESTY_MYSQL
@@ -236,7 +236,7 @@ curl -sSL https://github.com/openresty/lua-resty-redis/archive/v$LUA_RESTY_REDIS
 rm -rf lua-resty-redis-$LUA_RESTY_REDIS
 
 # https://github.com/openresty/lua-resty-string/tags
-LUA_RESTY_STRING=0.18
+LUA_RESTY_STRING=0.19
 curl -sSL https://github.com/openresty/lua-resty-string/archive/v$LUA_RESTY_STRING.tar.gz | tar zxf -
 \cp -rf lua-resty-string-$LUA_RESTY_STRING/lib/* .
 rm -rf lua-resty-string-$LUA_RESTY_STRING
@@ -248,19 +248,19 @@ curl -sSL https://github.com/openresty/lua-resty-upload/archive/v$LUA_RESTY_UPLO
 rm -rf lua-resty-upload-$LUA_RESTY_UPLOAD
 
 # https://github.com/openresty/lua-resty-upstream-healthcheck/tags
-LUA_RESTY_UPSTREAM_HEALTHCHECK=0.09
+LUA_RESTY_UPSTREAM_HEALTHCHECK=0.10
 curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$LUA_RESTY_UPSTREAM_HEALTHCHECK.tar.gz | tar zxf -
 \cp -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK/lib/* .
 rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
 
 # https://github.com/openresty/lua-resty-websocket/tags
-LUA_RESTY_WEBSOCKET=0.13
+LUA_RESTY_WEBSOCKET=0.14
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
 \cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
 
 # https://github.com/openresty/lua-cjson/tags
-LUA_CJSON=2.1.0.17
+LUA_CJSON=2.1.0.18
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 LUA_INCLUDE_DIR=/usr/local/include/luajit-2.1 make -C lua-cjson-$LUA_CJSON
 mv -f lua-cjson-$LUA_CJSON/cjson.so /usr/local/lib/lua/5.1

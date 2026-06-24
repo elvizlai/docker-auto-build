@@ -1,6 +1,6 @@
 FROM alpine:3.23 AS builder
 
-ARG VERSION=1.30.2
+ARG VERSION=1.30.3
 
 COPY build-stable.sh /opt/build.sh
 
