@@ -1,4 +1,4 @@
-ARG VERSION=8.2
+ARG VERSION=8.8
 
 # https://docs.redis.com/latest/modules/
 # https://hub.docker.com/r/redislabs/redisgraph/tags https://redis.io/docs/stack/graph/

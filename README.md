@@ -21,7 +21,7 @@ Using `SKIP_PUSH=1` var or env to skip auto image upload.
 - sdrzlyz/ml
 - sdrzlyz/nginx:1.30.3
 - sdrzlyz/pg:17
-- sdrzlyz/redis:8.2
+- sdrzlyz/redis:8
 - sdrzlyz/strapi:4.3.4
 - sdrzlyz/tools netcat tcpdump psql mycli
 - sdrzlyz/ubuntu

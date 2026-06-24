@@ -99,4 +99,4 @@ jobs:
 
       - name: Build image
         run: |
-          bash ./build.sh redis 8.2
+          bash ./build.sh redis 8

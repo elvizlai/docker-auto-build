@@ -4,7 +4,7 @@ docker run -it --rm \
     --sysctl net.core.somaxconn=100000 \
     -m 1024m \
     -p 6379:6379 \
-    sdrzlyz/redis:8.2
+    sdrzlyz/redis:8
 ```
 
 example with args
@@ -13,7 +13,7 @@ docker run -it --rm \
     --sysctl net.core.somaxconn=100000 \
     -m 1024m \
     -p 6379:6379 \
-    sdrzlyz/redis:8.2 \
+    sdrzlyz/redis:8 \
     redis-server --maxclients 100000 --maxmemory 1024mb --maxmemory-policy volatile-lru
 ```
 
@@ -23,7 +23,7 @@ docker run -it --rm \
     --sysctl net.core.somaxconn=10000 \
     -e ALLOW_EMPTY_PASSWORD=yes \
     -p 6379:6379 \
-    sdrzlyz/redis:8.2 \
+    sdrzlyz/redis:8 \
     redis-server --maxmemory 1G --maxmemory-policy allkeys-lru \
     --loadmodule /opt/modules/redisgraph.so \
     --loadmodule /opt/modules/tairhash.so \
