@@ -34,7 +34,7 @@ luarocks install luasocket
 luarocks install lua-cjson
 
 # cjson https://github.com/openresty/lua-cjson/tags
-LUA_CJSON=2.1.0.18
+LUA_CJSON=2.1.0.19
 curl -sSL https://github.com/openresty/lua-cjson/archive/$LUA_CJSON.tar.gz | tar zxf -
 cd lua-cjson-$LUA_CJSON && luarocks make && rm -rf lua-cjson-*
 
