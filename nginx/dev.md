@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 
 OPENSSL=openssl-3.5.7
-LUAJIT=v2.1-20260620
+LUAJIT=v2.1-20260701
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -67,7 +67,7 @@ NGINXDIR=/opt/nginx-$NGINXVER
 
 NGINXNJS=1.0.0
 NGINXNDK=0.3.4
-NGINXLUA=0.10.32rc1
+NGINXLUA=0.10.32rc3
 NGINXSTREAMLUA=0.0.20rc1
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
@@ -94,7 +94,7 @@ curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXST
 # mv pingos/modules/* .
 
 # https://github.com/winshining/nginx-http-flv-module
-git clone -b v1.2.13 https://github.com/winshining/nginx-http-flv-module
+git clone -b v1.2.14 https://github.com/winshining/nginx-http-flv-module
 
 # https://github.com/fffonion/lua-resty-openssl-aux-module/tags
 git clone -b 0.3.0 https://github.com/fffonion/lua-resty-openssl-aux-module
@@ -105,7 +105,7 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # waf
-git clone -b v3.0.15 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+git clone -b v3.0.16 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
 make -j$(nproc) && make install
@@ -269,7 +269,7 @@ mv -f lua-cjson-$LUA_CJSON/cjson.so /usr/local/lib/lua/5.1
 rm -rf lua-cjson-$LUA_CJSON
 
 # https://github.com/ledgetech/lua-resty-http/tags
-LUA_RESTY_HTTP=0.17.2
+LUA_RESTY_HTTP=0.18.0
 curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.tar.gz | tar zxf -
 \cp -rf lua-resty-http-$LUA_RESTY_HTTP/lib/* .
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
