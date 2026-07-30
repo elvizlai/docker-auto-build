@@ -45,7 +45,7 @@ apk update && apk upgrade \
 
 
 OPENSSL=openssl-3.5.7
-LUAJIT=v2.1-20260701
+LUAJIT=v2.1-20260724
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -68,7 +68,7 @@ NGINXDIR=/opt/nginx-$NGINXVER
 NGINXNJS=1.0.0
 NGINXNDK=0.3.4
 NGINXLUA=0.10.32rc3
-NGINXSTREAMLUA=0.0.20rc1
+NGINXSTREAMLUA=0.0.20rc2
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -120,7 +120,7 @@ git clone --depth 1 --quiet -b v0.65 https://github.com/openresty/echo-nginx-mod
 git clone --depth 1 --quiet -b v0.40 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.6.0 https://github.com/aperezdc/ngx-fancyindex
-git clone --depth 1 --quiet -b v0.2.5 https://github.com/vozlt/nginx-module-vts
+git clone --depth 1 --quiet -b v0.2.6 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 # https://nginx.org/en/download.html
