@@ -44,8 +44,8 @@ apk update && apk upgrade \
   && apk add --no-cache --virtual .gettext gettext
 
 
-OPENSSL=openssl-3.5.7
-LUAJIT=v2.1-20260724
+OPENSSL=openssl-3.5.9
+LUAJIT=v2.1-20260914
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -62,13 +62,13 @@ cd luajit2.1
 make -j$(nproc) && make install && cd ..
 
 
-NGINXVER=${1:-1.30.3}
+NGINXVER=${1:-1.30.5}
 NGINXDIR=/opt/nginx-$NGINXVER
 
-NGINXNJS=1.0.0
+NGINXNJS=1.0.1
 NGINXNDK=0.3.4
-NGINXLUA=0.10.32rc3
-NGINXSTREAMLUA=0.0.20rc2
+NGINXLUA=0.10.32rc5
+NGINXSTREAMLUA=0.0.20rc3
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
 
@@ -105,7 +105,7 @@ mkdir -p $NGINXDIR/module/dynamic
 cd $NGINXDIR/module/dynamic
 
 # waf
-git clone -b v3.0.16 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
+git clone -b v3.0.17 --recursive --single-branch https://github.com/SpiderLabs/ModSecurity
 cd ModSecurity
 ./build.sh && ./configure --prefix=/usr/local --enable-examples=no
 make -j$(nproc) && make install
@@ -120,7 +120,7 @@ git clone --depth 1 --quiet -b v0.65 https://github.com/openresty/echo-nginx-mod
 git clone --depth 1 --quiet -b v0.40 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.6.0 https://github.com/aperezdc/ngx-fancyindex
-git clone --depth 1 --quiet -b v0.2.6 https://github.com/vozlt/nginx-module-vts
+git clone --depth 1 --quiet -b v0.2.7 https://github.com/vozlt/nginx-module-vts
 git clone --depth 1 --quiet https://github.com/yaoweibin/ngx_http_substitutions_filter_module
 
 # https://nginx.org/en/download.html
@@ -275,7 +275,7 @@ curl -sSL https://github.com/ledgetech/lua-resty-http/archive/v$LUA_RESTY_HTTP.t
 rm -rf lua-resty-http-$LUA_RESTY_HTTP
 
 # https://github.com/fffonion/lua-resty-openssl/tags
-LUA_RESTY_OPENSSL=1.8.0
+LUA_RESTY_OPENSSL=1.9.0
 curl -sSL https://github.com/fffonion/lua-resty-openssl/archive/$LUA_RESTY_OPENSSL.tar.gz | tar zxf -
 \cp -rf lua-resty-openssl-$LUA_RESTY_OPENSSL/lib/* .
 rm -rf lua-resty-openssl-$LUA_RESTY_OPENSSL
@@ -299,7 +299,7 @@ curl -sSL https://github.com/bungle/lua-resty-template/archive/v$LUA_RESTY_TPL.t
 rm -rf lua-resty-template-$LUA_RESTY_TPL
 
 # https://github.com/leafo/pgmoon/tags
-LUA_PGMOON=1.17.0
+LUA_PGMOON=1.18.0
 curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf -
 \cp -rf pgmoon-$LUA_PGMOON/pgmoon .
 rm -rf pgmoon-$LUA_PGMOON
