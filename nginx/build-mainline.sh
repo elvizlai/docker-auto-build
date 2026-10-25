@@ -42,7 +42,7 @@ apk update && apk upgrade \
 
 
 OPENSSL=openssl-3.5.9
-LUAJIT=v2.1-20261015
+LUAJIT=v2.1-20261023
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -64,7 +64,7 @@ NGINXDIR=/opt/nginx-$NGINXVER
 
 NGINXNJS=1.0.2
 NGINXNDK=0.3.4
-NGINXLUA=0.10.32rc6
+NGINXLUA=0.10.32rc7
 NGINXSTREAMLUA=0.0.20rc3
 
 mkdir -p $NGINXDIR/module && cd $NGINXDIR/module
@@ -113,8 +113,8 @@ git clone -b v1.0.4 --depth=1 --recursive --single-branch https://github.com/Spi
 # waf
 
 git clone --depth 1 --quiet -b 3.4 https://github.com/leev/ngx_http_geoip2_module
-git clone --depth 1 --quiet -b v0.65 https://github.com/openresty/echo-nginx-module
-git clone --depth 1 --quiet -b v0.40 https://github.com/openresty/headers-more-nginx-module
+git clone --depth 1 --quiet -b v0.66 https://github.com/openresty/echo-nginx-module
+git clone --depth 1 --quiet -b v0.41 https://github.com/openresty/headers-more-nginx-module
 git clone --depth 1 --quiet -b v0.34 https://github.com/openresty/srcache-nginx-module
 git clone --depth 1 --quiet -b v0.6.0 https://github.com/aperezdc/ngx-fancyindex
 git clone --depth 1 --quiet -b v0.2.7 https://github.com/vozlt/nginx-module-vts
@@ -202,7 +202,7 @@ mkdir -p /var/cache/nginx/client_temp /var/log/nginx /etc/nginx/conf.d
 cd /usr/local/share/lua/5.1
 
 # https://github.com/openresty/lua-resty-core/tags
-LUA_RESTY_CORE=0.1.35rc1
+LUA_RESTY_CORE=0.1.35rc2
 curl -sSL https://github.com/openresty/lua-resty-core/archive/v$LUA_RESTY_CORE.tar.gz | tar zxf -
 cd lua-resty-core-$LUA_RESTY_CORE && make install LUA_LIB_DIR=/usr/local/share/lua/5.1 && cd ..
 rm -rf lua-resty-core-$LUA_RESTY_CORE
@@ -250,7 +250,7 @@ curl -sSL https://github.com/openresty/lua-resty-upstream-healthcheck/archive/v$
 rm -rf lua-resty-upstream-healthcheck-$LUA_RESTY_UPSTREAM_HEALTHCHECK
 
 # https://github.com/openresty/lua-resty-websocket/tags
-LUA_RESTY_WEBSOCKET=0.15
+LUA_RESTY_WEBSOCKET=0.16
 curl -sSL https://github.com/openresty/lua-resty-websocket/archive/v$LUA_RESTY_WEBSOCKET.tar.gz | tar zxf -
 \cp -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET/lib/* .
 rm -rf lua-resty-websocket-$LUA_RESTY_WEBSOCKET
