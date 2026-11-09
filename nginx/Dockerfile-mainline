@@ -1,11 +1,11 @@
-FROM alpine:3.23 AS builder
+FROM alpine:3.24 AS builder
 
 COPY build-mainline.sh /opt/build.sh
 
-RUN sh /opt/build.sh 1.31.7
+RUN sh /opt/build.sh 1.31.8
 
 
-FROM alpine:3.23
+FROM alpine:3.24
 
 COPY runtime.sh /opt/runtime.sh
 RUN sh /opt/runtime.sh

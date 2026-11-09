@@ -42,7 +42,7 @@ apk update && apk upgrade \
 
 
 OPENSSL=openssl-3.5.9
-LUAJIT=v2.1-20261023
+LUAJIT=v2.1-20261107
 
 mkdir -p /opt/lib-src && cd /opt/lib-src
 
@@ -59,7 +59,7 @@ cd luajit2.1
 make -j$(nproc) && make install && cd ..
 
 
-NGINXVER=${1:-1.31.7}
+NGINXVER=${1:-1.31.8}
 NGINXDIR=/opt/nginx-$NGINXVER
 
 NGINXNJS=1.0.2
@@ -77,7 +77,7 @@ git clone https://github.com/bellard/quickjs
 cd quickjs && CFLAGS='-fPIC' make libquickjs.a && cd ..
 
 # https://github.com/vision5/ngx_devel_kit/tags
-curl -sSL https://github.com/simplresty/ngx_devel_kit/archive/v$NGINXNDK.tar.gz | tar zxf -
+curl -sSL https://github.com/vision5/ngx_devel_kit/archive/v$NGINXNDK.tar.gz | tar zxf -
 
 # https://github.com/openresty/lua-nginx-module/tags
 curl -sSL https://github.com/openresty/lua-nginx-module/archive/v$NGINXLUA.tar.gz | tar zxf -
@@ -91,7 +91,7 @@ curl -sSL https://github.com/openresty/stream-lua-nginx-module/archive/v$NGINXST
 # mv pingos/modules/* .
 
 # https://github.com/winshining/nginx-http-flv-module
-git clone -b v1.2.14 https://github.com/winshining/nginx-http-flv-module
+git clone -b v1.2.15 https://github.com/winshining/nginx-http-flv-module
 
 # https://github.com/fffonion/lua-resty-openssl-aux-module/tags
 git clone -b 0.3.0 https://github.com/fffonion/lua-resty-openssl-aux-module
@@ -299,7 +299,7 @@ curl -sSL https://github.com/leafo/pgmoon/archive/v$LUA_PGMOON.tar.gz | tar zxf 
 rm -rf pgmoon-$LUA_PGMOON
 
 # https://github.com/starwing/lua-protobuf/tags
-LUA_PROTOBUF=0.5.3
+LUA_PROTOBUF=0.6.0
 curl -sSL https://github.com/starwing/lua-protobuf/archive/$LUA_PROTOBUF.tar.gz | tar zxf -
 cd lua-protobuf-$LUA_PROTOBUF && gcc -O2 -shared -fPIC -I /usr/local/include/luajit-2.1 pb.c -o /usr/local/lib/lua/5.1/pb.so && \cp -rf protoc.lua ../ && cd ..
 rm -rf lua-protobuf-$LUA_PROTOBUF

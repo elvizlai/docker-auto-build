@@ -1,4 +1,4 @@
-FROM alpine:3.23 AS builder
+FROM alpine:3.24 AS builder
 
 ARG VERSION=1.30.6
 
@@ -7,7 +7,7 @@ COPY build-stable.sh /opt/build.sh
 RUN sh /opt/build.sh $VERSION
 
 
-FROM alpine:3.23
+FROM alpine:3.24
 
 COPY runtime.sh /opt/runtime.sh
 RUN sh /opt/runtime.sh
