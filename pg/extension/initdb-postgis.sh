@@ -20,6 +20,12 @@ for DB in template_postgis; do
 		-- See https://github.com/postgis/docker-postgis/issues/288
 		\c
 		CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
-		CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
+		DO $$
+		BEGIN
+			IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis_tiger_geocoder') THEN
+				CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
+			END IF;
+		END
+		$$;
 EOSQL
 done

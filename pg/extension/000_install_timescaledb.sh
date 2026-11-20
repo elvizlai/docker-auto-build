@@ -1,7 +1,5 @@
 #!/bin/bash
 
-create_sql=`mktemp`
-
 # Checks to support bitnami image with same scripts so they stay in sync
 if [ ! -z "${BITNAMI_APP_NAME:-}" ]; then
 	if [ -z "${POSTGRES_USER:-}" ]; then
@@ -28,12 +26,6 @@ fi
 TS_TELEMETRY='basic'
 if [ "${TIMESCALEDB_TELEMETRY:-}" == "off" ]; then
 	TS_TELEMETRY='off'
-
-	# We delete the job as well to ensure that we do not spam the
-	# log with other messages related to the Telemetry job.
-	cat <<EOF >>${create_sql}
-SELECT alter_job(1,scheduled:=false);
-EOF
 fi
 
 echo "timescaledb.telemetry_level=${TS_TELEMETRY}" >> ${POSTGRESQL_CONF_DIR}/postgresql.conf
